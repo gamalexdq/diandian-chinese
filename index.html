@@ -797,6 +797,8 @@ function save(){
   try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch(e) {}
 }
 
+// first-try score needed to unlock the next level
+const PASS_PCT = 90;
 const lvState = uid => (S.lvl[uid] = S.lvl[uid] || {un:1, sel:1, best:{}});
 const lvPeek = uid => S.lvl[uid] || {un:1, sel:1, best:{}};
 const BOX_DAYS = [0, 1, 2, 4, 8, 16, 32];
@@ -1377,11 +1379,11 @@ function finish(){
   if (sess.unit){
     const L = lvState(sess.unit), lv = sess.level || 1;
     L.best[lv] = Math.max(L.best[lv] || 0, pct);
-    if (lv < 3 && pct >= 95 && L.un <= lv){
+    if (lv < 3 && pct >= PASS_PCT && L.un <= lv){
       L.un = lv + 1; L.sel = lv + 1;
       lvMsg = `<div class="unlock"><b>Nivel ${lv + 1} desbloqueado</b><span>${lv + 1 === 2 ? 'Sin pinyin y con más dictados.' : 'Frases nuevas cada vez, sin pinyin.'} Queda seleccionado para la próxima vez. Puedes volver a un nivel anterior cuando quieras.</span></div>`;
     } else if (lv < 3 && L.un <= lv){
-      lvMsg = `<div class="hint">Con 95% o más desbloqueas el nivel ${lv + 1}. Esta vez: ${pct}%.</div>`;
+      lvMsg = `<div class="hint">Con ${PASS_PCT}% o más desbloqueas el nivel ${lv + 1}. Esta vez: ${pct}%.</div>`;
     }
   }
   if (sess.exam){ const key = sess.examKey || 'examBest'; S[key] = Math.max(S[key] || 0, pct); }
@@ -1472,9 +1474,9 @@ function renderHome(){
     return `<li class="unit${nx ? ' next' : ''}"><div class="tzg"><span class="han">${u.key}</span></div>
       <div style="min-width:0"><div class="stat ${done ? 'done' : nx ? 'nx' : ''}">${done ? 'Hecha' : nx ? 'Siguiente' : 'Unidad ' + (k + 1)}</div><h3>${esc(u.title)}</h3><div class="han muted" style="font-size:15px">${esc(u.zh)}</div><div class="ref">${esc(u.ref)}</div>
       <div class="lvls" role="group" aria-label="Nivel de ${esc(u.title)}">${[1, 2, 3].map(n => n > L.un
-        ? `<button class="lv" disabled title="Consigue 95% en el nivel ${n - 1} para desbloquearlo">${ICON.lock}N${n}</button>`
+        ? `<button class="lv" disabled title="Consigue ${PASS_PCT}% en el nivel ${n - 1} para desbloquearlo">${ICON.lock}N${n}</button>`
         : `<button class="lv${L.sel === n ? ' on' : ''}" data-u="${u.id}" data-lv="${n}" aria-pressed="${L.sel === n}">N${n}</button>`).join('')}
-      <span class="lvbest">${L.best[L.sel] != null ? `mejor ${L.best[L.sel]}%` : L.un < 3 && L.sel === L.un ? `95% abre N${L.un + 1}` : ''}</span></div></div>
+      <span class="lvbest">${L.best[L.sel] != null ? `mejor ${L.best[L.sel]}%` : L.un < 3 && L.sel === L.un ? `${PASS_PCT}% abre N${L.un + 1}` : ''}</span></div></div>
       <button class="btn ${nx ? 'main' : ''}" data-unit="${u.id}">${done ? (L.sel > 1 ? 'Jugar N' + L.sel : 'Repetir') : 'Empezar'}</button></li>`;
   }).join('')}</ol>
   <div class="sect"><h2>Práctica extra</h2></div>
@@ -1490,7 +1492,7 @@ function renderHome(){
     <li><b>Lecciones cortas</b> de 3 a 5 minutos: primero ves y escuchas la palabra, luego la practicas.</li>
     <li><b>Recordar en lugar de releer.</b> Vas de reconocer (elegir) a producir (escribir pinyin, armar la oración, decirla en voz alta), que es lo que más fija.</li>
     <li><b>Lo que fallas vuelve</b> al final de la misma lección, hasta que te sale.</li>
-    <li><b>Tres niveles por unidad.</b> Con 95% se abre el siguiente: N2 quita el pinyin y suma dictados; N3 genera frases nuevas cada vez.</li>
+    <li><b>Tres niveles por unidad.</b> Con ${PASS_PCT}% se abre el siguiente: N2 quita el pinyin y suma dictados; N3 genera frases nuevas cada vez.</li>
     <li><b>Repaso espaciado.</b> Cada palabra vuelve en 1, 2, 4, 8 y 16 días si la aciertas; si la fallas, vuelve mañana. 10 minutos al día rinden más que 1 hora el domingo.</li>
   </ol></section>
   <div class="foot"><span>${esc(syncNote)}</span><button class="linkbtn" id="sync">Llevar mi progreso a otro dispositivo</button><button class="linkbtn" id="reset">Borrar mi progreso</button></div>`;

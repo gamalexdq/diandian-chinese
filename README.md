@@ -12,7 +12,7 @@ Aprende chino mandarín en sesiones cortas: repaso espaciado, pinyin coloreado p
   - **Preséntate:** saludos, los cuatro tonos, sonidos difíciles, nacionalidades, estudios y familia.
   - **La hora:** números del 1 al 99, la hora, las partes del día y la rutina diaria.
   - **Comida:** platos, frutas, carnes, verduras y bebidas, con 什么, 吗 y 不.
-- **Tres niveles por unidad.** Si sacas 95% al primer intento se abre el siguiente nivel.
+- **Tres niveles por unidad.** Si sacas 90% o más al primer intento se abre el siguiente nivel. El umbral es la constante `PASS_PCT` en `index.html`.
   - **N1:** tarjetas de introducción, y luego pasas de reconocer a producir.
   - **N2:** sin pinyin, más dictados y caracteres que armas uno por uno.
   - **N3:** frases nuevas generadas en cada sesión.
