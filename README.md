@@ -8,7 +8,8 @@ Aprende chino mandarín en sesiones cortas: repaso espaciado, pinyin coloreado p
 
 ## Qué tiene
 
-- **Dos rutas**
+- **Tres rutas**
+  - **Preséntate:** saludos, los cuatro tonos, sonidos difíciles, nacionalidades, estudios y familia.
   - **La hora:** números del 1 al 99, la hora, las partes del día y la rutina diaria.
   - **Comida:** platos, frutas, carnes, verduras y bebidas, con 什么, 吗 y 不.
 - **Tres niveles por unidad.** Si sacas 95% al primer intento se abre el siguiente nivel.
@@ -17,8 +18,8 @@ Aprende chino mandarín en sesiones cortas: repaso espaciado, pinyin coloreado p
   - **N3:** frases nuevas generadas en cada sesión.
 - **Repaso espaciado (cajas de Leitner).** Si aciertas una palabra vuelve en 1, 2, 4, 8, 16 y 32 días. Si la fallas, vuelve mañana.
 - **Lo que fallas vuelve** al final de la misma lección.
-- **Ejercicios:** opción múltiple, armar frases con fichas, escribir pinyin, dictado, hablar en voz alta con autoevaluación, responder preguntas y formular preguntas.
-- **Extras:** diálogos de situaciones cotidianas, un examen por ruta y el juego 逢七过 («no digas 7»).
+- **Ejercicios:** reconocer tonos de oído, opción múltiple, armar frases con fichas, escribir pinyin, dictado, hablar en voz alta con autoevaluación, responder preguntas y formular preguntas.
+- **Extras:** entrenamiento de oído (tonos y pares de sonidos), diálogos de situaciones cotidianas, un examen por ruta y el juego 逢七过 («no digas 7»).
 - **Audio** con la voz china del sistema (Web Speech API), a velocidad normal y lenta.
 - **Modo claro y oscuro.** Se puede usar con el teclado: 1–4 eligen una opción y Enter comprueba o continúa.
 
