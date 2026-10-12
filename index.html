@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Aprende chino mandarín en sesiones cortas: repaso espaciado, pinyin coloreado por tono y ejercicios generados.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230B7A5C'/%3E%3Ctext x='50' y='72' font-size='60' text-anchor='middle' fill='white' font-family='serif'%3E%E7%82%B9%3C/text%3E%3C/svg%3E">
+<title>Diǎn Diǎn 点点</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Noto+Serif+SC:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: one narrow study column. Home = path of units drawn on 田字格 practice paper; a session takes over the column. */
+:root{
+  --bg:#EEF2EF; --surface:#FFFFFF; --sunk:#E3E9E5; --ink:#17201B; --muted:#5B6A62; --line:#CFD8D2;
+  --accent:#0B7A5C; --accent-ink:#FFFFFF; --accent-soft:#D5EDE4;
+  --good:#1D8A4E; --good-soft:#DDF2E5; --bad:#C0352B; --bad-soft:#F8E1DE;
+  --grid:#E2A79C; --gold:#B7791F;
+  --t1:#C2410C; --t2:#2563C9; --t3:#7C3AED; --t4:#BE185D; --t0:#7A867F;
+  --sky-day:#F5D27A; --sky-night:#33406B; --on-night:#F3F1E8;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-han:"Noto Serif SC", "Songti SC", "SimSun", serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1512; --surface:#18201C; --sunk:#222C27; --ink:#E6ECE8; --muted:#9AA9A1; --line:#2F3B35;
+  --accent:#3CC59A; --accent-ink:#06261C; --accent-soft:#16372C;
+  --good:#4CC883; --good-soft:#163524; --bad:#F2766B; --bad-soft:#3D1E1B;
+  --grid:#6E3B33; --gold:#E3B254;
+  --t1:#FB9550; --t2:#77A6FF; --t3:#B99BFA; --t4:#F47AB7; --t0:#8E9A93;
+  --sky-day:#9C7A2A; --sky-night:#2A3560; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0F1512; --surface:#18201C; --sunk:#222C27; --ink:#E6ECE8; --muted:#9AA9A1; --line:#2F3B35;
+  --accent:#3CC59A; --accent-ink:#06261C; --accent-soft:#16372C;
+  --good:#4CC883; --good-soft:#163524; --bad:#F2766B; --bad-soft:#3D1E1B;
+  --grid:#6E3B33; --gold:#E3B254;
+  --t1:#FB9550; --t2:#77A6FF; --t3:#B99BFA; --t4:#F47AB7; --t0:#8E9A93;
+  --sky-day:#9C7A2A; --sky-night:#2A3560; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:640px;margin:0 auto}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+.han{font-family:var(--f-han);font-weight:500}
+.muted{color:var(--muted)}
+.t1{color:var(--t1)}.t2{color:var(--t2)}.t3{color:var(--t3)}.t4{color:var(--t4)}.t0{color:var(--t0)}
+.pw{white-space:nowrap}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;gap:12px;padding-block:12px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--f-display);font-weight:800;font-size:20px;display:flex;align-items:baseline;gap:6px}
+.brand .han{color:var(--accent);font-weight:700}
+.stats{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip svg{width:14px;height:14px}
+
+/* home */
+.hero{padding-block:28px 18px;display:grid;gap:6px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.hero .han{font-size:clamp(34px,9vw,52px);font-weight:700;line-height:1.1}
+.hero .py{font-size:20px}
+.actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-block:8px 28px}
+@media (max-width:520px){.actions{grid-template-columns:1fr}}
+.act{display:grid;gap:4px;text-align:left;padding:14px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);min-width:0}
+.act b{font-family:var(--f-display);font-size:17px}
+.act span{font-size:14px;color:var(--muted)}
+.act.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.act.primary span{color:inherit;opacity:.85}
+.act:hover{border-color:var(--accent)}
+.sect{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-block:8px 12px}
+.sect h2{font-size:20px}
+.path{display:grid;gap:10px;list-style:none;padding:0;margin:0}
+.unit{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line)}
+.unit.next{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.unit h3{font-size:17px}
+.unit .ref{font-size:13px;color:var(--muted)}
+.unit .stat{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.unit .stat.done{color:var(--good)} .unit .stat.nx{color:var(--accent)}
+.lvls{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px}
+.lv{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:2px 11px;font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.lv.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.lv:disabled{opacity:.55;cursor:not-allowed;border-style:dashed}
+.lv svg{width:11px;height:11px}
+.lvbest{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.unlock{display:grid;gap:4px;padding:12px 16px;border-radius:var(--r);background:var(--accent-soft);border:1px solid var(--accent);max-width:420px}
+.unlock b{font-family:var(--f-display);font-size:18px;color:var(--accent)}
+.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:700;background:var(--sunk);color:var(--ink)}
+.btn.main{background:var(--accent);color:var(--accent-ink)}
+.btn.big{width:100%;padding:14px;font-size:18px}
+.btn:disabled{opacity:.45;cursor:default}
+.method{margin-top:28px;padding:16px;border-radius:var(--r);background:var(--sunk);font-size:15px}
+.method h2{font-size:17px;margin-bottom:8px}
+.method ol{margin:0;padding-left:20px;display:grid;gap:6px}
+.foot{margin-top:14px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 14px}
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;font-size:13px}
+
+/* 田字格 practice square */
+.tzg{position:relative;display:inline-grid;place-items:center;aspect-ratio:1;border:2px solid var(--grid);background:var(--surface);
+  background-image:linear-gradient(var(--grid),var(--grid)),linear-gradient(var(--grid),var(--grid));
+  background-size:100% 1px,1px 100%;background-position:center;background-repeat:no-repeat}
+.tzg::after{content:"";position:absolute;inset:0;background:
+  linear-gradient(45deg,transparent calc(50% - .5px),color-mix(in srgb,var(--grid) 55%,transparent) 50%,transparent calc(50% + .5px)),
+  linear-gradient(-45deg,transparent calc(50% - .5px),color-mix(in srgb,var(--grid) 55%,transparent) 50%,transparent calc(50% + .5px));pointer-events:none}
+.tzg .han{position:relative;z-index:1;line-height:1}
+.unit .tzg{width:64px}.unit .tzg .han{font-size:38px}
+.tzgrow{display:flex;justify-content:center;flex-wrap:wrap}
+.tzgrow .tzg{width:clamp(88px,26vw,128px);margin-left:-2px}
+.tzgrow .tzg .han{font-size:clamp(56px,17vw,84px)}
+
+/* session */
+.sbar{display:flex;align-items:center;gap:12px;padding-block:16px}
+.xbtn{background:none;border:0;padding:6px;border-radius:8px;color:var(--muted);display:grid;place-items:center}
+.xbtn svg{width:22px;height:22px}
+.prog{flex:1;height:12px;border-radius:999px;background:var(--sunk);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .3s}
+.card{display:grid;gap:18px;padding-block:8px 24px}
+.kind{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.qtext{font-family:var(--f-display);font-size:24px;font-weight:600}
+.center{text-align:center;justify-items:center}
+.pybig{font-size:26px;font-weight:600}
+.es{font-size:19px}
+.tip{font-size:15px;background:var(--sunk);border-radius:12px;padding:10px 14px}
+.audio{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:600}
+.audio svg{width:20px;height:20px;color:var(--accent)}
+.audio.huge{padding:22px;border-radius:50%;}
+.audio.huge svg{width:44px;height:44px}
+.arow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{border:2px solid var(--line);background:var(--surface);border-radius:var(--r);padding:14px 10px;display:grid;gap:2px;justify-items:center;text-align:center;min-height:64px;align-content:center;min-width:0}
+.opt .han{font-size:30px}
+.opt small{font-size:14px;color:var(--muted)}
+.opt .k{font-size:11px;color:var(--muted);justify-self:start;margin-bottom:-14px}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)}
+.mods{display:flex;gap:6px;padding:4px;border-radius:999px;background:var(--sunk);width:max-content;max-width:100%;margin-top:18px}
+.mod{border:0;background:none;border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px;color:var(--muted)}
+.mod.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 18%,transparent)}
+.bubble{display:grid;gap:4px;justify-items:start;text-align:left;background:var(--sunk);border-radius:16px 16px 16px 4px;padding:12px 16px;max-width:100%}
+.bubble .who{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.bubble .han{font-size:26px}
+.ask{font-size:18px}
+.ask b{font-family:var(--f-display)}
+.opt svg.clk{width:84px;height:84px}
+.tray{min-height:76px;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding-bottom:10px}
+.bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.tile{border:2px solid var(--line);border-bottom-width:4px;background:var(--surface);border-radius:12px;padding:6px 12px;display:grid;justify-items:center;line-height:1.2}
+.tile .han{font-size:24px}
+.tile small{font-size:13px}
+.tile.ghost{visibility:hidden}
+.tile:active{transform:translateY(2px)}
+input.ans{width:100%;font:inherit;font-size:22px;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink)}
+input.ans:focus{border-color:var(--accent);outline:none}
+.hint{font-size:14px;color:var(--muted)}
+.feed{position:sticky;bottom:0;margin-inline:-16px;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));display:grid;gap:10px;background:var(--bg);border-top:1px solid var(--line)}
+.feed.ok{background:var(--good-soft);border-color:var(--good)}
+.feed.no{background:var(--bad-soft);border-color:var(--bad)}
+.feed h3{font-size:20px}
+.feed.ok h3{color:var(--good)} .feed.no h3{color:var(--bad)}
+.feed .ansline{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.feed .ansline .han{font-size:24px}
+.selfrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.formula{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.formula div{border-radius:10px;padding:8px 12px;display:grid;justify-items:center;background:var(--surface);border:1px solid var(--line)}
+.formula small{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.formula .han{font-size:24px}
+.formula .op{background:none;border:0;align-self:center;font-size:22px;color:var(--muted);padding:0}
+.rules{display:grid;gap:8px;width:100%}
+.rule{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left}
+.rule .han{font-size:24px}
+.daybar{width:100%;display:grid;gap:6px}
+.daybar .bar{display:flex;height:42px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.daybar .bar div{display:grid;place-items:center;font-family:var(--f-han);font-size:15px;min-width:0;overflow:hidden;white-space:nowrap}
+.daybar .ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.clockwrap{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}
+.clockwrap svg.clk{width:150px;height:150px}
+.digital{font-variant-numeric:tabular-nums;font-family:var(--f-display);font-size:30px;font-weight:800;display:grid;gap:2px;justify-items:center}
+.digital small{font-family:var(--f-body);font-size:14px;font-weight:600;color:var(--muted)}
+.result{display:grid;gap:16px;padding-block:40px;text-align:center;justify-items:center}
+.result .big{font-family:var(--f-display);font-size:56px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.result .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.misslist{display:grid;gap:6px;width:100%;text-align:left}
+.misslist div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.misslist .han{font-size:20px}
+/* 逢七过 */
+.g7num{font-family:var(--f-display);font-weight:800;font-size:88px;line-height:1;font-variant-numeric:tabular-nums}
+.timer{height:8px;border-radius:999px;background:var(--sunk);overflow:hidden;width:100%}
+.timer i{display:block;height:100%;background:var(--gold)}
+.clap{font-family:var(--f-han);font-size:26px;font-weight:700;border:2px solid var(--gold);color:var(--gold);background:var(--surface);border-radius:var(--r);padding:14px;grid-column:1/-1}
+.note{font-size:14px;padding:10px 14px;border-radius:12px;background:var(--bad-soft);color:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@keyframes pop{from{transform:scale(.96);opacity:.6}to{transform:none;opacity:1}}
+.card>*{animation:pop .18s ease-out}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="han">点点</span><span>Diǎn Diǎn</span></div>
+    <div class="stats" id="stats"></div>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+/* ---------- utilities ---------- */
+const app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const today = () => { const d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 864e5); };
+const ICON = {
+  play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  slow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  fire: '<svg viewBox="0 0 24 24" fill="currentColor" style="color:var(--t1)"><path d="M12 2s5 4.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 1.5-4S9 11 11 11c0-4 1-9 1-9z"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold)"><path d="m12 2 3 7 7 .6-5.3 4.7L18.3 22 12 18l-6.3 4 1.6-7.7L2 9.6 9 9z"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  cards: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent)"><rect x="3" y="6" width="13" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg>'
+};
+
+/* ---------- pinyin ---------- */
+const TONES = {1:'āēīōūǖĀĒĪŌŪ', 2:'áéíóúǘÁÉÍÓÚ', 3:'ǎěǐǒǔǚǍĚǏǑǓ', 4:'àèìòùǜÀÈÌÒÙ'};
+const toneOf = s => { for (const t in TONES) for (const c of TONES[t]) if (s.includes(c)) return +t; return 0; };
+// internal pinyin: syllables joined by "·", words by spaces
+const pyHTML = p => p.split(' ').map(w => '<span class="pw">' + w.split('·').map(s => `<span class="t${toneOf(s)}">${esc(s)}</span>`).join('') + '</span>').join(' ');
+const pyPlain = p => p.replace(/·/g, '');
+const loose = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/v/g, 'u').replace(/[^a-z]/g, '');
+const strict = s => s.normalize('NFC').toLowerCase().replace(/[\s·'’?？.,。!！]/g, '');
+
+/* ---------- numbers & time ---------- */
+const NZH = ['', '一','二','三','四','五','六','七','八','九','十'];
+const NPY = ['', 'yī','èr','sān','sì','wǔ','liù','qī','bā','jiǔ','shí'];
+function numZh(n){ if (n <= 10) return NZH[n]; const t = Math.floor(n/10), o = n % 10; return (t > 1 ? NZH[t] : '') + '十' + (o ? NZH[o] : ''); }
+function numPy(n){ if (n <= 10) return NPY[n]; const t = Math.floor(n/10), o = n % 10; return [t > 1 ? NPY[t] : null, 'shí', o ? NPY[o] : null].filter(Boolean).join('·'); }
+const h12 = h => (h % 12) || 12;
+const hourZh = h => (h12(h) === 2 ? '两' : numZh(h12(h))) + '点';
+const hourPy = h => (h12(h) === 2 ? 'liǎng' : numPy(h12(h))) + ' diǎn';
+const PERIODS = [
+  {id:'zs', h:'早上', p:'zǎo·shang', from:5,  to:8,  es:'mañana temprano'},
+  {id:'sw', h:'上午', p:'shàng·wǔ',  from:9,  to:11, es:'media mañana'},
+  {id:'zw', h:'中午', p:'zhōng·wǔ',  from:12, to:12, es:'mediodía'},
+  {id:'xw', h:'下午', p:'xià·wǔ',    from:13, to:17, es:'tarde'},
+  {id:'ws', h:'晚上', p:'wǎn·shang', from:18, to:23, es:'noche'}
+];
+const periodOf = h => PERIODS.find(p => h >= p.from && h <= p.to);
+const isDay = h => h >= 6 && h < 18;
+function clockSVG(h, opts = {}){
+  const a = (h % 12) * 30, sky = opts.sky;
+  const rad = d => (d - 90) * Math.PI / 180;
+  const hx = 50 + 24 * Math.cos(rad(a)), hy = 50 + 24 * Math.sin(rad(a));
+  let ticks = '';
+  for (let i = 0; i < 12; i++){ const r1 = i % 3 ? 40 : 36; ticks += `<line x1="${50+r1*Math.cos(rad(i*30))}" y1="${50+r1*Math.sin(rad(i*30))}" x2="${50+44*Math.cos(rad(i*30))}" y2="${50+44*Math.sin(rad(i*30))}" stroke="var(--ink)" stroke-width="${i%3?1.5:3}" stroke-linecap="round"/>`; }
+  let skyMark = '';
+  if (sky){
+    skyMark = isDay(h)
+      ? `<circle cx="50" cy="70" r="6" fill="var(--sky-day)" stroke="var(--gold)" stroke-width="1.5"/>`
+      : `<path d="M53 64a7 7 0 1 0 0 12a5.5 5.5 0 1 1 0-12z" fill="var(--sky-night)" stroke="var(--muted)" stroke-width="1"/>`;
+  }
+  return `<svg class="clk" viewBox="0 0 100 100" role="img" aria-label="Reloj marcando las ${h12(h)}"><circle cx="50" cy="50" r="47" fill="var(--surface)" stroke="var(--ink)" stroke-width="3"/>${ticks}${skyMark}<line x1="50" y1="50" x2="50" y2="14" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"/><line x1="50" y1="50" x2="${hx}" y2="${hy}" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="3.5" fill="var(--ink)"/></svg>`;
+}
+const fmt24 = h => String(h).padStart(2,'0') + ':00';
+
+/* ---------- content · Ruta 1: la hora y tu día ---------- */
+const ITEMS = {};
+const W = (id, unit, h, p, es, tip) => (ITEMS[id] = {id, unit, kind:'word', h, p, es, tip});
+// Unidad 1
+W('n1','u1','一','yī','uno (1)','Un solo trazo horizontal.');
+W('n2','u1','二','èr','dos (2)','Dos trazos. Para decir la hora se usa otra palabra: 两.');
+W('n3','u1','三','sān','tres (3)','Tres trazos.');
+W('n4','u1','四','sì','cuatro (4)','Suena casi como 死 sǐ, “morir”; por eso el 4 se considera de mala suerte.');
+W('n5','u1','五','wǔ','cinco (5)','Con la mano: palma abierta, los cinco dedos.');
+W('n6','u1','六','liù','seis (6)','Con la mano: solo pulgar y meñique extendidos.');
+W('n7','u1','七','qī','siete (7)','Con la mano: las puntas de pulgar, índice y medio juntas.');
+W('n8','u1','八','bā','ocho (8)','Con la mano: pulgar e índice en forma de L.');
+W('n9','u1','九','jiǔ','nueve (9)','Con la mano: el índice doblado como un gancho.');
+W('n10','u1','十','shí','diez (10)','Parece una cruz (+). Con la mano: índices cruzados o el puño cerrado.');
+// Unidad 2
+W('n11','u2','十一','shí·yī','once (11)','10 + 1: primero 十, luego la unidad.');
+W('n20','u2','二十','èr·shí','veinte (20)','2 × 10: el número va ANTES de 十.');
+W('n21','u2','二十一','èr·shí·yī','veintiuno (21)','2 × 10 + 1.');
+W('n99','u2','九十九','jiǔ·shí·jiǔ','noventa y nueve (99)','9 × 10 + 9. Con esto ya cuentas hasta 99.');
+ITEMS['g-num'] = {id:'g-num', unit:'u2', kind:'gen', es:'números del 11 al 99'};
+// Unidad 3
+W('xz','u3','现在','xiàn·zài','ahora','Se pone al inicio: 现在… = “ahora…”.');
+W('ji','u3','几','jǐ','¿cuántos? (pregunta por un número)','Va donde iría el número de la respuesta.');
+W('dian','u3','点','diǎn','… en punto / hora','Número + 点 = la hora: 三点 = las 3.');
+W('jd','u3','几点','jǐ diǎn','¿qué hora? / ¿a qué hora?','几 + 点: “¿cuántas horas?”.');
+W('ld','u3','两点','liǎng diǎn','las dos (en punto)','¡Ojo! Para la hora se dice 两 liǎng, nunca 二点.');
+W('xzjd','u3','现在几点？','xiàn·zài jǐ diǎn','¿Qué hora es ahora?','Literal: “¿ahora cuántas horas?”. No hace falta verbo “ser”.');
+ITEMS['g-time'] = {id:'g-time', unit:'u3', kind:'gen', es:'decir la hora'};
+// Unidad 4
+W('zs','u4','早上','zǎo·shang','mañana temprano (≈ 5–8 h)','早 = temprano. Se usa para las primeras horas.');
+W('sw','u4','上午','shàng·wǔ','media mañana (≈ 9–11 h)','上 = antes · 午 = mediodía → “antes del mediodía”, como a.m.');
+W('zw','u4','中午','zhōng·wǔ','mediodía (≈ 12 h)','中 = centro → el centro del día.');
+W('xw','u4','下午','xià·wǔ','tarde (≈ 13–17 h)','下 = después → “después del mediodía”, como p.m.');
+W('ws','u4','晚上','wǎn·shang','noche (desde ≈ 18 h)','晚 = tarde, de noche.');
+ITEMS['g-period'] = {id:'g-period', unit:'u4', kind:'gen', es:'hora con periodo del día'};
+// Unidad 5
+W('wo','u5','我','wǒ','yo','La palabra más útil: con ella empiezan casi todas tus frases.');
+W('qc','u5','起床','qǐ·chuáng','levantarse','起 = levantar · 床 = cama → “levantarse de la cama”.');
+W('gz','u5','工作','gōng·zuò','trabajar','También significa “trabajo”.');
+W('hj','u5','回家','huí·jiā','volver a casa','回 = volver · 家 = casa.');
+W('sj','u5','睡觉','shuì·jiào','dormir, irse a dormir','睡 lleva 目 (ojo) a la izquierda: cerrar los ojos.');
+W('qu','u5','去','qù','ir','去 + lugar: 去学校 = ir a la escuela.');
+W('xx','u5','学校','xué·xiào','escuela','学 = estudiar · 校 = escuela.');
+// Unidad 6
+W('chi','u6','吃','chī','comer','Lleva 口 (boca) a la izquierda.');
+W('zf','u6','早饭','zǎo·fàn','desayuno','早 = temprano · 饭 = comida.');
+W('wf','u6','午饭','wǔ·fàn','almuerzo','午 = mediodía (como en 中午) + 饭.');
+W('wanf','u6','晚饭','wǎn·fàn','cena','晚 = noche (como en 晚上) + 饭.');
+// Unidad 7: frases completas sobre tu día
+const C = (h, p) => ({h, p});
+const ch = {
+  wo:C('我','wǒ'), ni:C('你','nǐ'), xz:C('现在','xiàn·zài'), jd:C('几点','jǐ diǎn'), chi:C('吃','chī'), qu:C('去','qù'), xx:C('学校','xué·xiào'),
+  qc:C('起床','qǐ·chuáng'), gz:C('工作','gōng·zuò'), hj:C('回家','huí·jiā'), sj:C('睡觉','shuì·jiào'),
+  zf:C('早饭','zǎo·fàn'), wf:C('午饭','wǔ·fàn'), wanf:C('晚饭','wǎn·fàn')
+};
+PERIODS.forEach(p => ch[p.id] = C(p.h, p.p));
+const hc = h => C(hourZh(h), hourPy(h));
+const S_ = (id, chunks, es, q, unit) => (ITEMS[id] = {id, unit:unit || 'u7', kind:'sent', chunks, es, q:!!q,
+  h: chunks.map(c => c.h).join('') + (q ? '？' : '。'), p: chunks.map(c => c.p).join(' ')});
+S_('s1', [ch.xz, ch.jd], '¿Qué hora es ahora?', 1);
+S_('s2', [ch.xz, ch.ws, hc(20)], 'Ahora son las 8 de la noche.');
+S_('s3', [ch.wo, ch.zs, hc(7), ch.qc], 'Me levanto a las 7 de la mañana.');
+S_('s4', [ch.wo, ch.zs, hc(7), ch.chi, ch.zf], 'Desayuno a las 7 de la mañana.');
+S_('s5', [ch.wo, ch.sw, hc(9), ch.gz], 'Trabajo a las 9 de la mañana.');
+S_('s6', [ch.wo, ch.zw, hc(13), ch.chi, ch.wf], 'Almuerzo a la 1 del mediodía.');
+S_('s7', [ch.wo, ch.xw, hc(18), ch.hj], 'Vuelvo a casa a las 6 de la tarde.');
+S_('s8', [ch.wo, ch.ws, hc(20), ch.chi, ch.wanf], 'Ceno a las 8 de la noche.');
+S_('s9', [ch.wo, ch.ws, hc(22), ch.sj], 'Me voy a dormir a las 10 de la noche.');
+S_('s10', [ch.ni, ch.jd, ch.hj], '¿A qué hora vuelves a casa?', 1);
+const DISTRACT = [ch.zs, ch.sw, ch.zw, ch.xw, ch.ws, ch.chi, ch.qu, ch.qc, ch.gz, ch.hj, ch.sj, ch.zf, ch.wf, ch.wanf, hc(14), hc(9), hc(4), ch.ni, ch.wo];
+
+const UNITS = [
+  {id:'u1', key:'七', title:'Números 1–10', zh:'一二三', ref:'Contar del 1 al 10, también con una mano', items:['n1','n2','n3','n4','n5','n6','n7','n8','n9','n10'],
+   intro:[{type:'hands'}]},
+  {id:'u2', key:'十', title:'Números 11–99', zh:'十一 … 九十九', ref:'Decenas: todo se arma con 十', items:['n11','n20','n21','n99','g-num'],
+   intro:[{type:'numrules'}]},
+  {id:'u3', key:'点', title:'¿Qué hora es?', zh:'现在几点？', ref:'Número + 点', items:['xz','ji','dian','jd','ld','xzjd','g-time'],
+   intro:[{type:'timerule'}]},
+  {id:'u4', key:'午', title:'Mañana, tarde y noche', zh:'早上 上午 中午 下午 晚上', ref:'Las cinco partes del día', items:['zs','sw','zw','xw','ws','g-period'],
+   intro:[{type:'daybar'}]},
+  {id:'u5', key:'床', title:'Mi rutina', zh:'起床 工作 回家 睡觉', ref:'Verbos de todos los días', items:['wo','qc','gz','hj','sj','qu','xx'], intro:[]},
+  {id:'u6', key:'饭', title:'Las comidas del día', zh:'吃早饭 吃午饭 吃晚饭', ref:'Desayuno, almuerzo y cena', items:['chi','zf','wf','wanf'], intro:[]},
+  {id:'u7', key:'校', title:'Tu día en oraciones', zh:'你几点回家？', ref:'Frases completas sobre tu día', models:['s3','s10'], items:['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10'],
+   intro:[{type:'grammar'}]}
+];
+
+/* ---------- content · Ruta 2: comida y bebida ---------- */
+UNITS.forEach(u => u.mod = 'm2');
+// c1 主食
+W('sm','c1','什么','shén·me','¿qué?','Va donde iría la respuesta: 你吃什么？ → 我吃饺子。 No se mueve al inicio como en español.');
+W('jz','c1','饺子','jiǎo·zi','jiaozi (empanadillas chinas)','El plato del Año Nuevo en el norte de China. 子 zi va átono.');
+W('bz','c1','包子','bāo·zi','baozi (bollos al vapor rellenos)','包 = envolver. Otra vez 子 átono, como en 饺子.');
+W('mt','c1','面条','miàn·tiáo','fideos','面 = fideos/harina · 条 = tira larga.');
+W('cm','c1','炒面','chǎo·miàn','fideos salteados (chaomian)','炒 = saltear en wok.');
+W('cf','c1','炒饭','chǎo·fàn','arroz frito','炒 saltear + 饭 arroz. Del cantonés “chau faan” viene el chaufa peruano.');
+W('ncsm','c1','你吃什么？','nǐ chī shén·me','¿Qué comes? / ¿Qué vas a comer?','La pregunta del mesero. Respondes igual, cambiando 什么 por la comida.');
+// c2 吗 y 不
+W('ma','c2','吗','ma','¿…? (pregunta de sí o no)','Frase + 吗 = pregunta. 你吃饺子。→ 你吃饺子吗？');
+W('bu','c2','不','bù','no (antes del verbo)','Va antes del verbo: 我不吃. Antes de un 4.º tono suena bú: 不要 bú yào.');
+W('xie','c2','谢谢','xiè·xie','gracias','El segundo 谢 es átono.');
+W('pma','c2','你吃饺子吗？','nǐ chī jiǎo·zi ma','¿Comes jiaozi?','Igual que la afirmación, con 吗 al final.');
+W('pneg','c2','我不吃饺子。','wǒ bù chī jiǎo·zi','No como jiaozi.','不 justo antes del verbo.');
+W('pbx','c2','不，谢谢。','bù, xiè·xie','No, gracias.','');
+// c3 水果
+W('xh','c3','喜欢','xǐ·huan','gustar','我喜欢苹果 = “yo gusto manzanas”: quien siente el gusto va primero.');
+W('sg','c3','水果','shuǐ·guǒ','fruta','水 agua + 果 fruto: “frutos jugosos”.');
+W('pg','c3','苹果','píng·guǒ','manzana','Mismo 果 que en 水果.');
+W('xj','c3','香蕉','xiāng·jiāo','plátano','香 = aromático.');
+W('cz','c3','橙子','chéng·zi','naranja','chéng con “ng” al final y tono que sube; no “chen”.');
+W('nxhsg','c3','你喜欢什么水果？','nǐ xǐ·huan shén·me shuǐ·guǒ','¿Qué fruta te gusta?','什么 + sustantivo = ¿qué …?: 什么水果 = ¿qué fruta?');
+// c4 肉和蔬菜
+W('yao','c4','要','yào','querer, pedir (en tienda o restaurante)','Lo que dices al comprar o pedir: 我要鸡肉.');
+W('nr','c4','牛肉','niú·ròu','carne de res','牛 = vaca · 肉 = carne.');
+W('jr','c4','鸡肉','jī·ròu','pollo','鸡 = gallina + 肉.');
+W('zr','c4','猪肉','zhū·ròu','cerdo','zhū con “zh” (lengua hacia atrás), no “zu”.');
+W('yu','c4','鱼','yú','pescado','yú: labios redondos (ü) y tono que sube.');
+W('sc','c4','蔬菜','shū·cài','verduras','');
+W('nysm','c4','你要什么？','nǐ yào shén·me','¿Qué quieres? / ¿Qué va a llevar?','La pregunta del vendedor en el mercado.');
+W('by','c4','不要','bú·yào','no quiero','不 + 4.º tono → bú. Se escribe igual; cambia el sonido.');
+// c5 饮料
+W('he','c5','喝','hē','beber','Lleva 口 (boca), como 吃.');
+W('sh','c5','水','shuǐ','agua','Ya lo viste en 水果. Tercer tono: baja y sube.');
+W('kl','c5','可乐','kě·lè','Coca-Cola','kě lè con tonos 3 y 4, no plano. Literal: “puede alegrar”.');
+W('kf','c5','咖啡','kā·fēi','café','Préstamo por sonido: kā fēi ≈ café.');
+W('cha','c5','茶','chá','té','De chá viene “chai”; “té” viene de te, la forma del dialecto min.');
+W('pj','c5','啤酒','pí·jiǔ','cerveza','啤 pí (de “beer”) + 酒 bebida alcohólica.');
+W('nhsm','c5','你喝什么？','nǐ hē shén·me','¿Qué bebes? / ¿Qué vas a tomar?','');
+
+// sentence chunks and generator for module 3
+const k3 = {wo:C('我','wǒ'), ni:C('你','nǐ'), sm:C('什么','shén·me'), ma:C('吗','ma'), sg:C('水果','shuǐ·guǒ'),
+  chi:C('吃','chī'), xh:C('喜欢','xǐ·huan'), yao:C('要','yào'), he:C('喝','hē'), xie:C('谢谢','xiè·xie')};
+const N3 = {
+  jz:{es:'jiaozi', art:'los', pl:1}, bz:{es:'baozi', art:'los', pl:1}, mt:{es:'fideos', art:'los', pl:1}, cm:{es:'fideos salteados', art:'los', pl:1}, cf:{es:'arroz frito', art:'el'},
+  pg:{es:'manzanas', art:'las', pl:1}, xj:{es:'plátanos', art:'los', pl:1}, cz:{es:'naranjas', art:'las', pl:1},
+  nr:{es:'carne de res', art:'la'}, jr:{es:'pollo', art:'el'}, zr:{es:'cerdo', art:'el'}, yu:{es:'pescado', art:'el'}, sc:{es:'verduras', art:'las', pl:1},
+  sh:{es:'agua', art:'el'}, kl:{es:'Coca-Cola', art:'la'}, kf:{es:'café', art:'el'}, cha:{es:'té', art:'el'}, pj:{es:'cerveza', art:'la'}
+};
+Object.keys(N3).forEach(id => Object.assign(N3[id], {id, c:C(ITEMS[id].h, ITEMS[id].p)}));
+const VERB3 = {
+  chi:{v:k3.chi, yo:'como', tu:'comes', no:'no como', q:'¿Qué comes?', nouns:['jz','bz','mt','cm','cf']},
+  xh:{v:k3.xh, like:1, q:'¿Qué fruta te gusta?', qwh:[k3.ni, k3.xh, k3.sm, k3.sg], nouns:['pg','xj','cz','sc']},
+  yao:{v:k3.yao, yo:'quiero', tu:'quieres', no:'no quiero', q:'¿Qué quieres?', nouns:['nr','jr','zr','yu','sc']},
+  he:{v:k3.he, yo:'bebo', tu:'bebes', no:'no bebo', q:'¿Qué bebes?', nouns:['sh','kl','kf','cha','pj']}
+};
+const buC = V => C('不', toneOf(V.v.p.split('·')[0]) === 4 ? 'bú' : 'bù');
+const gus = n => 'gusta' + (n.pl ? 'n' : '') + ' ' + n.art + ' ' + n.es;
+const es3 = {
+  ans: (V, n) => V.like ? `Me ${gus(n)}.` : `${cap(V.yo)} ${n.es}.`,
+  ma: (V, n) => V.like ? `¿Te ${gus(n)}?` : `¿${cap(V.tu)} ${n.es}?`,
+  neg: (V, n) => V.like ? `No, no me ${gus(n)}.` : `No, ${V.no} ${n.es}.`,
+  yes: (V, n) => V.like ? `Sí, me ${gus(n)}.` : `Sí, ${V.yo} ${n.es}.`,
+  swap: (V, n, m) => V.like ? `No, no me ${gus(n)}; me ${gus(m)}.` : `No, ${V.no} ${n.es}; ${V.yo} ${m.es}.`
+};
+function food(form, V, n, m){
+  let chunks, end = '。';
+  if (form === 'what'){ chunks = V.qwh || [k3.ni, V.v, k3.sm]; end = '？'; }
+  else if (form === 'ma'){ chunks = [k3.ni, V.v, n.c, k3.ma]; end = '？'; }
+  else if (form === 'neg') chunks = [C('不，', 'bù'), k3.wo, buC(V), V.v, n.c];
+  else if (form === 'yes') chunks = [C(V.v.h + '，', V.v.p), k3.wo, V.v, n.c];
+  else if (form === 'swap') chunks = [C('不，', 'bù'), k3.wo, buC(V), V.v, C(n.c.h + '，', n.c.p), k3.wo, V.v, m.c];
+  else chunks = [k3.wo, V.v, n.c];
+  const es = form === 'what' ? V.q : es3[form] ? es3[form](V, n, m) : es3.ans(V, n);
+  return {form, V, n, m, chunks, es, h:chunks.map(c => c.h).join('') + end, p:chunks.map(c => c.p).join(' ')};
+}
+function randFood(form, verbs){
+  const V = VERB3[pick(verbs)], [a, b] = shuffle(V.nouns);
+  return food(form, V, N3[a], N3[b]);
+}
+const DISTRACT3 = [k3.wo, k3.ni, k3.sm, k3.ma, k3.chi, k3.xh, k3.yao, k3.he, C('不', 'bù'), ...Object.values(N3).map(n => n.c)];
+const tilesFrom = (chunks, n = 3) => shuffle([...chunks, ...shuffle(DISTRACT3.filter(d => !chunks.some(c => c.h === d.h))).slice(0, n)]);
+function foodEx(mode, verbs, forms){
+  verbs = verbs || Object.keys(VERB3); forms = forms || ['ans','ma','neg','yes'];
+  mode = mode || pick(['build','listen','mc','speak','reply','ask']);
+  if (mode === 'reply'){
+    // hear a question, pick the reply that fits it
+    const V = pick(verbs), q = randFood(Math.random() < .5 ? 'what' : 'ma', [V]);
+    if (q.form === 'what'){
+      const right = food('ans', q.V, N3[pick(q.V.nouns)]);
+      const others = shuffle(Object.keys(VERB3).filter(k => VERB3[k] !== q.V)).map(k => food('ans', VERB3[k], N3[pick(VERB3[k].nouns)]));
+      const opts = shuffle([right, ...others].slice(0, 4));
+      return {t:'mc', item:'g-food', kind:'Escucha y responde', say:q.h, q:`<div class="bubble"><span class="who">Te preguntan</span><span class="han">${esc(q.h)}</span>${pyHint(q.p) ? `<span>${pyHint(q.p)}</span>` : ''}</div>${audioBtns(q.h)}`,
+        options: opts.map(o => ({v:o.h, html:`<span class="han" style="font-size:22px">${esc(o.h)}</span>`})), answer:right.h, rev:{h:right.h, p:right.p, es:right.es}};
+    }
+    const want = Math.random() < .5, right = food(want ? 'yes' : 'neg', q.V, q.n);
+    const wrongOrder = {h:'我' + q.V.v.h + '不' + q.n.c.h + '。'};
+    const opts = shuffle([right, food(want ? 'neg' : 'yes', q.V, q.n), wrongOrder, food(want ? 'neg' : 'yes', q.V, N3[shuffle(q.V.nouns.filter(x => x !== q.n.id))[0]])]);
+    return {t:'mc', item:'g-food', kind:want ? 'Contesta que SÍ' : 'Contesta que NO', say:q.h, q:`<div class="bubble"><span class="who">Te preguntan</span><span class="han">${esc(q.h)}</span>${pyHint(q.p) ? `<span>${pyHint(q.p)}</span>` : ''}</div>${audioBtns(q.h)}`,
+      options: opts.map(o => ({v:o.h, html:`<span class="han" style="font-size:22px">${esc(o.h)}</span>`})), answer:right.h, rev:{h:right.h, p:right.p, es:right.es}};
+  }
+  if (mode === 'ask'){
+    // given the answer, build a question that asks for it (什么 or 吗 both count)
+    const a = randFood('ans', verbs), wh = food('what', a.V, a.n), mq = food('ma', a.V, a.n);
+    const bank = shuffle([k3.ni, a.V.v, k3.sm, k3.ma, a.n.c, k3.wo, ...(a.V.like ? [k3.sg] : [])]);
+    const accept = [wh.chunks, mq.chunks, [k3.ni, a.V.v, k3.sm]].map(cs => cs.map(c => c.h).join(''));
+    return {t:'tiles', item:'g-food', kind:'Haz la pregunta para esta respuesta', q:`<div class="bubble"><span class="who">Respuesta</span><span class="han">${esc(a.h)}</span>${pyHint(a.p) ? `<span>${pyHint(a.p)}</span>` : ''}<span class="muted">${esc(a.es)}</span></div>`,
+      bank, answer:accept, rev:{h:wh.h + ' / ' + mq.h, p:wh.p + ' / ' + mq.p, es:'Valen las dos: con 什么 o con 吗.'}};
+  }
+  const s = randFood(pick(forms), verbs), rev = {h:s.h, p:s.p, es:s.es};
+  if (mode === 'speak') return {t:'speak', item:'g-food', kind:'Dilo en voz alta', q:`<div class="qtext">${esc(s.es)}</div>`, rev};
+  if (mode === 'mc'){
+    const opts = [s];
+    for (let k = 0; opts.length < 4 && k < 60; k++){ const o = randFood(s.form, verbs); if (!opts.some(x => x.es === o.es)) opts.push(o); }
+    return {t:'mc', item:'g-food', kind:'Escucha: ¿qué dice?', say:s.h, q:audioBtns(s.h), options:shuffle(opts).map(o => ({v:o.es, html:esc(o.es)})), answer:s.es, rev};
+  }
+  const answer = s.chunks.map(c => c.h).join(''), bank = tilesFrom(s.chunks);
+  if (mode === 'listen') return {t:'tiles', item:'g-food', kind:'Dictado: ordena lo que oyes', say:s.h, q:audioBtns(s.h), bank, answer, rev};
+  return {t:'tiles', item:'g-food', kind:'Traduce al chino', q:`<div class="qtext">${esc(s.es)}</div>`, bank, answer, rev};
+}
+ITEMS['g-food'] = {id:'g-food', unit:'c2', kind:'gen', es:'preguntas y respuestas de comida'};
+
+// c6: full questions and answers about food
+const k3c = id => N3[id].c;
+S_('r1', [k3.wo, k3.chi, k3c('bz')], 'Voy a comer baozi.', 0, 'c6');
+S_('r2', [k3.ni, k3.yao, k3.sm], '¿Qué quieres?', 1, 'c6');
+S_('r3', [k3.wo, k3.xh, k3c('xj')], 'Me gustan los plátanos.', 0, 'c6');
+S_('r4', [k3.ni, k3.he, k3c('kf'), k3.ma], '¿Tomas café?', 1, 'c6');
+S_('r5', [C('不，','bù'), k3.wo, C('不','bù'), C('喝。','hē'), k3.wo, k3.he, k3c('cha')], 'No, no tomo. Tomo té.', 0, 'c6');
+S_('r6', [k3.ni, k3.xh, k3c('yu'), k3.ma], '¿Te gusta el pescado?', 1, 'c6');
+S_('r7', [C('喜欢，','xǐ·huan'), k3.wo, k3.xh, k3c('yu')], 'Sí, me gusta el pescado.', 0, 'c6');
+S_('r8', [k3.ni, k3.chi, k3.sm], '¿Qué vas a comer?', 1, 'c6');
+S_('r9', [k3.wo, k3.chi, k3c('mt')], 'Voy a comer fideos.', 0, 'c6');
+S_('r10', [C('不，','bù'), C('谢谢。','xiè·xie'), k3.wo, k3.yao, k3c('jr')], 'No, gracias. Quiero pollo.', 0, 'c6');
+
+UNITS.push(
+  {id:'c1', mod:'m3', key:'饺', title:'¿Qué vas a comer?', zh:'饺子 包子 面条 炒面 炒饭', ref:'Platos y la pregunta con 什么', items:['sm','chi','jz','bz','mt','cm','cf','ncsm'], intro:[{type:'shenme'}]},
+  {id:'c2', mod:'m3', key:'吗', title:'Sí, no y 吗', zh:'你吃饺子吗？ 不，谢谢。', ref:'Preguntas de sí o no', items:['ma','bu','xie','pma','pneg','pbx','g-food'], intro:[{type:'ma'}]},
+  {id:'c3', mod:'m3', key:'果', title:'Frutas', zh:'苹果 香蕉 橙子', ref:'喜欢 + fruta', items:['xh','sg','pg','xj','cz','nxhsg'], intro:[]},
+  {id:'c4', mod:'m3', key:'肉', title:'Carnes y verduras', zh:'牛肉 鸡肉 猪肉 鱼 蔬菜', ref:'要 y 不要', items:['yao','nr','jr','zr','yu','sc','nysm','by'], intro:[{type:'bu'}]},
+  {id:'c5', mod:'m3', key:'茶', title:'Bebidas', zh:'水 可乐 咖啡 茶 啤酒', ref:'喝 + bebida', items:['he','sh','kl','kf','cha','pj','nhsm'], intro:[]},
+  {id:'c6', mod:'m3', key:'吃', title:'Preguntar y responder', zh:'你喜欢鱼吗？', ref:'Frases completas sobre comida', models:['r2','r5'], items:['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10'], intro:[{type:'review3'}]}
+);
+const MODULES = {
+  m2:{n:1, tab:'La hora', zh:'你几点起床？', p:'nǐ jǐ diǎn qǐ·chuáng?', es:'¿A qué hora te levantas? Números, la hora, las partes del día y tu rutina.', examKey:'examBest'},
+  m3:{n:2, tab:'Comida', zh:'你喜欢吃什么？', p:'nǐ xǐ·huan chī shén·me?', es:'¿Qué te gusta comer? Platos, frutas, carnes, verduras y bebidas.', examKey:'examBest3'}
+};
+
+// four everyday situations
+const DIALOGS = [
+  {where:'Puesto de comida', who:'Vendedor', turns:[
+    {say:'你吃什么？', p:'nǐ chī shén·me', you:'Voy a comer baozi.', ans:[k3.wo, k3.chi, k3c('bz')]},
+    {say:'你喝什么？', p:'nǐ hē shén·me', you:'Tomo agua.', ans:[k3.wo, k3.he, k3c('sh')]}]},
+  {where:'En casa de un amigo', who:'Amigo', turns:[
+    {say:'你喜欢香蕉吗？', p:'nǐ xǐ·huan xiāng·jiāo ma', you:'Sí, me gustan los plátanos.', ans:[C('喜欢，','xǐ·huan'), k3.wo, k3.xh, k3c('xj')]},
+    {say:'你喜欢橙子吗？', p:'nǐ xǐ·huan chéng·zi ma', you:'No, no me gustan las naranjas.', ans:[C('不，','bù'), k3.wo, C('不','bù'), k3.xh, k3c('cz')]}]},
+  {where:'Mercado', who:'Vendedora', turns:[
+    {say:'你要牛肉吗？', p:'nǐ yào niú·ròu ma', you:'No, quiero pescado.', ans:[C('不，','bù'), k3.wo, k3.yao, k3c('yu')]},
+    {say:'你要什么水果？', p:'nǐ yào shén·me shuǐ·guǒ', you:'Quiero manzanas.', ans:[k3.wo, k3.yao, k3c('pg')]}]},
+  {where:'Cafetería', who:'Amiga', turns:[
+    {say:'你喝咖啡吗？', p:'nǐ hē kā·fēi ma', you:'No, gracias. Tomo té. ¿Tú qué tomas?', ans:[C('不，','bù'), C('谢谢。','xiè·xie'), k3.wo, k3.he, C('茶。','chá'), k3.ni, k3.he, k3.sm]},
+    {say:'我喝可乐。', p:'wǒ hē kě·lè', listen:['Coca-Cola', 'Café', 'Té', 'Agua'], es:'Tomo Coca-Cola.', ask:'¿Qué va a tomar tu amiga?'}]}
+];
+function dialogPlan(){
+  LV = 1;
+  const ex = [];
+  DIALOGS.forEach(d => d.turns.forEach((t, k) => {
+    const head = `<div class="kind">${esc(d.where)} · ${k + 1}/${d.turns.length}</div><div class="bubble"><span class="who">${esc(d.who)}</span><span class="han">${esc(t.say)}</span><span>${pyHTML(t.p)}</span></div>${audioBtns(t.say)}`;
+    if (t.listen){
+      ex.push({t:'mc', item:'g-food', kind:'Diálogo', say:t.say, q:head + `<div class="ask">${esc(t.ask)}</div>`, options:t.listen.map(o => ({v:o, html:esc(o)})), answer:t.listen[0], rev:{h:t.say, p:t.p, es:t.es}});
+      return;
+    }
+    const h = t.ans.map(c => c.h).join('');
+    ex.push({t:'tiles', item:'g-food', kind:'Diálogo', say:t.say, q:head + `<div class="ask">Responde: <b>${esc(t.you)}</b></div>`, bank:tilesFrom(t.ans, 2), answer:h,
+      rev:{h:h + (t.you.endsWith('?') ? '？' : '。'), p:t.ans.map(c => c.p).join(' '), es:t.you}});
+  }));
+  return {title:'Diálogos', cards:[], ex};
+}
+function examPlan3(){
+  LV = 1;
+  const ex = [];
+  shuffle(['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10']).forEach(id => ex.push(exFor(id, 'build')));
+  for (let i = 0; i < 3; i++) ex.push(withRedo(() => foodEx('ask')));
+  for (let i = 0; i < 3; i++) ex.push(withRedo(() => foodEx('reply')));
+  ['jz','pg','jr','kf'].forEach(id => ex.push(exFor(id, 'type')));
+  return {title:'Examen: comida', exam:true, examKey:'examBest3', cards:[], ex:shuffle(ex)};
+}
+
+/* ---------- state & saving ---------- */
+const LS_KEY = 'diandian-v1';
+const fresh = () => ({mod:'m2', v:1, xp:0, streak:0, lastDay:null, done:{}, lvl:{}, srs:{}, best7:0, examBest:null, updatedAt:0});
+let S = fresh();
+try { const raw = localStorage.getItem(LS_KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch(e) {}
+const syncNote = 'Tu progreso se guarda solo en este navegador.';
+function save(){
+  S.updatedAt = Date.now();
+  try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch(e) {}
+}
+
+const lvState = uid => (S.lvl[uid] = S.lvl[uid] || {un:1, sel:1, best:{}});
+const lvPeek = uid => S.lvl[uid] || {un:1, sel:1, best:{}};
+const BOX_DAYS = [0, 1, 2, 4, 8, 16, 32];
+function srsMark(id, ok){
+  const st = S.srs[id] || {b:0, due:today()};
+  st.b = ok ? Math.min(st.b + 1, 6) : 1;
+  st.due = today() + (ok ? BOX_DAYS[st.b] : 0);
+  S.srs[id] = st;
+}
+const dueIds = () => Object.keys(S.srs).filter(id => ITEMS[id] && S.srs[id].due <= today()).sort((a, b) => S.srs[a].due - S.srs[b].due);
+function bumpStreak(){
+  const t = today();
+  if (S.lastDay === t) return;
+  S.streak = S.lastDay === t - 1 ? S.streak + 1 : 1;
+  S.lastDay = t;
+}
+
+/* ---------- audio ---------- */
+let zhVoice = null, voicesChecked = false;
+function loadVoices(){
+  if (!('speechSynthesis' in window)) { voicesChecked = true; return; }
+  const vs = speechSynthesis.getVoices();
+  if (vs.length) voicesChecked = true;
+  zhVoice = vs.find(v => /zh[-_]CN/i.test(v.lang) && /google/i.test(v.name)) || vs.find(v => /zh[-_]CN/i.test(v.lang)) || vs.find(v => /^zh/i.test(v.lang)) || null;
+}
+if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = () => { loadVoices(); if (screen === 'home') renderHome(); }; }
+function say(text, rate = 0.85){
+  if (!('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text.replace(/[？。]/g, ''));
+    u.lang = 'zh-CN'; u.rate = rate; if (zhVoice) u.voice = zhVoice;
+    speechSynthesis.speak(u);
+  } catch(e) {}
+}
+const audioBtns = (text, huge) => `<div class="arow"><button class="audio${huge ? ' huge' : ''}" data-say="${esc(text)}" aria-label="Escuchar">${ICON.play}${huge ? '' : 'Escuchar'}</button>${huge ? '' : `<button class="audio" data-say="${esc(text)}" data-rate="0.5" aria-label="Escuchar lento">${ICON.slow}Lento</button>`}</div>`;
+app.addEventListener('click', e => { const b = e.target.closest('[data-say]'); if (b) say(b.dataset.say, +(b.dataset.rate || 0.85)); });
+
+/* ---------- exercise builders ---------- */
+const tzg = h => `<div class="tzgrow">${[...h.replace(/[？。]/g,'')].map(c => `<div class="tzg"><span class="han">${esc(c)}</span></div>`).join('')}</div>`;
+let LV = 1; // current session level: 2+ hides pinyin in prompts and tiles (feedback keeps it)
+const pyHint = p => LV >= 2 ? '' : pyHTML(p);
+const reveal = it => ({h: it.h, p: it.p, es: it.es});
+function sameUnitWords(it, n){
+  let pool = Object.values(ITEMS).filter(x => x.kind === 'word' && x.id !== it.id && x.unit === it.unit);
+  if (pool.length < n) pool = pool.concat(shuffle(Object.values(ITEMS).filter(x => x.kind === 'word' && x.id !== it.id && x.unit !== it.unit)));
+  return shuffle(pool).slice(0, n);
+}
+function wordEx(it, mode){
+  const others = sameUnitWords(it, 3);
+  const all = shuffle([it, ...others]);
+  switch (mode){
+    case 'meaning': return {t:'mc', item:it.id, kind:'¿Qué significa?', say:it.h, q:`${tzg(it.h)}<div class="pybig">${pyHint(it.p)}</div>${audioBtns(it.h)}`,
+      options: all.map(x => ({v:x.id, html:esc(x.es)})), answer:it.id, rev:reveal(it)};
+    case 'hanzi': return {t:'mc', item:it.id, kind:'Elige los caracteres', q:`<div class="qtext">${esc(it.es)}</div>`,
+      options: all.map(x => ({v:x.id, html:`<span class="han">${esc(x.h)}</span>`})), answer:it.id, rev:reveal(it)};
+    case 'listen': return {t:'mc', item:it.id, kind:'Escucha y elige', say:it.h, q:audioBtns(it.h, true),
+      options: all.map(x => ({v:x.id, html:`<span class="han">${esc(x.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(x.p)}</small>`}`})), answer:it.id, rev:reveal(it)};
+    case 'type': return {t:'type', item:it.id, kind:'Escribe el pinyin', q:`${tzg(it.h)}<div class="es">${esc(it.es)}</div>`,
+      answer:pyPlain(it.p), rev:reveal(it)};
+    case 'chars': case 'dict': {
+      const chars = [...it.h.replace(/[？。]/g, '')];
+      const pool = [...new Set(Object.values(ITEMS).filter(x => x.kind === 'word').flatMap(x => [...x.h.replace(/[？。]/g, '')]))].filter(c => !chars.includes(c));
+      const bank = shuffle([...chars, ...shuffle(pool).slice(0, Math.max(3, 6 - chars.length))].map(c => ({h:c, p:''})));
+      return mode === 'chars'
+        ? {t:'tiles', item:it.id, kind:'Escríbelo con caracteres', q:`<div class="qtext">${esc(it.es)}</div>`, bank, answer:chars.join(''), rev:reveal(it)}
+        : {t:'tiles', item:it.id, kind:'Dictado: escribe lo que oyes', say:it.h, q:audioBtns(it.h), bank, answer:chars.join(''), rev:reveal(it)};
+    }
+    case 'speak': return {t:'speak', item:it.id, kind:'Dilo en voz alta', q:`<div class="qtext">${esc(it.es)}</div><div class="hint">Dilo en chino antes de ver la respuesta. Recordar sin pistas es lo que fija la palabra.</div>`, rev:reveal(it)};
+  }
+}
+function sentEx(it, mode){
+  if (mode === 'speak') return {t:'speak', item:it.id, kind:'Dilo en voz alta', q:`<div class="qtext">${esc(it.es)}</div><div class="hint">Primero cuándo, luego la acción.</div>`, rev:reveal(it)};
+  const ans = it.chunks.map(c => c.h).join('');
+  const pool = it.unit[0] === 'c' ? DISTRACT3 : DISTRACT;
+  const extra = shuffle(pool.filter(d => !it.chunks.some(c => c.h === d.h))).slice(0, 3);
+  const bank = shuffle([...it.chunks, ...extra]);
+  if (mode === 'listen') return {t:'tiles', item:it.id, kind:'Escucha y ordena', say:it.h, q:audioBtns(it.h), bank, answer:ans, rev:reveal(it)};
+  return {t:'tiles', item:it.id, kind:'Traduce al chino', q:`<div class="qtext">${esc(it.es)}</div>`, bank, answer:ans, rev:reveal(it)};
+}
+function numEx(mode){
+  const n = rint(11, 99), zh = numZh(n), py = numPy(n);
+  const rev = {h:zh, p:py, es:String(n)};
+  if (mode === 'tiles'){
+    const chars = [...zh].map(c => ({h:c, p:NPY[NZH.indexOf(c)]}));
+    const extra = shuffle(NZH.slice(1).filter(c => !zh.includes(c))).slice(0, 3).map(c => ({h:c, p:NPY[NZH.indexOf(c)]}));
+    return {t:'tiles', item:'g-num', kind:'Escribe el número en chino', q:`<div class="g7num">${n}</div>`, bank:shuffle([...chars, ...extra]), answer:zh, rev};
+  }
+  if (mode === 'listen') return {t:'digits', item:'g-num', kind:'Escucha y escribe el número', say:zh, q:audioBtns(zh), answer:String(n), rev};
+  return {t:'digits', item:'g-num', kind:'¿Qué número es?', q:tzg(zh), answer:String(n), rev};
+}
+function timeEx(mode){
+  const h = rint(1, 12);
+  const rev = {h:hourZh(h), p:hourPy(h), es:`las ${h} en punto`};
+  if (mode === 'listen'){
+    const opts = shuffle([h, ...shuffle([1,2,3,4,5,6,7,8,9,10,11,12].filter(x => x !== h)).slice(0, 3)]);
+    return {t:'mc', item:'g-time', kind:'Escucha y elige el reloj', say:'现在' + hourZh(h), q:audioBtns('现在' + hourZh(h)),
+      options: opts.map(x => ({v:String(x), html:clockSVG(x)})), answer:String(h), rev:{...rev, h:'现在' + rev.h, p:'xiàn·zài ' + rev.p}};
+  }
+  if (mode === 'type') return {t:'type', item:'g-time', kind:'Escribe la hora en pinyin', q:`<div class="clockwrap">${clockSVG(h)}</div>`, answer:pyPlain(hourPy(h)), rev};
+  const wrong = h === 2 ? ['二点'] : [];
+  const pool = shuffle([1,3,4,5,6,7,8,9,10,11,12].filter(x => x !== h)).map(hourZh);
+  const opts = shuffle([hourZh(h), ...wrong, ...pool].slice(0, 4));
+  if (!opts.includes(hourZh(h))) opts[0] = hourZh(h);
+  return {t:'mc', item:'g-time', kind:'¿Qué hora es?', q:`<div class="clockwrap">${clockSVG(h)}</div>`,
+    options: shuffle(opts).map(x => ({v:x, html:`<span class="han">${x}</span>`})), answer:hourZh(h), rev};
+}
+const PERIOD_HOURS = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+function periodEx(mode){
+  const h = pick(PERIOD_HOURS), per = periodOf(h);
+  const rev = {h:per.h + hourZh(h), p:per.p + ' ' + hourPy(h), es:`${h12(h)}:00, ${per.es}`};
+  if (mode === 'listen'){
+    const cands = shuffle(PERIOD_HOURS.filter(x => x !== h && (x % 12 === h % 12 || Math.random() < .3))).slice(0, 3);
+    const opts = shuffle([h, ...cands]);
+    return {t:'mc', item:'g-period', kind:'Escucha y elige la hora', say:per.h + hourZh(h), q:audioBtns(per.h + hourZh(h)),
+      options: opts.map(x => ({v:String(x), html:`<span class="digital" style="font-size:24px">${fmt24(x)}</span>`})), answer:String(h), rev};
+  }
+  const bank = shuffle([...PERIODS.map(p => C(p.h, p.p)), hc(h), hc(h12(h) === 12 ? 11 : h12(h) + 1)]);
+  return {t:'tiles', item:'g-period', kind:'Di la hora con su periodo', q:`<div class="clockwrap">${clockSVG(h, {sky:1})}<div class="digital">${fmt24(h)}<small>formato 24 h</small></div></div>`,
+    bank, answer:per.h + hourZh(h), rev};
+}
+/* level 3: longer dictations and sentences built fresh from the module's vocabulary */
+function seqEx(mode){
+  const ds = Array.from({length:rint(3, 4)}, () => rint(1, 9));
+  const zh = ds.map(d => NZH[d]).join(''), rev = {h:zh, p:ds.map(d => NPY[d]).join(' '), es:ds.join('')};
+  if (mode === 'read') return {t:'digits', item:'g-num', kind:'Lee rápido y escribe las cifras', q:tzg(zh), answer:ds.join(''), rev};
+  if (mode === 'speak') return {t:'speak', item:'g-num', kind:'Dilo en voz alta, cifra por cifra', q:`<div class="g7num">${ds.join(' ')}</div><div class="hint">Como cuando dictas un número de teléfono.</div>`, rev};
+  return {t:'digits', item:'g-num', kind:'Dictado de cifras', say:zh, q:audioBtns(zh), hint:'Como un número de teléfono: escribe las cifras seguidas.', answer:ds.join(''), rev};
+}
+function pairEx(){
+  const a = rint(11, 99), b = rint(11, 99), zh = numZh(a) + '，' + numZh(b);
+  return {t:'digits', item:'g-num', kind:'Dictado: dos números', say:zh, q:audioBtns(zh), hint:'Escribe los dos números separados por un espacio.', answer:'' + a + b, rev:{h:zh, p:numPy(a) + ' ' + numPy(b), es:`${a} y ${b}`}};
+}
+function numSpeakEx(){
+  const n = rint(11, 99);
+  return {t:'speak', item:'g-num', kind:'Dilo en voz alta', q:`<div class="g7num">${n}</div>`, rev:{h:numZh(n), p:numPy(n), es:String(n)}};
+}
+function clockEx(mode, withPeriod){
+  const h = withPeriod ? pick(PERIOD_HOURS) : rint(1, 12), per = periodOf(h);
+  const zh = '现在' + (withPeriod ? per.h : '') + hourZh(h);
+  const rev = {h:zh + '。', p:'xiàn·zài ' + (withPeriod ? per.p + ' ' : '') + hourPy(h), es:`Son las ${h12(h)}${withPeriod ? ' ' + PER_ES[per.id] : ''}.`};
+  if (h12(h) === 1) rev.es = rev.es.replace('Son las', 'Es la');
+  const q = `<div class="clockwrap">${clockSVG(h, {sky:withPeriod})}${withPeriod ? `<div class="digital">${fmt24(h)}<small>formato 24 h</small></div>` : ''}</div>`;
+  const item = withPeriod ? 'g-period' : 'g-time';
+  if (mode === 'speak') return {t:'speak', item, kind:'现在几点？ Responde en voz alta', q, rev};
+  const bank = [ch.xz, hc(h), hc(h12(h) === 12 ? 11 : h12(h) + 1), hc(h12(h) === 1 ? 3 : h12(h) - 1)];
+  if (withPeriod) bank.push(...PERIODS.map(p => C(p.h, p.p)));
+  else bank.push(ch.wo);
+  return {t:'tiles', item, kind:'现在几点？ Responde con la frase completa', q, bank:shuffle(bank), answer:zh, rev};
+}
+const PER_ES = {zs:'de la mañana', sw:'de la mañana', zw:'del mediodía', xw:'de la tarde', ws:'de la noche'};
+const COMMA = C('，', '');
+const ACTIONS = [
+  {v:[ch.qc], yo:'me levanto', tu:'te levantas', hours:[5,6,7,8], u:'u5'},
+  {v:[ch.gz], yo:'trabajo', tu:'trabajas', hours:[8,9,10,14], u:'u5'},
+  {v:[ch.hj], yo:'vuelvo a casa', tu:'vuelves a casa', hours:[16,17,18,19], u:'u5'},
+  {v:[ch.sj], yo:'me voy a dormir', tu:'te vas a dormir', hours:[21,22,23], u:'u5'},
+  {v:[ch.qu, ch.xx], yo:'voy a la escuela', tu:'vas a la escuela', hours:[7,8,9], u:'u5'},
+  {v:[ch.chi, ch.zf], yo:'desayuno', tu:'desayunas', hours:[6,7,8,9], u:'u6'},
+  {v:[ch.chi, ch.wf], yo:'almuerzo', tu:'almuerzas', hours:[12,13], u:'u6'},
+  {v:[ch.chi, ch.wanf], yo:'ceno', tu:'cenas', hours:[18,19,20], u:'u6'}
+];
+const atEs = h => (h12(h) === 1 ? 'a la una' : 'a las ' + h12(h));
+const cap = t => t[0].toUpperCase() + t.slice(1);
+function genSent(form, acts){
+  const a = pick(acts), h = pick(a.hours), per = periodOf(h);
+  let chunks, es, end = '。';
+  if (form === 'q'){ chunks = [ch.ni, ch.jd, ...a.v]; es = `¿A qué hora ${a.tu}?`; end = '？'; }
+  else if (form === 'now'){ chunks = [ch.xz, ch[per.id], hc(h), COMMA, ch.wo, ...a.v]; es = `${h12(h) === 1 ? 'Es la una' : 'Son las ' + h12(h)} ${PER_ES[per.id]}: ${a.yo}.`; }
+  else if (form === 'two'){
+    for (let k = 0; k < 40; k++){
+      const b = pick(acts); if (b === a) continue;
+      const h2 = pick(b.hours);
+      if (h2 > h && periodOf(h2) === per){ chunks = [ch.wo, ch[per.id], hc(h), ...a.v, COMMA, hc(h2), ...b.v]; es = cap(`${a.yo} ${atEs(h)} ${PER_ES[per.id]} y ${atEs(h2)} ${b.yo}.`); break; }
+    }
+    if (!chunks) return genSent('yo', acts);
+  }
+  if (!chunks){ chunks = [ch.wo, ch[per.id], hc(h), ...a.v]; es = cap(`${a.yo} ${atEs(h)} ${PER_ES[per.id]}.`); }
+  return {form, chunks, es, h:chunks.map(c => c.h).join('') + end, p:chunks.map(c => c.p).filter(Boolean).join(' ')};
+}
+function sentGenEx(mode, acts, forms){
+  acts = acts || ACTIONS; forms = forms || ['yo','q','two','now'];
+  const s = genSent(pick(forms), acts), rev = {h:s.h, p:s.p, es:s.es};
+  mode = mode || pick(['build','listen','mc','speak']);
+  if (mode === 'speak') return {t:'speak', item:'g-sent', kind:'Dilo en voz alta', q:`<div class="qtext">${esc(s.es)}</div><div class="hint">Frase nueva: nunca la viste armada. Constrúyela con la regla quién · cuándo · qué.</div>`, rev};
+  if (mode === 'mc'){
+    const opts = [s];
+    for (let k = 0; opts.length < 4 && k < 60; k++){ const o = genSent(s.form, acts); if (!opts.some(x => x.es === o.es)) opts.push(o); }
+    return {t:'mc', item:'g-sent', kind:'Escucha: ¿qué dice?', say:s.h, q:audioBtns(s.h), options:shuffle(opts).map(o => ({v:o.es, html:esc(o.es)})), answer:s.es, rev};
+  }
+  const extra = shuffle(DISTRACT.filter(d => !s.chunks.some(c => c.h === d.h))).slice(0, 3);
+  const bank = shuffle([...s.chunks, ...extra]), answer = s.chunks.map(c => c.h).join('');
+  if (mode === 'listen') return {t:'tiles', item:'g-sent', kind:'Dictado: ordena lo que oyes', say:s.h, q:audioBtns(s.h), bank, answer, rev};
+  return {t:'tiles', item:'g-sent', kind:'Traduce al chino', q:`<div class="qtext">${esc(s.es)}</div>`, bank, answer, rev};
+}
+ITEMS['g-sent'] = {id:'g-sent', unit:'u7', kind:'gen', es:'oraciones nuevas'};
+const GEN = {'g-num':numEx, 'g-time':timeEx, 'g-period':periodEx, 'g-sent':m => sentGenEx(m), 'g-food':m => foodEx(m)};
+const GEN_MODES = {'g-num':['tiles','read','listen'], 'g-time':['mc','listen','type'], 'g-period':['tiles','listen'], 'g-sent':['build','listen','mc','speak'], 'g-food':['build','reply','listen','ask']};
+const withRedo = (fn) => { const ex = fn(); ex.redo = fn; return ex; };
+function exFor(id, mode){
+  const it = ITEMS[id];
+  const ex = it.kind === 'gen' ? GEN[id](mode || pick(GEN_MODES[id]))
+    : it.kind === 'sent' ? sentEx(it, mode || pick(['build','build','listen','speak']))
+    : wordEx(it, mode);
+  ex.redo = () => exFor(id, mode);
+  return ex;
+}
+// mode by SRS box: recognition first, production later
+function srsMode(id){
+  const it = ITEMS[id], b = (S.srs[id] || {b:0}).b;
+  if (it.kind !== 'word') return null;
+  if (b <= 1) return pick(['meaning','listen']);
+  if (b <= 3) return pick(['hanzi','listen','type']);
+  return pick(['type','speak','hanzi']);
+}
+
+/* ---------- session plans ---------- */
+function lessonPlan(u, lv){
+  LV = lv || 1;
+  if (LV === 2) return lessonPlan2(u);
+  if (LV === 3) return lessonPlan3(u);
+  const words = u.items.filter(id => ITEMS[id].kind === 'word');
+  const gens = u.items.filter(id => ITEMS[id].kind === 'gen');
+  const sents = u.items.filter(id => ITEMS[id].kind === 'sent');
+  const cards = [...u.intro];
+  words.forEach(id => cards.push({type:'word', id}));
+  if (sents.length) (u.models || sents.slice(0, 2)).forEach(id => cards.push({type:'sent', id}));
+  let ex = [];
+  if (words.length){
+    const focus = words.length > 7 ? shuffle(words).slice(0, 7) : words;
+    ex.push(...shuffle(words).map(id => exFor(id, 'meaning')));
+    ex.push(...shuffle(focus).map(id => exFor(id, pick(['hanzi','listen']))));
+    ex.push(...shuffle(focus).slice(0, 5).map(id => exFor(id, pick(['type','speak','type']))));
+  }
+  gens.forEach(id => GEN_MODES[id].forEach(m => ex.push(exFor(id, m))));
+  if (gens.length) ex = ex.slice(0, words.length).concat(shuffle(ex.slice(words.length)));
+  if (u.id === 'u1') ex.push(...shuffle(['n2','n4','n6','n8']).slice(0, 2).map(id => exFor(id, 'listen')));
+  if (sents.length){
+    ex.push(...shuffle(sents).map(id => exFor(id, 'build')));
+    ex.push(...shuffle(sents).slice(0, 3).map(id => exFor(id, 'listen')));
+    ex.push(...shuffle(sents).slice(0, 3).map(id => exFor(id, 'speak')));
+  }
+  return {title:u.title, unit:u.id, level:1, cards, ex};
+}
+const L2_GEN = {'g-food':['listen','reply','listen','mc'], 'g-num':['listen','listen','tiles','read'], 'g-time':['listen','listen','mc'], 'g-period':['listen','listen','tiles']};
+function lessonPlan2(u){
+  const words = u.items.filter(id => ITEMS[id].kind === 'word');
+  const gens = u.items.filter(id => ITEMS[id].kind === 'gen');
+  const sents = u.items.filter(id => ITEMS[id].kind === 'sent');
+  let ex = [], rest = [];
+  ex.push(...shuffle(words).map(id => exFor(id, 'listen')));
+  rest.push(...shuffle(words).slice(0, 6).map(id => exFor(id, pick(['chars','dict']))));
+  rest.push(...shuffle(words).slice(0, 4).map(id => exFor(id, pick(['hanzi','speak']))));
+  gens.forEach(id => L2_GEN[id].forEach(m => rest.push(exFor(id, m))));
+  if (sents.length){
+    ex.push(...shuffle(sents).map(id => exFor(id, 'listen')));
+    rest.push(...shuffle(sents).slice(0, 4).map(id => exFor(id, 'build')));
+    rest.push(...shuffle(sents).slice(0, 3).map(id => exFor(id, 'speak')));
+  }
+  return {title:u.title, unit:u.id, level:2, cards:[{type:'lvl', lv:2}], ex: ex.concat(shuffle(rest))};
+}
+const times = (n, fn) => Array.from({length:n}, () => withRedo(fn));
+const L3 = {
+  u1: () => [...times(6, () => seqEx('listen')), ...times(3, () => seqEx('read')), ...times(2, () => seqEx('speak')), ...times(2, () => numEx('listen'))],
+  u2: () => [...times(5, pairEx), ...times(3, () => numEx('tiles')), ...times(2, () => numEx('listen')), ...times(3, numSpeakEx)],
+  u3: () => [...times(4, () => clockEx('build', false)), ...times(3, () => timeEx('listen')), ...times(3, () => clockEx('speak', false)), ...times(2, () => timeEx('type'))],
+  u4: () => [...times(4, () => clockEx('build', true)), ...times(4, () => periodEx('listen')), ...times(3, () => clockEx('speak', true)), ...times(2, () => periodEx('tiles'))],
+  u5: () => sentSet(ACTIONS.filter(a => a.u === 'u5'), ['yo','q'], ['yo','q','now']),
+  u6: () => sentSet(ACTIONS, ['yo','q','now'], ['yo','q','now']),
+  u7: () => sentSet(ACTIONS, ['two','now'], ['two','now','q']),
+  c1: () => foodSet(['chi'], ['ans','ma']),
+  c2: () => foodSet(['chi','xh','yao','he'], ['ma','neg','yes']),
+  c3: () => foodSet(['xh'], ['ans','ma','neg','yes']),
+  c4: () => foodSet(['yao'], ['ans','ma','neg','yes']),
+  c5: () => foodSet(['he'], ['ans','ma','neg','yes']),
+  c6: () => foodSet(['chi','xh','yao','he'], ['swap','neg','yes','ma'])
+};
+function sentSet(acts, buildForms, otherForms){
+  return [...times(4, () => sentGenEx('build', acts, buildForms)), ...times(3, () => sentGenEx('listen', acts, otherForms)),
+          ...times(3, () => sentGenEx('mc', acts, otherForms)), ...times(3, () => sentGenEx('speak', acts, otherForms))];
+}
+function foodSet(verbs, forms){
+  return [...times(4, () => foodEx('build', verbs, forms)), ...times(3, () => foodEx('listen', verbs, forms)), ...times(3, () => foodEx('reply', verbs)),
+          ...times(2, () => foodEx('ask', verbs)), ...times(3, () => foodEx('speak', verbs, forms))];
+}
+function lessonPlan3(u){
+  const ex = L3[u.id]();
+  return {title:u.title, unit:u.id, level:3, cards:[{type:'lvl', lv:3}], ex: ex.slice(0, 3).concat(shuffle(ex.slice(3)))};
+}
+function reviewPlan(){
+  LV = 1;
+  const ids = dueIds().slice(0, 14);
+  return {title:'Repaso', review:true, cards:[], ex: shuffle(ids).map(id => exFor(id, srsMode(id)))};
+}
+function examPlan(){
+  LV = 1;
+  const ex = [];
+  shuffle(['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10']).forEach(id => ex.push(exFor(id, 'build')));
+  for (let i = 0; i < 3; i++) ex.push(periodEx(i ? 'tiles' : 'listen'));
+  ex.push(numEx('tiles'), numEx('listen'), timeEx('mc'), timeEx('type'));
+  ['qc','sj','hj','zf','wanf'].forEach(id => ex.push(exFor(id, 'type')));
+  return {title:'Examen: la hora', exam:true, cards:[], ex: shuffle(ex)};
+}
+
+/* ---------- intro cards ---------- */
+function cardHTML(c){
+  if (c.type === 'word'){
+    const it = ITEMS[c.id];
+    return `<div class="card center"><div class="kind">Palabra nueva</div>${tzg(it.h)}<div class="pybig">${pyHTML(it.p)}</div>${audioBtns(it.h)}<div class="es">${esc(it.es)}</div>${it.tip ? `<div class="tip">${esc(it.tip)}</div>` : ''}</div>`;
+  }
+  if (c.type === 'sent'){
+    const it = ITEMS[c.id];
+    return `<div class="card center"><div class="kind">Oración modelo</div><div class="han" style="font-size:34px">${esc(it.h)}</div><div class="pybig" style="font-size:20px">${pyHTML(it.p)}</div>${audioBtns(it.h)}<div class="es">${esc(it.es)}</div></div>`;
+  }
+  if (c.type === 'shenme') return `<div class="card center"><div class="kind">La regla</div><h2>什么 se queda en su sitio</h2>
+    <div class="rules">
+      <div class="rule"><div><span class="han">你 · 吃 · <b>什么</b>？</span><div class="muted">¿Qué comes?</div></div><button class="audio" data-say="你吃什么">${ICON.play}</button></div>
+      <div class="rule"><div><span class="han">我 · 吃 · <b>饺子</b>。</span><div class="muted">Como jiaozi.</div></div><button class="audio" data-say="我吃饺子">${ICON.play}</button></div>
+    </div><p class="es">La pregunta y la respuesta tienen el mismo orden. Para responder, cambia 你 por 我 y 什么 por la comida.</p></div>`;
+  if (c.type === 'ma') return `<div class="card center"><div class="kind">La regla</div><h2>Frase + 吗 = pregunta de sí o no</h2>
+    <div class="formula"><div><small>frase</small><span class="han">你吃饺子</span></div><div class="op">+</div><div><small>pregunta</small><span class="han">吗？</span></div></div>
+    ${audioBtns('你吃饺子吗')}
+    <div class="rules">
+      <div class="rule"><div><b>Sí:</b> repite el verbo. <span class="han">吃，我吃饺子。</span></div><button class="audio" data-say="吃，我吃饺子">${ICON.play}</button></div>
+      <div class="rule"><div><b>No:</b> 不 + verbo. <span class="han">不，我不吃饺子。</span></div><button class="audio" data-say="不，我不吃饺子">${ICON.play}</button></div>
+    </div><div class="tip">En chino no hay una palabra única para “sí”: se responde con el mismo verbo de la pregunta.</div></div>`;
+  if (c.type === 'bu') return `<div class="card center"><div class="kind">Pronunciación</div><h2>不 cambia de tono antes de un 4.º tono</h2>
+    <div class="rules">
+      <div class="rule"><div><span class="han">不吃</span> <span class="t4">bù</span> <span class="t1">chī</span></div><button class="audio" data-say="不吃">${ICON.play}</button></div>
+      <div class="rule"><div><span class="han">不喜欢</span> <span class="t4">bù</span> <span class="t3">xǐ</span>huan</div><button class="audio" data-say="不喜欢">${ICON.play}</button></div>
+      <div class="rule"><div><span class="han">不要</span> <span class="t2">bú</span> <span class="t4">yào</span></div><button class="audio" data-say="不要">${ICON.play}</button></div>
+    </div><div class="tip">Dos cuartos tonos seguidos cuestan, así que el primero sube: bù yào → bú yào.</div></div>`;
+  if (c.type === 'review3') return `<div class="card center"><div class="kind">Las 4 preguntas clave</div><h2>Un verbo para cada cosa</h2>
+    <div class="rules">
+      <div class="rule"><div><span class="han">你吃什么？</span><div class="muted">platos: 饺子, 炒饭…</div></div><button class="audio" data-say="你吃什么">${ICON.play}</button></div>
+      <div class="rule"><div><span class="han">你喜欢什么水果？</span><div class="muted">frutas: 苹果, 香蕉…</div></div><button class="audio" data-say="你喜欢什么水果">${ICON.play}</button></div>
+      <div class="rule"><div><span class="han">你要什么？</span><div class="muted">en el mercado: 鸡肉, 鱼…</div></div><button class="audio" data-say="你要什么">${ICON.play}</button></div>
+      <div class="rule"><div><span class="han">你喝什么？</span><div class="muted">bebidas: 茶, 咖啡…</div></div><button class="audio" data-say="你喝什么">${ICON.play}</button></div>
+    </div><div class="tip">Para conversar necesitas dos cosas: responder preguntas y hacerlas. Aquí practicas ambas.</div></div>`;
+  if (c.type === 'lvl') return c.lv === 2
+    ? `<div class="card center"><div class="kind">Nivel 2</div><h2>Sin pinyin, más oído</h2>
+      <p class="es">Las preguntas y las fichas ya no muestran pinyin: lees los caracteres. Hay más dictados y armas cada palabra carácter por carácter.</p>
+      <div class="tip">Después de cada respuesta sigues viendo el pinyin, para corregir tu pronunciación.</div></div>`
+    : `<div class="card center"><div class="kind">Nivel 3</div><h2>Frases que nunca viste</h2>
+      <p class="es">Cada vez se generan frases nuevas con el vocabulario de la ruta, con horas al azar, dictados más largos y respuestas completas. Sin pinyin.</p>
+      <div class="tip">No memorices frases: aplica la regla <b>quién · cuándo · qué hace</b>.</div></div>`;
+  if (c.type === 'hands') return `<div class="card center"><div class="kind">Antes de empezar</div><h2>Contar con una sola mano</h2>
+    <p class="es">En China los números del 6 al 10 se hacen con gestos de una sola mano. Cada tarjeta te dirá el gesto: hazlo mientras repites la palabra en voz alta. Mover la mano y decir la palabra a la vez ayuda a recordarla.</p>
+    <div class="tip">Los tonos tienen color: <b class="t1">1.º alto ā</b> · <b class="t2">2.º sube á</b> · <b class="t3">3.º baja y sube ǎ</b> · <b class="t4">4.º cae à</b></div></div>`;
+  if (c.type === 'numrules') return `<div class="card center"><div class="kind">La regla</div><h2>Con 10 caracteres cuentas hasta 99</h2>
+    <div class="rules">
+      <div class="rule"><div><span class="han">十 + 一</span> = 11</div><button class="audio" data-say="十一">${ICON.play}</button></div>
+      <div class="rule"><div><span class="han">二 × 十</span> = 20</div><button class="audio" data-say="二十">${ICON.play}</button></div>
+      <div class="rule"><div><span class="han">二 × 十 + 一</span> = 21</div><button class="audio" data-say="二十一">${ICON.play}</button></div>
+      <div class="rule"><div><span class="han">九 × 十 + 九</span> = 99</div><button class="audio" data-say="九十九">${ICON.play}</button></div>
+    </div><div class="tip">Si el número va <b>antes</b> de 十, multiplica. Si va <b>después</b>, suma.</div></div>`;
+  if (c.type === 'timerule') return `<div class="card center"><div class="kind">La regla</div><h2>Número + 点 = la hora</h2>
+    <div class="clockwrap">${clockSVG(3)}<div class="formula"><div><small>número</small><span class="han">三</span></div><div class="op">+</div><div><small>hora</small><span class="han">点</span></div></div></div>
+    ${audioBtns('三点')}<div class="tip">La única excepción: las 2 son <b class="han">两点</b> liǎng diǎn, no 二点.</div></div>`;
+  if (c.type === 'daybar') {
+    const segs = [['', 0, 5, 'var(--sky-night)'], ['早上', 5, 9, 'color-mix(in srgb,var(--sky-day) 55%,var(--surface))'], ['上午', 9, 12, 'var(--sky-day)'], ['中午', 12, 13, 'var(--gold)'], ['下午', 13, 18, 'color-mix(in srgb,var(--sky-day) 70%,var(--t1))'], ['晚上', 18, 24, 'var(--sky-night)']];
+    return `<div class="card center"><div class="kind">El día en chino</div><h2>Primero el periodo, después la hora</h2>
+    <div class="daybar"><div class="bar">${segs.map(s => `<div style="flex:${s[2]-s[1]};background:${s[3]};color:${s[3].includes('night') ? 'var(--on-night)' : 'var(--ink)'}">${s[0]}</div>`).join('')}</div>
+    <div class="ticks"><span>0 h</span><span>6</span><span>12</span><span>18</span><span>24 h</span></div></div>
+    <div class="formula"><div><small>periodo</small><span class="han">下午</span></div><div class="op">+</div><div><small>hora</small><span class="han">三点</span></div></div>
+    ${audioBtns('下午三点')}<div class="tip">下午三点 = las 3 de la tarde. Va de lo grande a lo pequeño: primero la parte del día, luego la hora.</div></div>`;
+  }
+  if (c.type === 'grammar') return `<div class="card center"><div class="kind">La regla clave</div><h2>El “cuándo” va antes de la acción</h2>
+    <div class="formula"><div><small>quién</small><span class="han">我</span></div><div><small>cuándo</small><span class="han">早上六点</span></div><div><small>qué hace</small><span class="han">起床</span></div></div>
+    <p class="es">En español decimos “me levanto <i>a las 6</i>”. En chino es “yo <i>a las 6 de la mañana</i> me levanto”. La hora nunca va al final.</p>
+    <div class="tip">Para preguntar, pon 几点 justo donde iría la hora: 你<b>几点</b>去学校？</div></div>`;
+  return '';
+}
+
+/* ---------- session engine ---------- */
+let screen = 'home', sess = null;
+function startSession(plan){
+  sess = {...plan, ci:0, i:0, queue:plan.ex.slice(), firstTry:{}, misses:[], correct:0, answered:0, retries:{}, firstN:0, firstOk:0};
+  screen = 'session';
+  if (!sess.queue.length) return renderHome();
+  renderStep();
+}
+function totalSteps(){ return sess.cards.length + sess.queue.length; }
+function doneSteps(){ return sess.ci + sess.i; }
+function header(){
+  return `<div class="sbar"><button class="xbtn" id="quit" aria-label="Salir">${ICON.x}</button><div class="prog"><i style="width:${Math.round(100 * doneSteps() / totalSteps())}%"></i></div><span class="chip">${esc(sess.title)}${sess.level ? ' · N' + sess.level : ''}</span></div>`;
+}
+function renderStep(){
+  window.scrollTo(0, 0);
+  if (sess.ci < sess.cards.length){
+    const c = sess.cards[sess.ci];
+    app.innerHTML = header() + cardHTML(c) + `<div class="feed"><button class="btn main big" id="next">${sess.ci === sess.cards.length - 1 ? 'Empezar práctica' : 'Siguiente'}</button></div>`;
+    bindQuit();
+    if (c.type === 'word' || c.type === 'sent') say(ITEMS[c.id].h);
+    document.getElementById('next').onclick = () => { sess.ci++; renderStep(); };
+    document.getElementById('next').focus({preventScroll:true});
+    return;
+  }
+  if (sess.i >= sess.queue.length) return finish();
+  renderEx(sess.queue[sess.i]);
+}
+function bindQuit(){ document.getElementById('quit').onclick = () => { if (window.speechSynthesis) speechSynthesis.cancel(); screen = 'home'; renderHome(); }; }
+
+function renderEx(ex){
+  let body = `<div class="card${ex.t === 'tiles' || ex.t === 'type' || ex.t === 'digits' ? '' : ''}"><div class="kind">${esc(ex.kind)}</div><div class="card center" style="padding:0">${ex.q}</div>`;
+  if (ex.t === 'mc'){
+    body += `<div class="opts" role="group">${ex.options.map((o, k) => `<button class="opt" data-v="${esc(o.v)}"><span class="k">${k + 1}</span>${o.html}</button>`).join('')}</div>`;
+  } else if (ex.t === 'tiles'){
+    body += `<div class="tray" id="tray" aria-label="Tu respuesta"></div><div class="bank" id="bank">${ex.bank.map((b, k) => `<button class="tile" data-k="${k}"><span class="han">${esc(b.h)}</span>${b.p && LV < 2 ? `<small>${pyHTML(b.p)}</small>` : ''}</button>`).join('')}</div>`;
+  } else if (ex.t === 'type' || ex.t === 'digits'){
+    body += `<div><input class="ans" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" ${ex.t === 'digits' ? 'inputmode="numeric" placeholder="Ej.: 47"' : 'placeholder="Ej.: xian zai o xiàn zài"'}><div class="hint" style="margin-top:6px">${ex.t === 'type' ? 'Los tonos son opcionales. Si los escribes bien, te lo digo.' : (ex.hint || 'Escribe el número con cifras.')}</div></div>`;
+  } else if (ex.t === 'speak'){
+    body += '';
+  }
+  body += '</div>';
+  const foot = ex.t === 'speak'
+    ? `<div class="feed" id="feed"><button class="btn main big" id="check">Mostrar respuesta</button></div>`
+    : `<div class="feed" id="feed"><button class="btn main big" id="check" disabled>Comprobar</button></div>`;
+  app.innerHTML = header() + body + foot;
+  bindQuit();
+  if (ex.say) setTimeout(() => say(ex.say), 250);
+  const check = document.getElementById('check');
+  let value = null;
+  if (ex.t === 'mc'){
+    app.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+      if (sess.locked) return;
+      app.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
+      b.classList.add('sel'); value = b.dataset.v; check.disabled = false;
+      const o = ex.options.find(o => String(o.v) === value); const it = ITEMS[o.v];
+      if (it && ex.kind === 'Escucha y elige') say(it.h);
+    });
+  } else if (ex.t === 'tiles'){
+    const tray = document.getElementById('tray'), bank = document.getElementById('bank');
+    const placed = [];
+    const sync = () => { value = placed.map(k => ex.bank[k].h).join(''); check.disabled = !placed.length; };
+    bank.querySelectorAll('.tile').forEach(b => b.onclick = () => {
+      if (sess.locked || b.classList.contains('ghost')) return;
+      const k = +b.dataset.k; placed.push(k); b.classList.add('ghost');
+      const t = b.cloneNode(true); t.classList.remove('ghost');
+      t.onclick = () => { if (sess.locked) return; placed.splice(placed.indexOf(k), 1); t.remove(); b.classList.remove('ghost'); sync(); };
+      tray.appendChild(t); say(ex.bank[k].h, 1); sync();
+    });
+  } else if (ex.t === 'type' || ex.t === 'digits'){
+    const inp = document.getElementById('ans');
+    inp.oninput = () => { value = inp.value; check.disabled = !inp.value.trim(); };
+    inp.focus({preventScroll:true});
+  }
+  sess.locked = false;
+  check.onclick = () => {
+    if (ex.t === 'speak') return showSelfGrade(ex);
+    let ok = false, perfect = false;
+    if (ex.t === 'mc') ok = String(value) === String(ex.answer);
+    else if (ex.t === 'tiles') ok = [].concat(ex.answer).includes(value);
+    else if (ex.t === 'digits') ok = value.replace(/\D/g, '') === ex.answer;
+    else { ok = loose(value) === loose(ex.answer); perfect = ok && strict(value) === strict(ex.answer); }
+    if (ex.t === 'mc') app.querySelectorAll('.opt').forEach(b => { if (b.dataset.v === String(ex.answer)) b.classList.add('ok'); else if (b.dataset.v === value) b.classList.add('no'); });
+    grade(ex, ok, perfect);
+  };
+}
+function revHTML(r){ return `<div class="ansline"><span class="han">${esc(r.h)}</span><span>${pyHTML(r.p)}</span><span class="muted">${esc(r.es)}</span>${`<button class="audio" data-say="${esc(r.h)}" aria-label="Escuchar">${ICON.play}</button>`}</div>`; }
+function showSelfGrade(ex){
+  sess.locked = true;
+  const feed = document.getElementById('feed');
+  feed.innerHTML = `<h3>¿Lo dijiste así?</h3>${revHTML(ex.rev)}<div class="selfrow"><button class="btn" id="sgNo">Me equivoqué</button><button class="btn main" id="sgOk">Lo dije bien</button></div>`;
+  say(ex.rev.h);
+  document.getElementById('sgOk').onclick = () => advance(ex, true);
+  document.getElementById('sgNo').onclick = () => advance(ex, false);
+}
+function grade(ex, ok, perfect){
+  sess.locked = true;
+  const feed = document.getElementById('feed');
+  feed.className = 'feed ' + (ok ? 'ok' : 'no');
+  const praise = perfect ? '¡Perfecto, con tonos!' : pick(['¡Bien!', '¡Correcto!', '¡Eso es!', '对！ Duì!']);
+  feed.innerHTML = `<h3>${ok ? praise : 'Respuesta correcta:'}</h3>${revHTML(ex.rev)}${!ok && !sess.exam ? '<div class="hint">La volverás a ver antes de terminar.</div>' : ''}<button class="btn main big" id="cont">Continuar</button>`;
+  say(ex.rev.h);
+  const c = document.getElementById('cont'); c.focus({preventScroll:true});
+  c.onclick = () => advance(ex, ok);
+}
+function advance(ex, ok){
+  const id = ex.item;
+  sess.answered++;
+  if (ok) { sess.correct++; S.xp += 1; }
+  if (!ex.retry){ sess.firstN++; if (ok) sess.firstOk++; }
+  if (!(id in sess.firstTry)) sess.firstTry[id] = ok;
+  else if (!ok) sess.firstTry[id] = false;
+  if (!ok){
+    if (!sess.misses.some(m => m.h === ex.rev.h)) sess.misses.push(ex.rev);
+    sess.retries[id] = (sess.retries[id] || 0) + 1;
+    if (!sess.exam && sess.retries[id] <= 2){
+      const again = ex.redo ? ex.redo() : exFor(id);
+      again.retry = true; again.redo = ex.redo;
+      sess.queue.push(again);
+    }
+  }
+  sess.i++;
+  renderStep();
+}
+function finish(){
+  const ids = Object.keys(sess.firstTry);
+  if (sess.unit){
+    const u = UNITS.find(u => u.id === sess.unit);
+    u.items.concat(ids).forEach(id => { if (!S.srs[id] && ITEMS[id]) S.srs[id] = {b:1, due: today() + 1}; });
+    ids.forEach(id => { if (!sess.firstTry[id]) S.srs[id] = {b:1, due: today()}; });
+    S.done[sess.unit] = (S.done[sess.unit] || 0) + 1;
+    S.xp += 10;
+  } else {
+    ids.forEach(id => srsMark(id, sess.firstTry[id]));
+    S.xp += 5;
+  }
+  const pct = Math.round(100 * sess.firstOk / Math.max(1, sess.firstN));
+  let lvMsg = '';
+  if (sess.unit){
+    const L = lvState(sess.unit), lv = sess.level || 1;
+    L.best[lv] = Math.max(L.best[lv] || 0, pct);
+    if (lv < 3 && pct >= 95 && L.un <= lv){
+      L.un = lv + 1; L.sel = lv + 1;
+      lvMsg = `<div class="unlock"><b>Nivel ${lv + 1} desbloqueado</b><span>${lv + 1 === 2 ? 'Sin pinyin y con más dictados.' : 'Frases nuevas cada vez, sin pinyin.'} Queda seleccionado para la próxima vez. Puedes volver a un nivel anterior cuando quieras.</span></div>`;
+    } else if (lv < 3 && L.un <= lv){
+      lvMsg = `<div class="hint">Con 95% o más desbloqueas el nivel ${lv + 1}. Esta vez: ${pct}%.</div>`;
+    }
+  }
+  if (sess.exam){ const key = sess.examKey || 'examBest'; S[key] = Math.max(S[key] || 0, pct); }
+  bumpStreak(); save();
+  screen = 'result';
+  const due = dueIds().length;
+  app.innerHTML = `<div class="result"><div class="eyebrow">${esc(sess.title)} · terminado</div><div class="big">${pct}%</div><div class="es">acertaste al primer intento</div>${lvMsg}
+    <div class="row"><span class="chip">${ICON.fire} racha de ${S.streak} día${S.streak === 1 ? '' : 's'}</span><span class="chip">${ICON.star} ${S.xp} XP</span></div>
+    ${sess.misses.length ? `<div class="misslist"><div class="kind" style="border:0;background:none;padding:0">Para repasar (vuelven en tu próximo repaso)</div>${sess.misses.slice(0, 8).map(r => `<div><span class="han">${esc(r.h)}</span><span>${pyHTML(r.p)}</span><span class="muted">${esc(r.es)}</span></div>`).join('')}</div>` : ''}
+    <div class="row">${due ? `<button class="btn main" id="goRev">Repasar ${due} pendientes</button>` : ''}<button class="btn" id="goHome">Volver al inicio</button></div></div>`;
+  app.addEventListener('click', function once(e){ if (e.target.id === 'goHome'){ app.removeEventListener('click', once); screen = 'home'; renderHome(); } if (e.target.id === 'goRev'){ app.removeEventListener('click', once); startSession(reviewPlan()); } });
+}
+
+/* ---------- 逢七过 game ---------- */
+let g7 = null;
+const isSeven = n => n % 7 === 0 || String(n).includes('7');
+function startG7(){
+  screen = 'g7'; g7 = {n:1, timer:null};
+  app.innerHTML = `<div class="sbar"><button class="xbtn" id="quit" aria-label="Salir">${ICON.x}</button><div style="flex:1"></div><span class="chip">${ICON.star} récord ${S.best7}</span></div>
+  <div class="card center"><div class="kind">Juego · 逢七过 féng qī guò</div><h2>No digas siete</h2>
+  <p class="es">Se cuenta en voz alta. Cuando el número es múltiplo de 7 o lleva un 7 (7, 14, 17, 21…), no se dice: se aplaude. Elige la forma correcta antes de que se acabe el tiempo.</p>
+  <button class="btn main big" id="g7go">Empezar</button></div>`;
+  bindQuit();
+  document.getElementById('g7go').onclick = g7Step;
+}
+function g7Step(){
+  const n = g7.n;
+  const near = [n + 1, n - 1, n + 10, n - 10, Number(String(n).split('').reverse().join(''))].filter(x => x > 0 && x < 100 && x !== n && numZh(x) !== numZh(n));
+  const opts = shuffle([n, ...shuffle([...new Set(near)]).slice(0, 2)]);
+  const limit = Math.max(2.6, 5 - n * 0.05);
+  app.innerHTML = `<div class="sbar"><button class="xbtn" id="quit" aria-label="Salir">${ICON.x}</button><div style="flex:1"></div><span class="chip">${ICON.star} récord ${S.best7}</span></div>
+  <div class="card center"><div class="kind">Turno ${n}</div><div class="g7num">${n}</div><div class="timer"><i id="g7t" style="width:100%"></i></div>
+  <div class="opts" style="width:100%">${opts.map(x => `<button class="opt" data-v="${x}"><span class="han">${numZh(x)}</span></button>`).join('')}<button class="clap" data-v="clap">拍手 · aplaudir</button></div></div>`;
+  bindQuit();
+  const t0 = performance.now(), bar = document.getElementById('g7t');
+  const tick = () => { if (screen !== 'g7' || g7.n !== n) return; const f = 1 - (performance.now() - t0) / (limit * 1000); if (f <= 0) return g7Over(n, 'Se acabó el tiempo'); bar.style.width = (f * 100) + '%'; g7.timer = requestAnimationFrame(tick); };
+  g7.timer = requestAnimationFrame(tick);
+  app.querySelectorAll('[data-v]').forEach(b => b.onclick = () => {
+    if (g7.n !== n) return;
+    const v = b.dataset.v, ok = isSeven(n) ? v === 'clap' : v === String(n);
+    cancelAnimationFrame(g7.timer);
+    if (!ok) return g7Over(n, isSeven(n) ? `El ${n} ${n % 7 === 0 ? 'es múltiplo de 7' : 'lleva un 7'}: tocaba aplaudir.` : 'Ese no era el número.');
+    if (!isSeven(n)) say(numZh(n), 1.1);
+    g7.n++; g7Step();
+  });
+}
+function g7Over(n, why){
+  cancelAnimationFrame(g7.timer);
+  const score = n - 1, rec = score > S.best7;
+  if (rec) S.best7 = score;
+  S.xp += Math.floor(score / 5); bumpStreak(); save();
+  g7.n = -1;
+  app.innerHTML = `<div class="result"><div class="eyebrow">逢七过 · fin</div><div class="big">${score}</div><div class="es">${rec ? '¡Nuevo récord!' : 'números seguidos'}</div>
+  <p class="es">${esc(why)}</p>${isSeven(n) ? '' : revHTML({h:numZh(n), p:numPy(n), es:String(n)})}
+  <div class="row"><button class="btn main" id="again">Otra vez</button><button class="btn" id="home">Volver al inicio</button></div></div>`;
+  document.getElementById('again').onclick = startG7;
+  document.getElementById('home').onclick = () => { screen = 'home'; renderHome(); };
+}
+
+/* ---------- home ---------- */
+function renderStats(){
+  document.getElementById('stats').innerHTML = `<span class="chip" title="Días seguidos">${ICON.fire}${S.streak}</span><span class="chip" title="Puntos">${ICON.star}${S.xp}</span>`;
+}
+function renderHome(){
+  screen = 'home'; renderStats();
+  const due = dueIds().length;
+  const modId = MODULES[S.mod] ? S.mod : 'm2', M = MODULES[modId];
+  const units = UNITS.filter(u => u.mod === modId);
+  const nextU = units.find(u => !S.done[u.id]);
+  const noVoice = voicesChecked && !zhVoice;
+  app.innerHTML = `
+  <div class="mods" role="tablist" aria-label="Ruta">${Object.keys(MODULES).map(k => `<button class="mod${k === modId ? ' on' : ''}" role="tab" aria-selected="${k === modId}" data-mod="${k}">${MODULES[k].n} · ${MODULES[k].tab}</button>`).join('')}</div>
+  <section class="hero"><div class="eyebrow">Ruta ${M.n} · ${M.tab}</div>
+    <div class="han">${M.zh}</div>
+    <div class="py">${pyHTML(M.p)} <button class="audio" data-say="${M.zh}" aria-label="Escuchar">${ICON.play}</button></div>
+    <div class="muted">${esc(M.es)}</div>
+  </section>
+  ${noVoice ? '<div class="note">Tu navegador no tiene voz en chino, así que no habrá audio. En Chrome o Edge con conexión suele funcionar; en Windows también puedes instalar el paquete de voz de chino (Configuración → Hora e idioma → Voz).</div>' : ''}
+  <div class="actions">
+    <button class="act ${due ? 'primary' : ''}" id="aRev"><b>${ICON.cards.replace('<svg', '<svg width="16" height="16"')} Repaso ${due ? `(${due})` : ''}</b><span>${due ? 'Palabras que toca recordar hoy' : 'Nada pendiente. Vuelve mañana.'}</span></button>
+    <button class="act ${!due && !nextU ? 'primary' : ''}" id="aExam"><b>Examen de la ruta</b><span>${S[M.examKey] != null ? `Mejor: ${S[M.examKey]}%` : 'Todo lo de la ruta, mezclado'}</span></button>
+    ${modId === 'm2'
+      ? `<button class="act" id="aG7"><b><span class="han">逢七过</span> No digas 7</b><span>${S.best7 ? `Récord: ${S.best7}` : 'Un juego clásico para contar'}</span></button>`
+      : `<button class="act" id="aDlg"><b>Diálogos</b><span>Puesto de comida, mercado, cafetería y casa de un amigo</span></button>`}
+  </div>
+  <div class="sect"><h2>Unidades</h2><span class="muted" style="font-size:14px">${units.filter(u => S.done[u.id]).length}/${units.length} unidades</span></div>
+  <ol class="path">${units.map((u, k) => {
+    const done = S.done[u.id], nx = nextU && nextU.id === u.id, L = lvPeek(u.id);
+    return `<li class="unit${nx ? ' next' : ''}"><div class="tzg"><span class="han">${u.key}</span></div>
+      <div style="min-width:0"><div class="stat ${done ? 'done' : nx ? 'nx' : ''}">${done ? 'Hecha' : nx ? 'Siguiente' : 'Unidad ' + (k + 1)}</div><h3>${esc(u.title)}</h3><div class="han muted" style="font-size:15px">${esc(u.zh)}</div><div class="ref">${esc(u.ref)}</div>
+      <div class="lvls" role="group" aria-label="Nivel de ${esc(u.title)}">${[1, 2, 3].map(n => n > L.un
+        ? `<button class="lv" disabled title="Consigue 95% en el nivel ${n - 1} para desbloquearlo">${ICON.lock}N${n}</button>`
+        : `<button class="lv${L.sel === n ? ' on' : ''}" data-u="${u.id}" data-lv="${n}" aria-pressed="${L.sel === n}">N${n}</button>`).join('')}
+      <span class="lvbest">${L.best[L.sel] != null ? `mejor ${L.best[L.sel]}%` : L.un < 3 && L.sel === L.un ? `95% abre N${L.un + 1}` : ''}</span></div></div>
+      <button class="btn ${nx ? 'main' : ''}" data-unit="${u.id}">${done ? (L.sel > 1 ? 'Jugar N' + L.sel : 'Repetir') : 'Empezar'}</button></li>`;
+  }).join('')}</ol>
+  <section class="method"><h2>Cómo está pensado</h2><ol>
+    <li><b>Lecciones cortas</b> de 3 a 5 minutos: primero ves y escuchas la palabra, luego la practicas.</li>
+    <li><b>Recordar en lugar de releer.</b> Vas de reconocer (elegir) a producir (escribir pinyin, armar la oración, decirla en voz alta), que es lo que más fija.</li>
+    <li><b>Lo que fallas vuelve</b> al final de la misma lección, hasta que te sale.</li>
+    <li><b>Tres niveles por unidad.</b> Con 95% se abre el siguiente: N2 quita el pinyin y suma dictados; N3 genera frases nuevas cada vez.</li>
+    <li><b>Repaso espaciado.</b> Cada palabra vuelve en 1, 2, 4, 8 y 16 días si la aciertas; si la fallas, vuelve mañana. 10 minutos al día rinden más que 1 hora el domingo.</li>
+  </ol></section>
+  <div class="foot"><span>${esc(syncNote)}</span><button class="linkbtn" id="reset">Borrar mi progreso</button></div>`;
+  app.querySelectorAll('[data-unit]').forEach(b => b.onclick = () => startSession(lessonPlan(UNITS.find(u => u.id === b.dataset.unit), lvPeek(b.dataset.unit).sel)));
+  app.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { const L = lvState(b.dataset.u), n = +b.dataset.lv; if (n <= L.un && n !== L.sel){ L.sel = n; save(); renderHome(); } });
+  document.getElementById('aRev').onclick = () => { if (dueIds().length) startSession(reviewPlan()); else { const u = nextU || units[0]; startSession(lessonPlan(u, lvPeek(u.id).sel)); } };
+  document.getElementById('aExam').onclick = () => startSession(modId === 'm3' ? examPlan3() : examPlan());
+  if (modId === 'm2') document.getElementById('aG7').onclick = startG7;
+  else document.getElementById('aDlg').onclick = () => startSession(dialogPlan());
+  app.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => { if (S.mod !== b.dataset.mod){ S.mod = b.dataset.mod; save(); renderHome(); } });
+  const rs = document.getElementById('reset');
+  rs.onclick = () => {
+    if (rs.dataset.arm){ S = fresh(); save(); renderHome(); return; }
+    rs.dataset.arm = '1'; rs.textContent = 'Toca otra vez para confirmar'; rs.style.color = 'var(--bad)';
+    setTimeout(() => { if (rs.isConnected){ delete rs.dataset.arm; rs.textContent = 'Borrar mi progreso'; rs.style.color = ''; } }, 4000);
+  };
+}
+
+/* keyboard: 1–4 pick options, Enter checks / continues */
+document.addEventListener('keydown', e => {
+  if (screen !== 'session') return;
+  if (e.key === 'Enter'){
+    const b = document.getElementById('cont') || document.getElementById('next') || document.getElementById('check');
+    if (b && !b.disabled){ e.preventDefault(); b.click(); }
+    return;
+  }
+  if (/^[1-4]$/.test(e.key) && document.activeElement.tagName !== 'INPUT'){
+    const o = app.querySelectorAll('.opt')[+e.key - 1]; if (o) o.click();
+  }
+});
+
+renderHome();
+</script>
+
+</body>
+</html>
