@@ -29,6 +29,11 @@ Abre `index.html` en el navegador. No hace falta compilar nada ni instalar depen
 
 El progreso se guarda en `localStorage`, así que queda solo en ese navegador y en ese dispositivo.
 
+**Llevar el progreso a otro dispositivo:** al final del inicio está «Llevar mi progreso a otro dispositivo». Genera un enlace y un QR que llevan todo tu avance: unidades, niveles, XP, racha y el calendario de repaso.
+- Lo abres en el otro dispositivo y confirmas.
+- El progreso va después del `#`, así que nunca llega a ningún servidor.
+- Es una copia del momento en que lo generas, no una sincronización.
+
 **Audio:** Android, iOS y macOS ya traen voz china. En Windows, si no se oye nada, instala el paquete de voz «Chino (simplificado)» en *Configuración → Hora e idioma → Voz*.
 
 ## Estructura
