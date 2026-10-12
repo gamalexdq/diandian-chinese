@@ -63,8 +63,23 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1
 .eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
 .hero .han{font-size:clamp(34px,9vw,52px);font-weight:700;line-height:1.1}
 .hero .py{font-size:20px}
-.actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-block:8px 28px}
-@media (max-width:520px){.actions{grid-template-columns:1fr}}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-block:4px 28px}
+.cta{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;padding:14px 16px;border:0;border-radius:var(--r);background:var(--accent);color:var(--accent-ink);margin-block:4px 22px}
+.cta b{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:18px}
+.cta span{display:block;font-size:14px;opacity:.88;margin-top:2px}
+.cta .go{font-size:24px;line-height:1;flex:none}
+.cta:hover{filter:brightness(1.08)}
+@media (max-width:520px){
+  .hero{padding-block:14px 10px;gap:2px}
+  .hero .han{font-size:34px}
+  .hero .py{font-size:17px}
+  .hero .muted{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .act{padding:12px}
+  .act b{font-size:16px}
+  .unit{grid-template-columns:44px minmax(0,1fr);gap:8px 12px;align-items:start;padding:12px 12px 14px}
+  .unit .tzg{width:44px}.unit .tzg .han{font-size:26px}
+  .unit > .btn{grid-column:2;justify-self:start;padding:8px 18px}
+}
 .act{display:grid;gap:4px;text-align:left;padding:14px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);min-width:0}
 .act b{font-family:var(--f-display);font-size:17px}
 .act span{font-size:14px;color:var(--muted)}
@@ -1424,15 +1439,11 @@ function renderHome(){
   </section>
   ${homeNote ? `<div class="note ok" role="status">${esc(homeNote)}</div>` : ''}
   ${noVoice ? '<div class="note">Tu navegador no tiene voz en chino, así que no habrá audio. En Chrome o Edge con conexión suele funcionar; en Windows también puedes instalar el paquete de voz de chino (Configuración → Hora e idioma → Voz).</div>' : ''}
-  <div class="actions">
-    <button class="act ${due ? 'primary' : ''}" id="aRev"><b>${ICON.cards.replace('<svg', '<svg width="16" height="16"')} Repaso ${due ? `(${due})` : ''}</b><span>${due ? 'Palabras que toca recordar hoy' : 'Nada pendiente. Vuelve mañana.'}</span></button>
-    <button class="act ${!due && !nextU ? 'primary' : ''}" id="aExam"><b>Examen de la ruta</b><span>${S[M.examKey] != null ? `Mejor: ${S[M.examKey]}%` : 'Todo lo de la ruta, mezclado'}</span></button>
-    ${modId === 'm1'
-      ? `<button class="act" id="aEar"><b>Entrena el oído</b><span>Tonos y sonidos difíciles, en 3 minutos</span></button>`
-      : modId === 'm2'
-      ? `<button class="act" id="aG7"><b><span class="han">逢七过</span> No digas 7</b><span>${S.best7 ? `Récord: ${S.best7}` : 'Un juego clásico para contar'}</span></button>`
-      : `<button class="act" id="aDlg"><b>Diálogos</b><span>Puesto de comida, mercado, cafetería y casa de un amigo</span></button>`}
-  </div>
+  ${due
+    ? `<button class="cta" id="aRev"><div><b>${ICON.cards.replace('<svg', '<svg width="18" height="18"')} Repaso de hoy</b><span>${plural(due, 'palabra', 'palabras')} para recordar antes de seguir</span></div><span class="go" aria-hidden="true">→</span></button>`
+    : nextU
+    ? `<button class="cta" id="aGo"><div><b>Continuar</b><span>Unidad ${units.indexOf(nextU) + 1} · ${esc(nextU.title)} · N${lvPeek(nextU.id).sel}</span></div><span class="go" aria-hidden="true">→</span></button>`
+    : `<button class="cta" id="aGo"><div><b>Ruta completa</b><span>Pon a prueba todo con el examen de la ruta</span></div><span class="go" aria-hidden="true">→</span></button>`}
   <div class="sect"><h2>Unidades</h2><span class="muted" style="font-size:14px">${units.filter(u => S.done[u.id]).length}/${units.length} unidades</span></div>
   <ol class="path">${units.map((u, k) => {
     const done = S.done[u.id], nx = nextU && nextU.id === u.id, L = lvPeek(u.id);
@@ -1444,6 +1455,15 @@ function renderHome(){
       <span class="lvbest">${L.best[L.sel] != null ? `mejor ${L.best[L.sel]}%` : L.un < 3 && L.sel === L.un ? `95% abre N${L.un + 1}` : ''}</span></div></div>
       <button class="btn ${nx ? 'main' : ''}" data-unit="${u.id}">${done ? (L.sel > 1 ? 'Jugar N' + L.sel : 'Repetir') : 'Empezar'}</button></li>`;
   }).join('')}</ol>
+  <div class="sect"><h2>Práctica extra</h2></div>
+  <div class="actions">
+    <button class="act" id="aExam"><b>Examen de la ruta</b><span>${S[M.examKey] != null ? `Mejor: ${S[M.examKey]}%` : 'Todo lo de la ruta, mezclado'}</span></button>
+    ${modId === 'm1'
+      ? `<button class="act" id="aEar"><b>Entrena el oído</b><span>Tonos y sonidos difíciles, en 3 minutos</span></button>`
+      : modId === 'm2'
+      ? `<button class="act" id="aG7"><b><span class="han">逢七过</span> No digas 7</b><span>${S.best7 ? `Récord: ${S.best7}` : 'Un juego clásico para contar'}</span></button>`
+      : `<button class="act" id="aDlg"><b>Diálogos</b><span>Restaurante, mercado y más</span></button>`}
+  </div>
   <section class="method"><h2>Cómo está pensado</h2><ol>
     <li><b>Lecciones cortas</b> de 3 a 5 minutos: primero ves y escuchas la palabra, luego la practicas.</li>
     <li><b>Recordar en lugar de releer.</b> Vas de reconocer (elegir) a producir (escribir pinyin, armar la oración, decirla en voz alta), que es lo que más fija.</li>
@@ -1456,8 +1476,11 @@ function renderHome(){
   document.getElementById('sync').onclick = showSync;
   app.querySelectorAll('[data-unit]').forEach(b => b.onclick = () => startSession(lessonPlan(UNITS.find(u => u.id === b.dataset.unit), lvPeek(b.dataset.unit).sel)));
   app.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { const L = lvState(b.dataset.u), n = +b.dataset.lv; if (n <= L.un && n !== L.sel){ L.sel = n; save(); renderHome(); } });
-  document.getElementById('aRev').onclick = () => { if (dueIds().length) startSession(reviewPlan()); else { const u = nextU || units[0]; startSession(lessonPlan(u, lvPeek(u.id).sel)); } };
-  document.getElementById('aExam').onclick = () => startSession(modId === 'm3' ? examPlan3() : modId === 'm1' ? examPlan1() : examPlan());
+  const exam = () => startSession(modId === 'm3' ? examPlan3() : modId === 'm1' ? examPlan1() : examPlan());
+  const rv = document.getElementById('aRev'), go = document.getElementById('aGo');
+  if (rv) rv.onclick = () => startSession(reviewPlan());
+  if (go) go.onclick = () => nextU ? startSession(lessonPlan(nextU, lvPeek(nextU.id).sel)) : exam();
+  document.getElementById('aExam').onclick = exam;
   if (modId === 'm1') document.getElementById('aEar').onclick = () => startSession(earPlan());
   else if (modId === 'm2') document.getElementById('aG7').onclick = startG7;
   else document.getElementById('aDlg').onclick = () => startSession(dialogPlan());
