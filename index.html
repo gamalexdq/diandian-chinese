@@ -470,13 +470,13 @@ function foodEx(mode, verbs, forms){
       const others = shuffle(Object.keys(VERB3).filter(k => VERB3[k] !== q.V)).map(k => food('ans', VERB3[k], N3[pick(VERB3[k].nouns)]));
       const opts = shuffle([right, ...others].slice(0, 4));
       return {t:'mc', item:'g-food', kind:'Escucha y responde', say:q.h, q:`<div class="bubble"><span class="who">Te preguntan</span><span class="han">${esc(q.h)}</span>${pyHint(q.p) ? `<span>${pyHint(q.p)}</span>` : ''}</div>${audioBtns(q.h)}`,
-        options: opts.map(o => ({v:o.h, html:`<span class="han" style="font-size:22px">${esc(o.h)}</span>`})), answer:right.h, rev:{h:right.h, p:right.p, es:right.es}};
+        options: opts.map(o => ({v:o.h, say:o.h, html:`<span class="han" style="font-size:22px">${esc(o.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(o.p)}</small>`}`})), answer:right.h, rev:{h:right.h, p:right.p, es:right.es}};
     }
     const want = Math.random() < .5, right = food(want ? 'yes' : 'neg', q.V, q.n);
-    const wrongOrder = {h:'我' + q.V.v.h + '不' + q.n.c.h + '。'};
+    const wrongOrder = {h:'我' + q.V.v.h + '不' + q.n.c.h + '。', p:'wǒ ' + q.V.v.p + ' bù ' + q.n.c.p};
     const opts = shuffle([right, food(want ? 'neg' : 'yes', q.V, q.n), wrongOrder, food(want ? 'neg' : 'yes', q.V, N3[shuffle(q.V.nouns.filter(x => x !== q.n.id))[0]])]);
     return {t:'mc', item:'g-food', kind:want ? 'Contesta que SÍ' : 'Contesta que NO', say:q.h, q:`<div class="bubble"><span class="who">Te preguntan</span><span class="han">${esc(q.h)}</span>${pyHint(q.p) ? `<span>${pyHint(q.p)}</span>` : ''}</div>${audioBtns(q.h)}`,
-      options: opts.map(o => ({v:o.h, html:`<span class="han" style="font-size:22px">${esc(o.h)}</span>`})), answer:right.h, rev:{h:right.h, p:right.p, es:right.es}};
+      options: opts.map(o => ({v:o.h, say:o.h, html:`<span class="han" style="font-size:22px">${esc(o.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(o.p)}</small>`}`})), answer:right.h, rev:{h:right.h, p:right.p, es:right.es}};
   }
   if (mode === 'ask'){
     // given the answer, build a question that asks for it (什么 or 吗 both count)
@@ -631,7 +631,7 @@ function introEx(mode, groups, item = 'g-intro'){
     if (!opts.some(o => o.h === xa.h)) opts.push({...xa, es:x.aes});
   }
   return {t:'mc', item, kind:'Escucha y responde', say:Q.h, q:`${audioBtns(Q.h)}${LV >= 2 ? '' : `<div class="han" style="font-size:26px">${esc(Q.h)}</div>`}<div class="ask">¿Qué respondes?</div>`,
-    options:shuffle(opts).map(o => ({v:o.h, html:`<span class="han">${esc(o.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(o.p)}</small>`}`})), answer:A.h,
+    options:shuffle(opts).map(o => ({v:o.h, say:o.h, html:`<span class="han">${esc(o.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(o.p)}</small>`}`})), answer:A.h,
     rev:{h:Q.h + ' ' + A.h, p:Q.p + ' · ' + A.p, es:s.qes + ' ' + s.aes}};
 }
 function natEx(mode, ids, item = 'g-nat'){
@@ -823,17 +823,39 @@ function loadVoices(){
   zhVoice = vs.find(v => /zh[-_]CN/i.test(v.lang) && /google/i.test(v.name)) || vs.find(v => /zh[-_]CN/i.test(v.lang)) || vs.find(v => /^zh/i.test(v.lang)) || null;
 }
 if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = () => { loadVoices(); if (screen === 'home') renderHome(); }; }
+// Safari barely slows down short utterances, so slow mode also pauses between words
+const IS_SAFARI = typeof navigator !== 'undefined' && /^((?!chrome|chromium|crios|fxios|android).)*safari/i.test(navigator.userAgent);
+let WORDSET = null;
+function slowText(text){
+  if (!WORDSET){
+    WORDSET = new Set();
+    const add = h => { const w = String(h || '').replace(/[，。？\s]/g, ''); if (w.length > 1) WORDSET.add(w); };
+    Object.values(ITEMS).forEach(it => { if (it.kind === 'word') add(it.h); (it.chunks || []).forEach(c => add(c.h)); });
+    [...DISTRACT, ...DISTRACT3, ...DISTRACT1, ...NAMES.map(n => n.c)].forEach(c => add(c.h));
+  }
+  return text.split(/([，。？！、])/).map(part => {
+    if (/^[，。？！、]?$/.test(part)) return part;
+    const out = [];
+    for (let i = 0; i < part.length;){
+      let n = Math.min(3, part.length - i);
+      while (n > 1 && !WORDSET.has(part.slice(i, i + n))) n--;
+      out.push(part.slice(i, i + n)); i += n;
+    }
+    return out.join('，');
+  }).join('');
+}
 function say(text, rate = 0.85){
   if (!('speechSynthesis' in window)) return;
   try {
     speechSynthesis.cancel();
+    if (rate === 'slow') { text = slowText(text); rate = IS_SAFARI ? 0.3 : 0.45; }
     const u = new SpeechSynthesisUtterance(text.replace(/[？。]/g, ''));
     u.lang = 'zh-CN'; u.rate = rate; if (zhVoice) u.voice = zhVoice;
     speechSynthesis.speak(u);
   } catch(e) {}
 }
-const audioBtns = (text, huge) => `<div class="arow"><button class="audio${huge ? ' huge' : ''}" data-say="${esc(text)}" aria-label="Escuchar">${ICON.play}${huge ? '' : 'Escuchar'}</button>${huge ? '' : `<button class="audio" data-say="${esc(text)}" data-rate="0.5" aria-label="Escuchar lento">${ICON.slow}Lento</button>`}</div>`;
-app.addEventListener('click', e => { const b = e.target.closest('[data-say]'); if (b) say(b.dataset.say, +(b.dataset.rate || 0.85)); });
+const audioBtns = (text, huge) => `<div class="arow"><button class="audio${huge ? ' huge' : ''}" data-say="${esc(text)}" aria-label="Escuchar">${ICON.play}${huge ? '' : 'Escuchar'}</button><button class="audio" data-say="${esc(text)}" data-rate="slow" aria-label="Escuchar lento">${ICON.slow}Lento</button></div>`;
+app.addEventListener('click', e => { const b = e.target.closest('[data-say]'); if (b) say(b.dataset.say, b.dataset.rate === 'slow' ? 'slow' : 0.85); });
 
 /* ---------- exercise builders ---------- */
 const tzg = h => `<div class="tzgrow">${[...h.replace(/[？。]/g,'')].map(c => `<div class="tzg"><span class="han">${esc(c)}</span></div>`).join('')}</div>`;
@@ -856,9 +878,9 @@ function wordEx(it, mode){
     case 'meaning': return {t:'mc', item:it.id, kind:'¿Qué significa?', say:it.h, q:`${tzg(it.h)}<div class="pybig">${pyHint(it.p)}</div>${audioBtns(it.h)}`,
       options: all.map(x => ({v:x.id, html:esc(x.es)})), answer:it.id, rev:reveal(it)};
     case 'hanzi': return {t:'mc', item:it.id, kind:'Elige los caracteres', q:`<div class="qtext">${esc(it.es)}</div>`,
-      options: all.map(x => ({v:x.id, html:`<span class="han">${esc(x.h)}</span>`})), answer:it.id, rev:reveal(it)};
+      options: all.map(x => ({v:x.id, say:x.h, html:`<span class="han">${esc(x.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(x.p)}</small>`}`})), answer:it.id, rev:reveal(it)};
     case 'listen': return {t:'mc', item:it.id, kind:'Escucha y elige', say:it.h, q:audioBtns(it.h, true),
-      options: all.map(x => ({v:x.id, html:`<span class="han">${esc(x.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(x.p)}</small>`}`})), answer:it.id, rev:reveal(it)};
+      options: all.map(x => ({v:x.id, say:x.h, html:`<span class="han">${esc(x.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(x.p)}</small>`}`})), answer:it.id, rev:reveal(it)};
     case 'type': return {t:'type', item:it.id, kind:'Escribe el pinyin', q:`${tzg(it.h)}<div class="es">${esc(it.es)}</div>`,
       answer:pyPlain(it.p), rev:reveal(it)};
     case 'chars': case 'dict': {
@@ -906,7 +928,7 @@ function timeEx(mode){
   const opts = shuffle([hourZh(h), ...wrong, ...pool].slice(0, 4));
   if (!opts.includes(hourZh(h))) opts[0] = hourZh(h);
   return {t:'mc', item:'g-time', kind:'¿Qué hora es?', q:`<div class="clockwrap">${clockSVG(h)}</div>`,
-    options: shuffle(opts).map(x => ({v:x, html:`<span class="han">${x}</span>`})), answer:hourZh(h), rev};
+    options: shuffle(opts).map(x => ({v:x, say:x, html:`<span class="han">${x}</span>${LV >= 2 ? '' : `<small>${pyHTML(x === '二点' ? 'èr diǎn' : hourPy([1,2,3,4,5,6,7,8,9,10,11,12].find(n => hourZh(n) === x)))}</small>`}`})), answer:hourZh(h), rev};
 }
 const PERIOD_HOURS = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
 function periodEx(mode){
@@ -1269,8 +1291,8 @@ function renderEx(ex){
       if (sess.locked) return;
       app.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
       b.classList.add('sel'); value = b.dataset.v; check.disabled = false;
-      const o = ex.options.find(o => String(o.v) === value); const it = ITEMS[o.v];
-      if (it && ex.kind === 'Escucha y elige') say(it.h);
+      const o = ex.options.find(o => String(o.v) === value);
+      if (o.say && LV < 2) say(o.say);
     });
   } else if (ex.t === 'tiles'){
     const tray = document.getElementById('tray'), bank = document.getElementById('bank');
