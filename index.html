@@ -873,27 +873,36 @@ function sameUnitWords(it, n){
   for (const x of pool) if (out.length < n && !out.some(o => o.h === x.h || o.es === x.es || loose(o.p) === loose(x.p))) out.push(x);
   return out;
 }
+// the Spanish cue without its romanization: "fideos salteados (chaomian)" → "fideos salteados"
+function cue(it){
+  const key = loose(it.p);
+  if (key.length < 3) return it.es;
+  let c = it.es.replace(/\s*\(([^)]*)\)/g, (m, inner) => loose(inner) === key ? '' : m).trim();
+  const m = c.match(/^(\S+)\s*\((.*)\)$/);
+  if (m && loose(m[1]) === key) c = m[2];
+  return c || it.es;
+}
 function wordEx(it, mode){
   const others = sameUnitWords(it, 3);
   const all = shuffle([it, ...others]);
   switch (mode){
     case 'meaning': return {t:'mc', item:it.id, kind:'¿Qué significa?', say:it.h, q:`${tzg(it.h)}<div class="pybig">${pyHint(it.p)}</div>${audioBtns(it.h)}`,
-      options: all.map(x => ({v:x.id, html:esc(x.es)})), answer:it.id, rev:reveal(it)};
-    case 'hanzi': return {t:'mc', item:it.id, kind:'Elige los caracteres', q:`<div class="qtext">${esc(it.es)}</div>`,
+      options: all.map(x => ({v:x.id, html:esc(cue(x))})), answer:it.id, rev:reveal(it)};
+    case 'hanzi': return {t:'mc', item:it.id, kind:'Elige los caracteres', q:`<div class="qtext">${esc(cue(it))}</div>`,
       options: all.map(x => ({v:x.id, say:x.h, html:`<span class="han">${esc(x.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(x.p)}</small>`}`})), answer:it.id, rev:reveal(it)};
     case 'listen': return {t:'mc', item:it.id, kind:'Escucha y elige', say:it.h, q:audioBtns(it.h, true),
       options: all.map(x => ({v:x.id, say:x.h, html:`<span class="han">${esc(x.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(x.p)}</small>`}`})), answer:it.id, rev:reveal(it)};
-    case 'type': return {t:'type', item:it.id, kind:'Escribe el pinyin', q:`${tzg(it.h)}<div class="es">${esc(it.es)}</div>`,
+    case 'type': return {t:'type', item:it.id, kind:'Escribe el pinyin', q:`${tzg(it.h)}<div class="es">${esc(cue(it))}</div>${LV < 2 ? audioBtns(it.h) : ''}`,
       answer:pyPlain(it.p), rev:reveal(it)};
     case 'chars': case 'dict': {
       const chars = [...it.h.replace(/[？。]/g, '')];
       const pool = [...new Set(Object.values(ITEMS).filter(x => x.kind === 'word').flatMap(x => [...x.h.replace(/[？。]/g, '')]))].filter(c => !chars.includes(c) && !chars.some(x => HOMO[x] === c));
       const bank = shuffle([...chars, ...shuffle(pool).slice(0, Math.max(3, 6 - chars.length))].map(c => ({h:c, p:''})));
       return mode === 'chars'
-        ? {t:'tiles', item:it.id, kind:'Escríbelo con caracteres', q:`<div class="qtext">${esc(it.es)}</div>`, bank, answer:chars.join(''), rev:reveal(it)}
+        ? {t:'tiles', item:it.id, kind:'Escríbelo con caracteres', q:`<div class="qtext">${esc(cue(it))}</div>`, bank, answer:chars.join(''), rev:reveal(it)}
         : {t:'tiles', item:it.id, kind:'Dictado: escribe lo que oyes', say:it.h, q:audioBtns(it.h), bank, answer:chars.join(''), rev:reveal(it)};
     }
-    case 'speak': return {t:'speak', item:it.id, kind:'Dilo en voz alta', q:`<div class="qtext">${esc(it.es)}</div><div class="hint">Dilo en chino antes de ver la respuesta. Recordar sin pistas es lo que fija la palabra.</div>`, rev:reveal(it)};
+    case 'speak': return {t:'speak', item:it.id, kind:'Dilo en voz alta', q:`<div class="qtext">${esc(cue(it))}</div><div class="hint">Dilo en chino antes de ver la respuesta. Recordar sin pistas es lo que fija la palabra.</div>`, rev:reveal(it)};
   }
 }
 function sentEx(it, mode){
@@ -924,7 +933,7 @@ function timeEx(mode){
     return {t:'mc', item:'g-time', kind:'Escucha y elige el reloj', say:'现在' + hourZh(h), q:audioBtns('现在' + hourZh(h)),
       options: opts.map(x => ({v:String(x), html:clockSVG(x)})), answer:String(h), rev:{...rev, h:'现在' + rev.h, p:'xiàn·zài ' + rev.p}};
   }
-  if (mode === 'type') return {t:'type', item:'g-time', kind:'Escribe la hora en pinyin', q:`<div class="clockwrap">${clockSVG(h)}</div>`, answer:pyPlain(hourPy(h)), rev};
+  if (mode === 'type') return {t:'type', item:'g-time', kind:'Escribe la hora en pinyin', q:`<div class="clockwrap">${clockSVG(h)}</div>${LV < 2 ? audioBtns(hourZh(h)) : ''}`, answer:pyPlain(hourPy(h)), rev};
   const wrong = h === 2 ? ['二点'] : [];
   const pool = shuffle([1,3,4,5,6,7,8,9,10,11,12].filter(x => x !== h)).map(hourZh);
   const opts = shuffle([hourZh(h), ...wrong, ...pool].slice(0, 4));
