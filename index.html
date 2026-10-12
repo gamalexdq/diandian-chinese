@@ -466,7 +466,7 @@ function foodEx(mode, verbs, forms){
     // hear a question, pick the reply that fits it
     const V = pick(verbs), q = randFood(Math.random() < .5 ? 'what' : 'ma', [V]);
     if (q.form === 'what'){
-      const right = food('ans', q.V, N3[pick(q.V.nouns)]);
+      const right = food('ans', q.V, N3[pick(q.V.nouns.filter(x => !(q.V.qwh && x === 'sc')))]);
       const others = shuffle(Object.keys(VERB3).filter(k => VERB3[k] !== q.V)).map(k => food('ans', VERB3[k], N3[pick(VERB3[k].nouns)]));
       const opts = shuffle([right, ...others].slice(0, 4));
       return {t:'mc', item:'g-food', kind:'Escucha y responde', say:q.h, q:`<div class="bubble"><span class="who">Te preguntan</span><span class="han">${esc(q.h)}</span>${pyHint(q.p) ? `<span>${pyHint(q.p)}</span>` : ''}</div>${audioBtns(q.h)}`,
@@ -482,9 +482,10 @@ function foodEx(mode, verbs, forms){
     // given the answer, build a question that asks for it (什么 or 吗 both count)
     const a = randFood('ans', verbs), wh = food('what', a.V, a.n), mq = food('ma', a.V, a.n);
     const bank = shuffle([k3.ni, a.V.v, k3.sm, k3.ma, a.n.c, k3.wo, ...(a.V.like ? [k3.sg] : [])]);
-    const accept = [wh.chunks, mq.chunks, [k3.ni, a.V.v, k3.sm]].map(cs => cs.map(c => c.h).join(''));
+    const fits = !(a.V.qwh && a.n.id === 'sc'), wq = fits ? wh : {h:'你' + a.V.v.h + '什么？', p:'nǐ ' + a.V.v.p + ' shén·me'};
+    const accept = [...(fits ? [wh.chunks] : []), mq.chunks, [k3.ni, a.V.v, k3.sm]].map(cs => cs.map(c => c.h).join(''));
     return {t:'tiles', item:'g-food', kind:'Haz la pregunta para esta respuesta', q:`<div class="bubble"><span class="who">Respuesta</span><span class="han">${esc(a.h)}</span>${pyHint(a.p) ? `<span>${pyHint(a.p)}</span>` : ''}<span class="muted">${esc(a.es)}</span></div>`,
-      bank, answer:accept, rev:{h:wh.h + ' / ' + mq.h, p:wh.p + ' / ' + mq.p, es:'Valen las dos: con 什么 o con 吗.'}};
+      bank, answer:accept, rev:{h:wq.h + ' / ' + mq.h, p:wq.p + ' / ' + mq.p, es:'Valen las dos: con 什么 o con 吗.'}};
   }
   const s = randFood(pick(forms), verbs), rev = {h:s.h, p:s.p, es:s.es};
   if (mode === 'speak') return {t:'speak', item:'g-food', kind:'Dilo en voz alta', q:`<div class="qtext">${esc(s.es)}</div>`, rev};
@@ -1277,6 +1278,8 @@ function renderStep(){
 }
 function bindQuit(){ document.getElementById('quit').onclick = () => { if (window.speechSynthesis) speechSynthesis.cancel(); screen = 'home'; renderHome(); }; }
 
+// tiles like 喜欢， and 喜欢 differ only by the comma: where it lands must not decide the answer
+const noPunct = t => String(t).replace(/[，。？！、,.?!\s]/g, '');
 function renderEx(ex){
   let body = `<div class="card${ex.t === 'tiles' || ex.t === 'type' || ex.t === 'digits' ? '' : ''}"><div class="kind">${esc(ex.kind)}</div><div class="card center" style="padding:0">${ex.q}</div>`;
   if (ex.t === 'mc'){
@@ -1326,7 +1329,7 @@ function renderEx(ex){
     if (ex.t === 'speak') return showSelfGrade(ex);
     let ok = false, perfect = false;
     if (ex.t === 'mc') ok = String(value) === String(ex.answer);
-    else if (ex.t === 'tiles') ok = [].concat(ex.answer).includes(value);
+    else if (ex.t === 'tiles') ok = [].concat(ex.answer).some(a => noPunct(a) === noPunct(value));
     else if (ex.t === 'digits') ok = value.replace(/\D/g, '') === ex.answer;
     else { ok = loose(value) === loose(ex.answer); perfect = ok && strict(value) === strict(ex.answer); }
     if (ex.t === 'mc') app.querySelectorAll('.opt').forEach(b => { if (b.dataset.v === String(ex.answer)) b.classList.add('ok'); else if (b.dataset.v === value) b.classList.add('no'); });
