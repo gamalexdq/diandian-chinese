@@ -145,6 +145,8 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1
 .audio.huge svg{width:44px;height:44px}
 .arow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opts.wide{grid-template-columns:minmax(0,1fr)}
+.opts.wide .opt{min-height:56px;padding:10px}
 .opt{border:2px solid var(--line);background:var(--surface);border-radius:var(--r);padding:14px 10px;display:grid;gap:2px;justify-items:center;text-align:center;min-height:64px;align-content:center;min-width:0}
 .opt .han{font-size:30px}
 .opt small{font-size:14px;color:var(--muted)}
@@ -152,8 +154,26 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1
 .opt.sel{border-color:var(--accent);background:var(--accent-soft)}
 .opt.ok{border-color:var(--good);background:var(--good-soft)}
 .opt.no{border-color:var(--bad);background:var(--bad-soft)}
-.mods{display:flex;gap:6px;padding:4px;border-radius:999px;background:var(--sunk);width:max-content;max-width:100%;margin-top:18px}
+.mods{display:flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:20px;background:var(--sunk);width:max-content;max-width:100%;margin-top:18px}
 .mod{border:0;background:none;border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px;color:var(--muted)}
+.sw{display:inline-block;width:52px;height:52px;border-radius:14px;border:2px solid var(--line);vertical-align:middle}
+.sw.big{width:120px;height:120px;border-radius:26px}
+.tag{display:inline-block;font-family:var(--f-display);font-weight:800;font-size:52px;line-height:1.1;padding:10px 24px;border:3px dashed var(--line);border-radius:18px;font-variant-numeric:tabular-nums}
+.pic{font-size:72px;line-height:1.15}
+.ask .pic,.ask .sw{display:inline-block;font-size:40px;vertical-align:middle}
+.scene{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);gap:4px;justify-content:center;margin:8px auto}
+.scene span{display:grid;place-items:center;font-size:34px;background:var(--sunk);border-radius:12px;line-height:1}
+.scene .me{font-family:var(--f-body);font-size:13px;line-height:1.1;color:var(--accent);text-align:center}
+.scene.sm{grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px);gap:3px;margin:0}
+.scene.sm span{font-size:20px;border-radius:8px}.scene.sm .me{font-size:10px}
+.route{display:flex;gap:8px;align-items:center;justify-content:center}
+.route i{display:grid;place-items:center;width:48px;height:48px;color:var(--accent)}.route i svg{width:44px;height:44px}
+.route.sm i{width:28px;height:28px}.route.sm i svg{width:26px;height:26px}
+.wx{display:inline-grid;justify-items:center;gap:2px;padding:12px 24px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+.wx .wxi{font-size:52px;line-height:1.1}.wx b{font-family:var(--f-display);font-size:28px}.wx small{color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:12px}
+.wx.sm{padding:4px 8px;border:0;background:none}.wx.sm .wxi{font-size:30px}.wx.sm b{font-size:18px}
+.cal{display:inline-grid;justify-items:center;border:2px solid var(--line);border-top:12px solid var(--bad);border-radius:14px;padding:8px 22px;background:var(--surface)}
+.cal small{text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted);font-size:12px}.cal b{font-family:var(--f-display);font-size:26px}
 .mod.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 18%,transparent)}
 .bubble{display:grid;gap:4px;justify-items:start;text-align:left;background:var(--sunk);border-radius:16px 16px 16px 4px;padding:12px 16px;max-width:100%}
 .bubble .who{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -421,7 +441,7 @@ W('nhsm','c5','你喝什么？','nǐ hē shén·me','¿Qué bebes? / ¿Qué vas 
 const k3 = {wo:C('我','wǒ'), ni:C('你','nǐ'), sm:C('什么','shén·me'), ma:C('吗','ma'), sg:C('水果','shuǐ·guǒ'),
   chi:C('吃','chī'), xh:C('喜欢','xǐ·huan'), yao:C('要','yào'), he:C('喝','hē'), xie:C('谢谢','xiè·xie')};
 const N3 = {
-  jz:{es:'jiaozi', art:'los', pl:1}, bz:{es:'baozi', art:'los', pl:1}, mt:{es:'fideos', art:'los', pl:1}, cm:{es:'fideos salteados', art:'los', pl:1}, cf:{es:'arroz frito', art:'el'},
+  jz:{es:'empanadillas chinas', art:'las', pl:1}, bz:{es:'bollos al vapor', art:'los', pl:1}, mt:{es:'fideos', art:'los', pl:1}, cm:{es:'fideos salteados', art:'los', pl:1}, cf:{es:'arroz frito', art:'el'},
   pg:{es:'manzanas', art:'las', pl:1}, xj:{es:'plátanos', art:'los', pl:1}, cz:{es:'naranjas', art:'las', pl:1},
   nr:{es:'carne de res', art:'la'}, jr:{es:'pollo', art:'el'}, zr:{es:'cerdo', art:'el'}, yu:{es:'pescado', art:'el'}, sc:{es:'verduras', art:'las', pl:1},
   sh:{es:'agua', art:'el'}, kl:{es:'Coca-Cola', art:'la'}, kf:{es:'café', art:'el'}, cha:{es:'té', art:'el'}, pj:{es:'cerveza', art:'la'}
@@ -502,7 +522,7 @@ ITEMS['g-food'] = {id:'g-food', unit:'c2', kind:'gen', es:'preguntas y respuesta
 
 // c6: full questions and answers about food
 const k3c = id => N3[id].c;
-S_('r1', [k3.wo, k3.chi, k3c('bz')], 'Voy a comer baozi.', 0, 'c6');
+S_('r1', [k3.wo, k3.chi, k3c('bz')], 'Voy a comer bollos al vapor.', 0, 'c6');
 S_('r2', [k3.ni, k3.yao, k3.sm], '¿Qué quieres?', 1, 'c6');
 S_('r3', [k3.wo, k3.xh, k3c('xj')], 'Me gustan los plátanos.', 0, 'c6');
 S_('r4', [k3.ni, k3.he, k3c('kf'), k3.ma], '¿Tomas café?', 1, 'c6');
@@ -741,16 +761,824 @@ function examPlan1(){
   return {title:'Examen: preséntate', exam:true, examKey:'examBest1', cards:[], ex:shuffle(ex)};
 }
 
+/* ---------- rutas 4–7: shared helpers ---------- */
+// a generated sentence: chunks + Spanish; alt = other valid answers for the tiles
+const mkS = (chunks, es, end = '。', alt) => ({chunks, es, alt, h:chunks.map(c => c.h).join('') + end, p:chunks.map(c => c.p).filter(Boolean).join(' ')});
+// a time word can go before or after the subject: 我每天… = 每天我…
+const TIME_RE = /^(早上|上午|中午|下午|晚上|现在|今天|明天|昨天|每天|每天早上|每天晚上|每星期.|星期.|[一二三四五六七八九十两]+点)$/;
+function orders(chunks){
+  const j = cs => cs.map(c => c.h).join(''), np = c => c.h.replace(/[，。？！、]/g, ''), subj = ['我','你','我们'];
+  const out = [j(chunks)];
+  if (chunks.length > 2 && subj.includes(np(chunks[0]))){
+    let k = 1; while (k < chunks.length && TIME_RE.test(np(chunks[k]))) k++;
+    if (k > 1) out.push(j([...chunks.slice(1, k), chunks[0], ...chunks.slice(k)]));
+  } else {
+    let k = 0; while (k < chunks.length && TIME_RE.test(np(chunks[k]))) k++;
+    if (k > 0 && k < chunks.length && subj.includes(np(chunks[k]))) out.push(j([chunks[k], ...chunks.slice(0, k), ...chunks.slice(k + 1)]));
+  }
+  return out;
+}
+// 我喜欢红色 = 我喜欢红的: both are taught, both count
+const expandAns = list => [...new Set(list.flatMap(a => {
+  const m = a.match(/^(.*(?:喜欢|要))([红黄蓝绿白黑紫])[色的]$/);
+  return m ? [a, m[1] + m[2] + '色', m[1] + m[2] + '的'] : [a];
+}))];
+const answersOf = s => expandAns([...orders(s.chunks), ...(s.alt || [])]);
+const optHTML = s => `<span class="han" style="font-size:22px">${esc(s.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(s.p)}</small>`}`;
+const bubbleQ = (who, s, extra = '') => ({say:s.h, html:`<div class="bubble"><span class="who">${esc(who)}</span><span class="han">${esc(s.h)}</span>${pyHint(s.p) ? `<span>${pyHint(s.p)}</span>` : ''}</div>${audioBtns(s.h)}${extra}`});
+const picBox = e => `<div class="pic" aria-hidden="true">${e}</div>`;
+const uniqBy = (arr, key) => arr.filter((x, i) => arr.findIndex(y => key(y) === key(x)) === i);
+// build / listen / mc / speak from one sentence; again(k) makes another one for mc
+function chunkEx(mode, s, item, pool, again, pic = ''){
+  const rev = {h:s.h, p:s.p, es:s.es};
+  if (mode === 'speak') return {t:'speak', item, kind:'Dilo en voz alta', q:`${pic}<div class="qtext">${esc(s.es)}</div><div class="hint">Dilo en chino antes de ver la respuesta.</div>`, rev};
+  if (mode === 'mc'){
+    const os = [s];
+    for (let k = 0; os.length < 4 && k < 120; k++){ const o = again(k); if (!os.some(x => x.es === o.es || noPunct(x.h) === noPunct(o.h))) os.push(o); }
+    return {t:'mc', item, kind:'Escucha: ¿qué dice?', say:s.h, q:audioBtns(s.h), options:shuffle(os).map(o => ({v:o.es, html:esc(o.es)})), answer:s.es, rev};
+  }
+  const extra = shuffle(uniqBy(pool, d => noPunct(d.h)).filter(d => !s.chunks.some(c => noPunct(c.h) === noPunct(d.h)))).slice(0, 3);
+  const bank = shuffle([...s.chunks, ...extra]), answer = answersOf(s);
+  if (mode === 'listen') return {t:'tiles', item, kind:'Dictado: ordena lo que oyes', say:s.h, q:audioBtns(s.h), bank, answer, rev};
+  return {t:'tiles', item, kind:'Traduce al chino', q:`${pic}<div class="qtext">${esc(s.es)}</div>`, bank, answer, rev};
+}
+const genEx = (mode, item, pool, gen) => { const s = gen(); return chunkEx(mode, s, item, pool, k => gen(k < 60 ? s.form : undefined), s.pic || ''); };
+// pick the line that fits; wrong options must not fit the cue
+function replyEx(item, kind, head, right, wrongs){
+  const os = [right];
+  for (const w of shuffle(wrongs)) if (os.length < 4 && !os.some(o => noPunct(o.h) === noPunct(w.h))) os.push(w);
+  return {t:'mc', item, kind, say:head.say, q:head.html, wide:os.some(o => noPunct(o.h).length > 4), options:shuffle(os).map(o => ({v:o.h, say:o.h, html:optHTML(o)})), answer:right.h, rev:{h:right.h, p:right.p, es:right.es}};
+}
+// hear a sentence, pick the picture
+const seeEx = (item, kind, s, opts, answer) => ({t:'mc', item, kind, say:s.h, q:audioBtns(s.h, true), options:shuffle(opts), answer, rev:{h:s.h, p:s.p, es:s.es}});
+const K = {wo:C('我','wǒ'), ni:C('你','nǐ'), wm:C('我们','wǒ·men'), xh:C('喜欢','xǐ·huan'), bu:C('不','bù'), shi:C('是','shì'), yao:C('要','yào'), ma:C('吗','ma'),
+  sm:C('什么','shén·me'), you:C('有','yǒu'), zai:C('在','zài'), qu:C('去','qù'), qw:C('请问，','qǐng·wèn'), mt:C('每天','měi·tiān'), hen:C('很','hěn')};
+
+/* ---------- content · Ruta 4: de compras ---------- */
+W('dys','d1','颜色','yán·sè','color','什么颜色？ = ¿qué color? Igual que 什么水果.');
+W('dhong','d1','红色','hóng·sè','rojo','El color de la suerte: sobres rojos, faroles y Año Nuevo.');
+W('dhuang','d1','黄色','huáng·sè','amarillo','huáng sube, como al preguntar.');
+W('dlan','d1','蓝色','lán·sè','azul','lán (2.º tono). No lo confundas con 绿 lǜ.');
+W('dlv','d1','绿色','lǜ·sè','verde','ü con los labios redondos. En el teclado se escribe lv.');
+W('dbai','d1','白色','bái·sè','blanco','');
+W('dhei','d1','黑色','hēi·sè','negro','');
+W('dzi','d1','紫色','zǐ·sè','morado','zǐ: lengua plana detrás de los dientes, como en 字.');
+W('dnxys','d1','你喜欢什么颜色？','nǐ xǐ·huan shén·me yán·sè','¿Qué color te gusta?','Respondes con 我喜欢 + color: 我喜欢红色 o 我喜欢红的.');
+ITEMS['g-color'] = {id:'g-color', unit:'d1', kind:'gen', es:'colores'};
+W('dzg','d2','这个','zhè·ge','este, esta','这 = este + 个, la palabra de medida general. 个 va átono.');
+W('dng','d2','那个','nà·ge','ese, esa','那 nà, con 4.º tono.');
+W('djian','d2','件','jiàn','(palabra de medida para ropa)','这件 = esta prenda. Con 个 también te entienden, pero con ropa suena mejor 件.');
+W('dda','d2','大','dà','grande','Una persona con los brazos abiertos.');
+W('dxiao','d2','小','xiǎo','pequeño','');
+W('dtdl','d2','太大了','tài dà le','es demasiado grande','太 + adjetivo + 了 = demasiado …: 太小了, 太贵了.');
+W('dzmy','d2','怎么样','zěn·me·yàng','¿qué tal?','Al final de la frase: 这件怎么样？ = ¿qué tal esta?');
+ITEMS['g-size'] = {id:'g-size', unit:'d2', kind:'gen', es:'este, ese y la talla'};
+W('dqian','d3','钱','qián','dinero','Lleva 钅 (metal) a la izquierda: las monedas.');
+W('ddsh','d3','多少','duō·shao','¿cuánto?','Para precios y cantidades grandes. 几 es para números pequeños.');
+W('dkuai','d3','块','kuài','yuan (al hablar)','En los billetes dice 元 yuán; al hablar se dice 块.');
+W('ddsq','d3','多少钱？','duō·shao qián','¿Cuánto cuesta?','Cosa + 多少钱？: 咖啡多少钱？');
+W('dbai3','d3','百','bǎi','cien','一百 = 100 · 一百六十 = 160.');
+W('dlk','d3','两块','liǎng kuài','dos yuanes','Como con la hora: 两块, no 二块. Pero 12 se dice 十二块.');
+ITEMS['g-price'] = {id:'g-price', unit:'d3', kind:'gen', es:'precios'};
+W('dgui','d4','贵','guì','caro','');
+W('dpy','d4','便宜','pián·yi','barato','¡Ojo! Aquí 便 se lee pián, no biàn. 宜 va átono.');
+W('dydr','d4','一点儿','yì·diǎnr','un poco','Va después del adjetivo: 便宜一点儿 = un poco más barato. La r final es típica de Pekín.');
+W('dtgl','d4','太贵了','tài guì le','¡es demasiado caro!','');
+W('dpyhm','d4','便宜一点儿，好吗？','pián·yi yì·diǎnr, hǎo ma','¿Me lo deja un poco más barato?','好吗？ al final = ¿vale? Sirve para proponer cualquier cosa.');
+W('dbg','d4','不贵','bú guì','no es caro','不 + 4.º tono → bú. Es lo que dirá el vendedor.');
+W('ddbq','d4','对不起','duì·bu·qǐ','perdón, lo siento','El 不 del medio va átono.');
+W('dhd','d4','好的','hǎo de','de acuerdo','Para aceptar: 好的，我要这个。');
+ITEMS['g-shop'] = {id:'g-shop', unit:'d4', kind:'gen', es:'regatear'};
+
+const COLORS = {
+  hong:{h:'红', p:'hóng', css:'#D62828', m:'rojo', f:'roja'}, huang:{h:'黄', p:'huáng', css:'#F2C014', m:'amarillo', f:'amarilla'},
+  lan:{h:'蓝', p:'lán', css:'#1F6FD1', m:'azul', f:'azul'}, lv:{h:'绿', p:'lǜ', css:'#2A9D4B', m:'verde', f:'verde'},
+  bai:{h:'白', p:'bái', css:'#FFFFFF', m:'blanco', f:'blanca'}, hei:{h:'黑', p:'hēi', css:'#111111', m:'negro', f:'negra'},
+  zi:{h:'紫', p:'zǐ', css:'#7B3FA0', m:'morado', f:'morada'}
+};
+const colSe = k => C(COLORS[k].h + '色', COLORS[k].p + '·sè');
+const colDe = k => C(COLORS[k].h + '的', COLORS[k].p + ' de');
+const swatch = (k, big) => `<span class="sw${big ? ' big' : ''}" style="background:${COLORS[k].css}" role="img" aria-label="${COLORS[k].m}"></span>`;
+const CL = {'件':C('件','jiàn'), '个':C('个','ge')};
+const OBJ4 = [{es:'camisa', f:1, cl:'件'}, {es:'chaqueta', f:1, cl:'件'}, {es:'abrigo', cl:'件'}, {es:'suéter', cl:'件'}, {es:'taza', f:1, cl:'个'}, {es:'bolso', cl:'个'}];
+const DEM = {zhe:{c:C('这','zhè'), m:'este', f:'esta'}, na:{c:C('那','nà'), m:'ese', f:'esa'}};
+const D4 = [K.wo, K.ni, K.xh, K.bu, K.yao, K.sm, DEM.zhe.c, DEM.na.c, CL['个'], CL['件'], C('太大了','tài dà le'), C('太小了','tài xiǎo le'), C('太贵了','tài guì le'),
+  C('便宜','pián·yi'), C('一点儿','yì·diǎnr'), C('好吗','hǎo ma'), C('多少','duō·shao'), C('钱','qián'), C('颜色','yán·sè'), C('怎么样','zěn·me·yàng'), colSe('lan'), colSe('bai'), colDe('hong'), colDe('hei')];
+function colorS(form, k){
+  form = form || pick(['like','like','not']); k = k || pick(Object.keys(COLORS));
+  const c = COLORS[k];
+  const s = form === 'not' ? mkS([K.wo, K.bu, K.xh, colSe(k)], `No me gusta el ${c.m}.`) : mkS([K.wo, K.xh, colSe(k)], `Me gusta el ${c.m}.`);
+  return Object.assign(s, {form, pic:swatch(k, true)});
+}
+function colorEx(mode){
+  const ks = Object.keys(COLORS), k = pick(ks), c = COLORS[k], word = mkS([colSe(k)], c.m, '');
+  if (mode === 'swatch') return replyEx('g-color', '¿Qué color es?', {html:swatch(k, true)}, word, ks.filter(x => x !== k).map(x => mkS([colSe(x)], COLORS[x].m, '')));
+  if (mode === 'listen') return seeEx('g-color', 'Escucha y elige el color', word,
+    [k, ...shuffle(ks.filter(x => x !== k)).slice(0, 3)].map(x => ({v:x, html:swatch(x)})), k);
+  if (mode === 'reply'){
+    const q = mkS([K.ni, K.xh, K.sm, C('颜色','yán·sè')], '¿Qué color te gusta?', '？');
+    const wrongs = [...shuffle(ks.filter(x => x !== k)).slice(0, 2).map(x => colorS('like', x)), mkS([K.wo, K.xh, C('苹果','píng·guǒ')], 'Me gustan las manzanas.')];
+    return replyEx('g-color', 'Responde', bubbleQ('Amiga', q, `<div class="ask">Tu color favorito: ${swatch(k)}</div>`), colorS('like', k), wrongs);
+  }
+  return genEx(mode, 'g-color', D4, colorS);
+}
+function sizeS(form){
+  form = form || pick(['too','too','want','how']);
+  const o = pick(OBJ4), d = DEM[pick(['zhe','na'])], dem = o.f ? d.f : d.m, cl = CL[o.cl];
+  let cs, es, end = '。';
+  if (form === 'too'){
+    const k = pick(['hong','hei','huang','bai']);
+    const adj = pick([{c:C('太大了','tài dà le'), es:'grande'}, {c:C('太小了','tài xiǎo le'), es:o.f ? 'pequeña' : 'pequeño'}, {c:C('太' + COLORS[k].h + '了', 'tài ' + COLORS[k].p + ' le'), es:o.f ? COLORS[k].f : COLORS[k].m}]);
+    cs = [d.c, cl, adj.c]; es = `${cap(dem)} ${o.es} es demasiado ${adj.es}.`;
+  } else if (form === 'want'){
+    const k = pick(Object.keys(COLORS));
+    cs = [K.wo, K.yao, d.c, cl, colDe(k)]; es = `Quiero ${dem} ${o.es} ${o.f ? COLORS[k].f : COLORS[k].m}.`;
+  } else { cs = [d.c, cl, C('怎么样','zěn·me·yàng')]; es = `¿Qué tal ${dem} ${o.es}?`; end = '？'; }
+  // clothes take 件, but 个 is understood too
+  const alt = o.cl === '件' ? [cs.map(c => c === cl ? '个' : c.h).join('')] : [];
+  return Object.assign(mkS(cs, es, end, alt), {form});
+}
+function sizeEx(mode){
+  if (mode === 'reply'){
+    const o = pick(OBJ4), cl = CL[o.cl], esta = o.f ? 'esta' : 'este', zhe = DEM.zhe.c;
+    const q = mkS([zhe, cl, C('怎么样','zěn·me·yàng')], `¿Qué tal ${esta} ${o.es}?`, '？');
+    const opts = [
+      {cue:'es demasiado grande', s:mkS([zhe, cl, C('太大了','tài dà le')], `${cap(esta)} ${o.es} es demasiado grande.`)},
+      {cue:`es demasiado ${o.f ? 'pequeña' : 'pequeño'}`, s:mkS([zhe, cl, C('太小了','tài xiǎo le')], `${cap(esta)} ${o.es} es demasiado ${o.f ? 'pequeña' : 'pequeño'}.`)},
+      {cue:o.f ? 'te la llevas' : 'te lo llevas', s:mkS([K.wo, K.yao, zhe, cl], `Me llevo ${esta}.`)},
+      {cue:`es demasiado ${o.f ? 'roja' : 'rojo'}`, s:mkS([zhe, cl, C('太红了','tài hóng le')], `${cap(esta)} ${o.es} es demasiado ${o.f ? 'roja' : 'rojo'}.`)}
+    ];
+    const r = pick(opts);
+    return replyEx('g-size', 'Responde a la vendedora', bubbleQ('Vendedora', q, `<div class="ask">Te muestra ${o.f ? 'una' : 'un'} ${o.es}. Dile que <b>${r.cue}</b>.</div>`), r.s, opts.filter(x => x !== r).map(x => x.s));
+  }
+  return genEx(mode, 'g-size', D4, sizeS);
+}
+const PDIG = {'一':'yī','二':'èr','三':'sān','四':'sì','五':'wǔ','六':'liù','七':'qī','八':'bā','九':'jiǔ','十':'shí','百':'bǎi','两':'liǎng','块':'kuài','月':'yuè'};
+function priceZh(n){
+  if (n === 2) return {h:'两块', p:'liǎng kuài'};
+  if (n < 100) return {h:numZh(n) + '块', p:numPy(n) + ' kuài'};
+  const r = n - 100;
+  return {h:'一百' + (r === 10 ? '一十' : r ? numZh(r) : '') + '块', p:'yì·bǎi' + (r === 10 ? ' yī·shí' : r ? ' ' + numPy(r) : '') + ' kuài'};
+}
+const randPrice = () => { const x = Math.random(); return x < .2 ? 100 + 10 * rint(0, 9) : x < .4 ? rint(1, 10) : rint(11, 99); };
+const priceTag = n => `<div class="tag">¥ ${n}</div>`;
+function priceEx(mode){
+  const n = randPrice(), z = priceZh(n), rev = {h:z.h, p:z.p, es:`¥${n}`};
+  if (mode === 'read'){
+    const chars = [...z.h].map(c => ({h:c, p:PDIG[c]}));
+    const trap = z.h.includes('两') ? '二' : z.h.includes('二') || z.h.includes('百') ? '两' : pick(['两','百']);
+    const extra = shuffle(Object.keys(PDIG).filter(c => c !== '块' && c !== '月' && c !== trap && !z.h.includes(c))).slice(0, 2).concat(trap).map(c => ({h:c, p:PDIG[c]}));
+    return {t:'tiles', item:'g-price', kind:'Di el precio en chino', q:priceTag(n), bank:shuffle([...chars, ...extra]), answer:z.h, rev};
+  }
+  if (mode === 'listen') return {t:'digits', item:'g-price', kind:'Escucha el precio y escríbelo', say:z.h, q:audioBtns(z.h), hint:'Escribe solo el número. Ej.: 38', answer:String(n), rev};
+  if (mode === 'mc'){
+    // 七块五 = ¥7.50
+    const half = n < 50 && Math.random() < .4, val = half ? n + .5 : n, sayH = z.h + (half ? '五' : '');
+    const lab = v => '¥' + (v % 1 ? v.toFixed(2) : v);
+    const near = [...new Set([n + 10, n - 10, Number(String(n).split('').reverse().join('')), n * 10, n + 1, n - 1])].filter(x => x > 0 && x !== n && x < 200);
+    const os = [...new Set([val, half ? n : n + .5, ...shuffle(near).slice(0, 3).map(x => half ? x + .5 : x)])].slice(0, 4);
+    return {t:'mc', item:'g-price', kind:'Escucha: ¿cuánto cuesta?', say:sayH, q:audioBtns(sayH, true),
+      options:shuffle(os).map(v => ({v:String(v), html:`<span class="digital" style="font-size:24px">${lab(v)}</span>`})), answer:String(val), rev:{h:sayH, p:z.p + (half ? ' wǔ' : ''), es:lab(val)}};
+  }
+  const N = N3[pick(['sh','kl','kf','cha','pj','pg','xj','cz'])], verb = N.pl ? 'cuestan' : 'cuesta';
+  if (mode === 'ask') return chunkEx('build', mkS([K.qw, N.c, C('多少','duō·shao'), C('钱','qián')], `Disculpe, ¿cuánto ${verb} ${N.art} ${N.es}?`, '？'), 'g-price', D4);
+  // reply: you are the seller
+  const q = mkS([N.c, C('多少钱','duō·shao qián')], `¿Cuánto ${verb} ${N.art} ${N.es}?`, '？');
+  const mk = v => { const pz = priceZh(v); return mkS([N.c, C(pz.h, pz.p)], `${cap(N.art)} ${N.es} ${verb} ${v} yuan${v === 1 ? '' : 'es'}.`); };
+  const near = [...new Set([n + 10, n - 10, n * 10, n + 1, n - 1, n + 20])].filter(x => x > 0 && x !== n && x < 200);
+  return replyEx('g-price', 'Eres el vendedor: di el precio', bubbleQ('Cliente', q, priceTag(n)), mk(n), shuffle(near).slice(0, 3).map(mk));
+}
+function shopLines(){
+  const n = rint(15, 90), m = n - 5 * rint(1, 2), k = pick(['hong','hei','bai','lan']), pn = priceZh(n), pm = priceZh(m);
+  return [
+    {who:'Vendedor', v:mkS([C('这个','zhè·ge'), C(pn.h, pn.p)], `Este cuesta ${n} yuanes.`), cue:'Es demasiado caro: pide que te lo rebajen.',
+      me:mkS([C('太贵了，','tài guì le'), C('便宜','pián·yi'), C('一点儿，','yì·diǎnr'), C('好吗','hǎo ma')], '¡Es demasiado caro! ¿Me lo deja un poco más barato?', '？')},
+    {who:'Vendedor', v:mkS([C('好，','hǎo'), C(pm.h, pm.p)], `Bueno, ${m} yuanes.`), cue:'Acepta: te lo llevas.',
+      me:mkS([C('好的，','hǎo de'), K.wo, K.yao, C('这个','zhè·ge')], 'De acuerdo, me llevo este.')},
+    {who:'Vendedora', v:mkS([K.ni, K.yao, K.sm, C('颜色','yán·sè')], '¿Qué color quieres?', '？'), cue:`Pide el ${COLORS[k].m}.`,
+      me:mkS([K.wo, K.yao, colDe(k)], `Quiero el ${COLORS[k].m}.`)},
+    {who:'Vendedora', v:mkS([K.ni, K.xh, C('这个','zhè·ge'), K.ma], '¿Te gusta este?', '？'), cue:'No te gusta: es demasiado pequeño.',
+      me:mkS([C('不，','bù'), C('这个','zhè·ge'), C('太小了','tài xiǎo le')], 'No, este es demasiado pequeño.')},
+    {who:'Vendedor', v:mkS([C('不贵，','bú guì'), C('不贵','bú guì')], 'No es caro, no es caro.', '！'), cue:'Pregunta cuánto cuesta ese otro.',
+      me:mkS([C('那个','nà·ge'), C('多少钱','duō·shao qián')], '¿Cuánto cuesta ese?', '？')}
+  ];
+}
+function shopEx(mode){
+  const L = shopLines(), r = pick(L);
+  if (mode === 'reply') return replyEx('g-shop', 'Responde', bubbleQ(r.who, r.v, `<div class="ask">${esc(r.cue)}</div>`), r.me, L.filter(x => x !== r).map(x => x.me));
+  return genEx(mode, 'g-shop', D4, () => Object.assign(pick(shopLines()).me, {form:'x'}));
+}
+const S4 = (id, chunks, es, q, alt) => { S_(id, chunks, es, q, 'd5'); if (alt) ITEMS[id].alt = alt; };
+S4('ds1', [K.wo, K.xh, C('蓝色，','lán·sè'), K.bu, K.xh, C('黑色','hēi·sè')], 'Me gusta el azul, no el negro.');
+S4('ds2', [DEM.zhe.c, CL['件'], C('怎么样','zěn·me·yàng')], '¿Qué tal esta chaqueta?', 1, ['这个怎么样']);
+S4('ds3', [DEM.zhe.c, CL['件'], C('太小了','tài xiǎo le')], 'Esta chaqueta es demasiado pequeña.', 0, ['这个太小了']);
+S4('ds4', [K.wo, K.yao, DEM.na.c, CL['件'], colDe('hong')], 'Quiero esa chaqueta roja.', 0, ['我要那个红的']);
+S4('ds5', [K.qw, C('这个','zhè·ge'), C('多少钱','duō·shao qián')], 'Disculpe, ¿cuánto cuesta esto?', 1);
+S4('ds6', [C('这个','zhè·ge'), C('五十八块','wǔ·shí·bā kuài')], 'Esto cuesta 58 yuanes.');
+S4('ds7', [C('太贵了，','tài guì le'), C('便宜','pián·yi'), C('一点儿，','yì·diǎnr'), C('好吗','hǎo ma')], '¡Es demasiado caro! ¿Me lo deja un poco más barato?', 1);
+S4('ds8', [C('好，','hǎo'), C('五十块','wǔ·shí kuài')], 'Bueno, 50 yuanes.');
+S4('ds9', [C('好的，','hǎo de'), K.wo, K.yao, C('这个','zhè·ge')], 'De acuerdo, me llevo este.');
+S4('ds10', [C('苹果','píng·guǒ'), C('多少钱','duō·shao qián')], '¿Cuánto cuestan las manzanas?', 1);
+
+/* ---------- content · Ruta 5: la ciudad ---------- */
+W('ezm','e1','怎么','zěn·me','¿cómo?','怎么 + verbo: 你怎么去？ = ¿cómo vas?');
+W('emt','e1','每天','měi·tiān','todos los días','每 = cada + 天 = día. Va antes del verbo, como la hora.');
+W('ezl','e1','走路','zǒu·lù','ir a pie','走 caminar + 路 camino.');
+W('eqi','e1','骑','qí','montar (bici, moto, caballo)','Lleva 马 (caballo): vas montado encima.');
+W('ezxc','e1','自行车','zì·xíng·chē','bicicleta','自 por sí mismo + 行 andar + 车 vehículo.');
+W('ezuo','e1','坐','zuò','ir en (metro, bus, avión)','También significa «sentarse»: en el metro y el bus vas sentado.');
+W('edt','e1','地铁','dì·tiě','metro','地 tierra + 铁 hierro: el tren bajo tierra.');
+W('egjqc','e1','公共汽车','gōng·gòng qì·chē','autobús','公共 público + 汽车 auto.');
+W('ekc','e1','开车','kāi·chē','manejar, ir en carro','开 = conducir + 车.');
+W('edx','e1','大学','dà·xué','universidad','大 grande + 学 estudiar.');
+ITEMS['g-go'] = {id:'g-go', unit:'e1', kind:'gen', es:'cómo vas'};
+W('efj','e2','附近','fù·jìn','cerca, por aquí','Va al inicio: 附近有…吗？ = ¿hay … cerca?');
+W('eyou','e2','有','yǒu','hay; tener','附近有银行 = cerca hay un banco.');
+W('emy','e2','没有','méi·yǒu','no hay; no tener','La negación de 有 es siempre 没有. Nunca 不有.');
+W('ecs','e2','超市','chāo·shì','supermercado','超 súper + 市 mercado: casi una traducción literal.');
+W('esd','e2','商店','shāng·diàn','tienda','');
+W('eyh','e2','银行','yín·háng','banco','银 plata + 行 (aquí se lee háng: casa comercial).');
+W('exsj','e2','洗手间','xǐ·shǒu·jiān','baño','洗 lavar + 手 manos + 间 cuarto.');
+W('edtz','e2','地铁站','dì·tiě zhàn','estación de metro','站 = estación, parada.');
+W('ezne','e2','在那儿','zài nàr','está allí','La r final es de Pekín; en el sur dicen 在那里.');
+W('ebzd','e2','我不知道','wǒ bù zhī·dào','no sé','知道 = saber. Con 对不起 delante suena más amable.');
+ITEMS['g-near'] = {id:'g-near', unit:'e2', kind:'gen', es:'¿hay … cerca?'};
+W('ezai','e3','在','zài','estar (en un lugar)','Cosa + 在 + lugar: 银行在左边。');
+W('ezb','e3','左边','zuǒ·bian','a la izquierda','边 = lado, va átono.');
+W('eyb','e3','右边','yòu·bian','a la derecha','');
+W('eqb','e3','前边','qián·bian','adelante, enfrente','');
+W('ehb','e3','后边','hòu·bian','detrás','');
+W('esb','e3','上边','shàng·bian','arriba, encima','上 como en 上午.');
+W('exb','e3','下边','xià·bian','abajo, debajo','下 como en 下午.');
+W('ezn','e3','在哪儿？','zài nǎr','¿dónde está?','哪儿 nǎr (3.º tono) = ¿dónde?; 那儿 nàr (4.º tono) = allí. Solo cambia el tono.');
+ITEMS['g-where'] = {id:'g-where', unit:'e3', kind:'gen', es:'¿dónde está?'};
+W('ewang','e4','往','wǎng','hacia','往 + dirección + verbo: 往左拐.');
+W('ezou','e4','走','zǒu','caminar, avanzar','Ya lo viste en 走路.');
+W('eguai','e4','拐','guǎi','girar, doblar','');
+W('ewqz','e4','往前走','wǎng qián zǒu','sigue recto','Literal: hacia adelante camina.');
+W('ewzg','e4','往左拐','wǎng zuǒ guǎi','dobla a la izquierda','Tres terceros tonos seguidos: suena wáng zuó guǎi, pero se escribe con el tono original.');
+W('ewyg','e4','往右拐','wǎng yòu guǎi','dobla a la derecha','');
+W('ezmq','e4','怎么去？','zěn·me qù','¿cómo se llega?','Lugar + 怎么去？: 地铁站怎么去？');
+W('emgx','e4','没关系','méi guān·xi','no pasa nada','La respuesta a 对不起.');
+W('ebkq','e4','不客气','bú kè·qi','de nada','La respuesta a 谢谢. 不 + 4.º tono → bú.');
+ITEMS['g-route'] = {id:'g-route', unit:'e4', kind:'gen', es:'cómo llegar'};
+
+const TRANS = {
+  bike:{c:[C('骑','qí'), C('自行车','zì·xíng·chē')], es:'en bicicleta', pic:'🚲'},
+  metro:{c:[C('坐','zuò'), C('地铁','dì·tiě')], es:'en metro', pic:'🚇'},
+  bus:{c:[C('坐','zuò'), C('公共汽车','gōng·gòng qì·chē')], es:'en autobús', pic:'🚌'},
+  car:{c:[C('开车','kāi·chē')], es:'en carro', pic:'🚗'},
+  walk:{c:[C('走路','zǒu·lù')], es:'a pie', pic:'🚶'}
+};
+const DEST5 = {xx:{c:C('学校','xué·xiào'), es:'a la escuela'}, gz:{c:C('工作','gōng·zuò'), es:'al trabajo'}, dx:{c:C('大学','dà·xué'), es:'a la universidad'}};
+const PLACES = {
+  cs:{c:C('超市','chāo·shì'), un:'un supermercado', the:'el supermercado', pic:'🛒'},
+  sd:{c:C('商店','shāng·diàn'), un:'una tienda', the:'la tienda', pic:'🏪'},
+  yh:{c:C('银行','yín·háng'), un:'un banco', the:'el banco', pic:'🏦'},
+  xsj:{c:C('洗手间','xǐ·shǒu·jiān'), un:'un baño', the:'el baño', pic:'🚻'},
+  dtz:{c:C('地铁站','dì·tiě zhàn'), un:'una estación de metro', the:'la estación de metro', pic:'🚇'}
+};
+const aThe = P => P.the.startsWith('el ') ? 'al ' + P.the.slice(3) : 'a ' + P.the;
+const SIDES = {zuo:{c:C('左边','zuǒ·bian'), es:'a la izquierda'}, you:{c:C('右边','yòu·bian'), es:'a la derecha'}, qian:{c:C('前边','qián·bian'), es:'adelante'}, hou:{c:C('后边','hòu·bian'), es:'detrás'}};
+const D5 = [K.wo, K.ni, K.mt, C('怎么','zěn·me'), K.qu, C('骑','qí'), C('坐','zuò'), C('开车','kāi·chē'), C('走路','zǒu·lù'), C('地铁','dì·tiě'), C('自行车','zì·xíng·chē'),
+  C('学校','xué·xiào'), C('工作','gōng·zuò'), C('附近','fù·jìn'), K.you, C('没有','méi·yǒu'), K.zai, C('那儿','nàr'), C('哪儿','nǎr'), C('左边','zuǒ·bian'), C('右边','yòu·bian'),
+  C('前边','qián·bian'), C('后边','hòu·bian'), C('往左拐','wǎng zuǒ guǎi'), C('往右拐','wǎng yòu guǎi'), C('银行','yín·háng'), C('超市','chāo·shì'), K.ma];
+// a 3×3 street: you in the middle, looking up
+function scene(pk, side, small){
+  const cell = {qian:1, zuo:3, you:5, hou:7}[side];
+  return `<div class="scene${small ? ' sm' : ''}" role="img" aria-label="${esc(PLACES[pk].the)}">${Array.from({length:9}, (_, i) => `<span>${i === 4 ? '<b class="me">tú<br>↑</b>' : i === cell ? PLACES[pk].pic : ''}</span>`).join('')}</div>`;
+}
+const ARROW = {
+  up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V4M6 10l6-6 6 6"/></svg>',
+  zuo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-8a4 4 0 0 0-4-4H5M9 5 5 9l4 4"/></svg>',
+  you:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21v-8a4 4 0 0 1 4-4h8M15 5l4 4-4 4"/></svg>'
+};
+const routePic = (turn, end, pk, small) => `<div class="route${small ? ' sm' : ''}" role="img" aria-label="Ruta"><i>${ARROW.up}</i><i>${ARROW[turn]}</i>${scene(pk, end, true)}</div>`;
+function goS(form, tk, dk){
+  form = form || pick(['yo','yo','q']); tk = tk || pick(Object.keys(TRANS)); dk = dk || pick(Object.keys(DEST5));
+  const t = TRANS[tk], d = DEST5[dk];
+  if (form === 'q') return Object.assign(mkS([K.ni, K.mt, C('怎么','zěn·me'), K.qu, d.c], `¿Cómo vas ${d.es} todos los días?`, '？'), {form});
+  return Object.assign(mkS([K.wo, K.mt, ...t.c, K.qu, d.c], `Todos los días voy ${d.es} ${t.es}.`), {form, pic:picBox(t.pic)});
+}
+function goEx(mode){
+  const ks = Object.keys(TRANS), tk = pick(ks), t = TRANS[tk];
+  if (mode === 'pic') return replyEx('g-go', '¿Cómo va?', {html:picBox(t.pic)}, mkS(t.c, t.es, ''), ks.filter(x => x !== tk).map(x => mkS(TRANS[x].c, TRANS[x].es, '')));
+  if (mode === 'reply'){
+    const dk = pick(Object.keys(DEST5)), d = DEST5[dk], q = goS('q', tk, dk);
+    const wrongs = [...shuffle(ks.filter(x => x !== tk)).slice(0, 2).map(x => goS('yo', x, dk)), mkS([K.wo, K.mt, hc(7), K.qu, d.c], `Todos los días voy ${d.es} a las 7.`)];
+    return replyEx('g-go', 'Responde', bubbleQ('Amigo', q, `<div class="ask">Tú vas así: ${picBox(t.pic)}</div>`), goS('yo', tk, dk), wrongs);
+  }
+  return genEx(mode, 'g-go', D5, goS);
+}
+const ningun = P => P.un.replace(/^una /, 'ninguna ').replace(/^un /, 'ningún ');
+function nearS(form, pk){
+  form = form || pick(['ask','ask','yes','no','dk']); pk = pk || pick(Object.keys(PLACES));
+  const P = PLACES[pk];
+  const s = form === 'ask' ? mkS([K.qw, C('附近','fù·jìn'), K.you, P.c, K.ma], `Disculpe, ¿hay ${P.un} cerca?`, '？')
+    : form === 'yes' ? mkS([C('有，','yǒu'), K.zai, C('那儿','nàr')], 'Sí, está allí.')
+    : form === 'no' ? mkS([C('附近','fù·jìn'), C('没有','méi·yǒu'), P.c], `No hay ${ningun(P)} cerca.`)
+    : mkS([C('对不起，','duì·bu·qǐ'), K.wo, K.bu, C('知道','zhī·dào')], 'Lo siento, no sé.');
+  return Object.assign(s, {form});
+}
+function nearEx(mode){
+  if (mode === 'reply'){
+    const pk = pick(Object.keys(PLACES)), P = PLACES[pk];
+    const lines = {yes:['Hay uno: dile que está allí.', nearS('yes', pk)], no:['No hay ninguno cerca.', nearS('no', pk)], dk:['No lo sabes.', nearS('dk', pk)]};
+    const rk = pick(Object.keys(lines));
+    const trap = mkS([C('附近','fù·jìn'), C('不有','bù yǒu'), P.c], `(incorrecto: la negación de 有 es 没有)`);
+    return replyEx('g-near', 'Responde', bubbleQ('Turista', nearS('ask', pk), `<div class="ask">${lines[rk][0]}</div>`), lines[rk][1], [...Object.keys(lines).filter(k => k !== rk).map(k => lines[k][1]), trap]);
+  }
+  // mc mixes all forms: the yes/no answers do not change with the place
+  if (mode === 'mc'){ const s = nearS(); return chunkEx('mc', s, 'g-near', D5, () => nearS()); }
+  return genEx(mode, 'g-near', D5, nearS);
+}
+function whereS(form, pk, side){
+  form = form || pick(['at','at','ask']); pk = pk || pick(Object.keys(PLACES)); side = side || pick(Object.keys(SIDES));
+  const P = PLACES[pk];
+  if (form === 'ask') return Object.assign(mkS([P.c, K.zai, C('哪儿','nǎr')], `¿Dónde está ${P.the}?`, '？'), {form});
+  return Object.assign(mkS([P.c, K.zai, SIDES[side].c], `${cap(P.the)} está ${SIDES[side].es}.`), {form, pic:scene(pk, side)});
+}
+function whereEx(mode){
+  const pk = pick(Object.keys(PLACES)), side = pick(Object.keys(SIDES));
+  if (mode === 'pic') return chunkEx('build', whereS('at', pk, side), 'g-where', D5, null, scene(pk, side));
+  if (mode === 'listen') return seeEx('g-where', 'Escucha y elige el dibujo', whereS('at', pk, side), Object.keys(SIDES).map(x => ({v:x, html:scene(pk, x, true)})), side);
+  if (mode === 'reply') return replyEx('g-where', 'Responde mirando el dibujo', bubbleQ('Turista', whereS('ask', pk), scene(pk, side)), whereS('at', pk, side),
+    Object.keys(SIDES).filter(x => x !== side).map(x => whereS('at', pk, x)));
+  if (mode === 'ask') return chunkEx('build', whereS('ask', pk), 'g-where', D5);
+  return genEx(mode, 'g-where', D5, () => whereS('at'));
+}
+function routeS(turn, end, pk){
+  turn = turn || pick(['zuo','you']); end = end || pick(['zuo','you','qian']); pk = pk || pick(Object.keys(PLACES));
+  const P = PLACES[pk], T = {zuo:C('往左拐，','wǎng zuǒ guǎi'), you:C('往右拐，','wǎng yòu guǎi')};
+  return Object.assign(mkS([C('往前走，','wǎng qián zǒu'), T[turn], P.c, K.zai, SIDES[end].c],
+    `Sigue recto y dobla ${turn === 'zuo' ? 'a la izquierda' : 'a la derecha'}: ${P.the} está ${SIDES[end].es}.`), {form:'route', pic:routePic(turn, end, pk), turn, end, pk});
+}
+function routeEx(mode){
+  if (mode === 'mc'){
+    const s = routeS(), combos = shuffle(['zuo','you'].flatMap(t => ['zuo','you','qian'].map(e => t + ' ' + e)).filter(x => x !== s.turn + ' ' + s.end)).slice(0, 3);
+    return {...seeEx('g-route', 'Escucha y elige el camino', s, [s.turn + ' ' + s.end, ...combos].map(x => ({v:x, html:routePic(...x.split(' '), s.pk, true)})), s.turn + ' ' + s.end), wide:true};
+  }
+  if (mode === 'pic'){ const s = routeS(); return chunkEx('build', s, 'g-route', D5, null, s.pic); }
+  if (mode === 'ask'){
+    const P = PLACES[pick(Object.keys(PLACES))];
+    return chunkEx('build', mkS([K.qw, P.c, C('怎么','zěn·me'), K.qu], `Disculpe, ¿cómo llego ${aThe(P)}?`, '？'), 'g-route', D5);
+  }
+  return genEx(mode, 'g-route', D5, () => routeS());
+}
+const S5 = (id, chunks, es, q) => S_(id, chunks, es, q, 'e5');
+S5('es1', [K.ni, K.mt, C('怎么','zěn·me'), K.qu, C('工作','gōng·zuò')], '¿Cómo vas al trabajo todos los días?', 1);
+S5('es2', [K.wo, K.mt, C('坐','zuò'), C('地铁','dì·tiě'), K.qu, C('工作','gōng·zuò')], 'Todos los días voy al trabajo en metro.');
+S5('es3', [K.wo, C('骑','qí'), C('自行车','zì·xíng·chē'), K.qu, C('学校','xué·xiào')], 'Voy a la escuela en bicicleta.');
+S5('es4', [K.qw, C('附近','fù·jìn'), K.you, C('超市','chāo·shì'), K.ma], 'Disculpe, ¿hay un supermercado cerca?', 1);
+S5('es5', [C('有，','yǒu'), K.zai, C('那儿','nàr')], 'Sí, está allí.');
+S5('es6', [C('对不起，','duì·bu·qǐ'), K.wo, K.bu, C('知道','zhī·dào')], 'Lo siento, no sé.');
+S5('es7', [C('洗手间','xǐ·shǒu·jiān'), K.zai, C('哪儿','nǎr')], '¿Dónde está el baño?', 1);
+S5('es8', [C('银行','yín·háng'), K.zai, C('左边','zuǒ·bian')], 'El banco está a la izquierda.');
+S5('es9', [C('往前走，','wǎng qián zǒu'), C('往右拐','wǎng yòu guǎi')], 'Sigue recto y dobla a la derecha.');
+S5('es10', [C('地铁站','dì·tiě zhàn'), C('怎么','zěn·me'), K.qu], '¿Cómo se llega a la estación de metro?', 1);
+
+/* ---------- content · Ruta 6: el tiempo ---------- */
+W('ftq','f1','天气','tiān·qì','el tiempo (el clima)','天 cielo + 气 aire.');
+W('fjt','f1','今天','jīn·tiān','hoy','');
+W('fmt','f1','明天','míng·tiān','mañana (el día siguiente)','No lo confundas con 早上, la mañana como parte del día.');
+W('fzt','f1','昨天','zuó·tiān','ayer','');
+W('fhen','f1','很','hěn','muy','Antes de un adjetivo casi siempre va 很: 天气很好. Sin 很 suena a comparación.');
+W('fre','f1','热','rè','caluroso, hace calor','La r china se dice sin vibrar, casi como la «y» de «yo» en Argentina.');
+W('fleng','f1','冷','lěng','frío, hace frío','');
+W('fjttq','f1','今天天气怎么样？','jīn·tiān tiān·qì zěn·me·yàng','¿Qué tiempo hace hoy?','怎么样 lo viste en Compras: ¿qué tal?');
+ITEMS['g-wx1'] = {id:'g-wx1', unit:'f1', kind:'gen', es:'¿qué tiempo hace?'};
+W('fxy','f2','下雨','xià yǔ','llueve','下 = bajar: «baja lluvia».');
+W('fxx','f2','下雪','xià xuě','nieva','xuě: x suave y ü.');
+W('fdu','f2','度','dù','grado (de temperatura)','Número + 度: 二十度 = 20 grados.');
+W('fdsd','f2','多少度？','duō·shao dù','¿a cuántos grados estamos?','多少, como en 多少钱.');
+W('fbrbl','f2','不热不冷','bú rè bù lěng','ni calor ni frío','El primer 不 va antes de un 4.º tono (rè), así que suena bú.');
+W('ftqbh','f2','天气不好','tiān·qì bù hǎo','hace mal tiempo','');
+ITEMS['g-wx'] = {id:'g-wx', unit:'f2', kind:'gen', es:'el tiempo y los grados'};
+W('fyue','f3','月','yuè','mes; luna','Número + 月 = mes: 一月 enero … 十二月 diciembre.');
+W('fyy','f3','一月','yī·yuè','enero','');
+W('fqy','f3','七月','qī·yuè','julio','');
+W('fsey','f3','十二月','shí·èr·yuè','diciembre','12 = 十二: aquí no se usa 两.');
+W('fbj','f3','北京','Běi·jīng','Pekín','北 norte + 京 capital.');
+W('flm','f3','利马','Lì·mǎ','Lima','Se escribe por el sonido: 马 (caballo) se lee mǎ.');
+ITEMS['g-month'] = {id:'g-month', unit:'f3', kind:'gen', es:'los meses'};
+W('fjj','f4','季节','jì·jié','estación del año','');
+W('fct','f4','春天','chūn·tiān','primavera','');
+W('fxt','f4','夏天','xià·tiān','verano','');
+W('fqt','f4','秋天','qiū·tiān','otoño','');
+W('fdt','f4','冬天','dōng·tiān','invierno','');
+W('fwsm','f4','为什么？','wèi·shén·me','¿por qué?','');
+W('fyw','f4','因为','yīn·wèi','porque','');
+ITEMS['g-season'] = {id:'g-season', unit:'f4', kind:'gen', es:'las estaciones'};
+W('fgm','f5','感冒','gǎn·mào','resfriarse; resfrío','我感冒了 = me resfrié. 了 al final indica que algo cambió.');
+W('ftt','f5','头疼','tóu téng','dolor de cabeza','头 cabeza + 疼 doler: 我头疼 = me duele la cabeza.');
+W('fszt','f5','嗓子疼','sǎng·zi téng','dolor de garganta','');
+W('ffs','f5','发烧','fā·shāo','tener fiebre','');
+W('fxix','f5','休息','xiū·xi','descansar','你休息休息吧 = descansa un poco: repetir el verbo lo suaviza.');
+W('fnzml','f5','你怎么了？','nǐ zěn·me le','¿Qué te pasa?','');
+ITEMS['g-sick'] = {id:'g-sick', unit:'f5', kind:'gen', es:'cómo te sientes'};
+
+const DAYS6 = {jt:{c:C('今天','jīn·tiān'), es:'Hoy', lab:'hoy', t:0}, mt:{c:C('明天','míng·tiān'), es:'Mañana', lab:'mañana', t:1}, zt:{c:C('昨天','zuó·tiān'), es:'Ayer', lab:'ayer', t:2}};
+const V6 = {hace:['hace','hará','hizo'], llueve:['llueve','lloverá','llovió'], nieva:['nieva','nevará','nevó']};
+const WXI = {hot:'☀️', mild:'⛅', cold:'☁️', good:'🌤️', rain:'🌧️', snow:'❄️'};
+const D6 = [C('今天','jīn·tiān'), C('明天','míng·tiān'), C('昨天','zuó·tiān'), C('天气','tiān·qì'), C('很热','hěn rè'), C('很冷','hěn lěng'), C('很好','hěn hǎo'), C('不好','bù hǎo'),
+  C('下雨','xià yǔ'), C('下雪','xià xuě'), C('不热不冷','bú rè bù lěng'), C('春天','chūn·tiān'), C('夏天','xià·tiān'), C('秋天','qiū·tiān'), C('冬天','dōng·tiān'),
+  C('因为','yīn·wèi'), K.wo, K.xh, C('头疼','tóu téng'), C('发烧','fā·shāo'), C('感冒','gǎn·mào'), C('了','le')];
+const wxCard = (kind, t, d, small) => `<div class="wx${small ? ' sm' : ''}"><span class="wxi" aria-hidden="true">${WXI[kind]}</span><b>${t}°C</b><small>${d.lab}</small></div>`;
+// f1: 天气很热/很冷/很好 · f2: grados, lluvia y nieve. Temperatures never overlap between kinds.
+function wxS(full, kind, dk){
+  kind = kind || pick(full ? ['hot','mild','cold','rain','snow'] : ['hot','cold','good']);
+  const d = DAYS6[dk || pick(Object.keys(DAYS6))], v = w => V6[w][d.t];
+  const t = {hot:rint(30, 38), mild:rint(16, 24), cold:rint(1, 8), good:rint(20, 26), rain:rint(10, 18), snow:rint(-6, 0)}[kind];
+  const deg = C(numZh(Math.max(t, 1)) + '度，', numPy(Math.max(t, 1)) + ' dù'), TQ = C('天气','tiān·qì');
+  let cs, es, alt;
+  if (!full){
+    const adj = {hot:[C('很热','hěn rè'), 'mucho calor'], cold:[C('很冷','hěn lěng'), 'mucho frío'], good:[C('很好','hěn hǎo'), 'buen tiempo']}[kind];
+    cs = [d.c, TQ, adj[0]]; es = `${d.es} ${v('hace')} ${adj[1]}.`;
+    if (kind !== 'good') alt = [d.c.h + adj[0].h];
+  } else if (kind === 'rain'){ cs = [d.c, C('下雨，','xià yǔ'), TQ, C('不好','bù hǎo')]; es = `${d.es} ${v('llueve')}: ${v('hace')} mal tiempo.`; }
+  else if (kind === 'snow'){ cs = [d.c, C('下雪，','xià xuě'), TQ, C('很冷','hěn lěng')]; es = `${d.es} ${v('nieva')}: ${v('hace')} mucho frío.`; }
+  else if (kind === 'mild'){ cs = [d.c, deg, C('不热不冷','bú rè bù lěng')]; es = `${d.es} ${v('hace')} ${t} grados: no ${v('hace')} ni calor ni frío.`; }
+  else {
+    const hot = kind === 'hot', adj = hot ? C('很热','hěn rè') : C('很冷','hěn lěng');
+    cs = [d.c, deg, TQ, adj]; es = `${d.es} ${v('hace')} ${t} grado${t === 1 ? '' : 's'}: ${v('hace')} mucho ${hot ? 'calor' : 'frío'}.`;
+    alt = [d.c.h + deg.h + adj.h];
+  }
+  return Object.assign(mkS(cs, es, '。', alt), {form:kind, kind, t, d, pic:wxCard(kind, t, d)});
+}
+function wxGen(full, mode){
+  const item = full ? 'g-wx' : 'g-wx1', kinds = full ? ['hot','mild','cold','rain','snow'] : ['hot','cold','good'];
+  const s = wxS(full), dk = Object.keys(DAYS6).find(k => DAYS6[k] === s.d);
+  const others = shuffle(kinds.filter(k => k !== s.kind)).slice(0, 3).map(k => wxS(full, k, dk));
+  if (mode === 'pic') return chunkEx('build', s, item, D6, null, s.pic);
+  if (mode === 'reply') return replyEx(item, 'Responde mirando el pronóstico', bubbleQ('Amiga', mkS([s.d.c, C('天气','tiān·qì'), C('怎么样','zěn·me·yàng')], '', '？'), s.pic), s, others);
+  if (mode === 'listen') return seeEx(item, 'Escucha y elige el pronóstico', s, [s, ...others].map(o => ({v:o.kind, html:wxCard(o.kind, o.t, o.d, true)})), s.kind);
+  if (mode === 'temp'){
+    const t = rint(1, 39), z = numZh(t) + '度';
+    return {t:'digits', item, kind:'Escucha: ¿cuántos grados?', say:z, q:audioBtns(z), hint:'Escribe solo el número. Ej.: 25', answer:String(t), rev:{h:z, p:numPy(t) + ' dù', es:`${t} grados`}};
+  }
+  return chunkEx(mode, s, item, D6, () => wxS(full), s.pic);
+}
+const wx1Ex = m => wxGen(false, m), wxEx = m => wxGen(true, m);
+const MES = ['', 'enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const monthC = n => C(numZh(n) + '月', numPy(n) + '·yuè');
+function monthEx(mode){
+  const n = rint(1, 12), m = monthC(n), rev = {h:m.h, p:m.p, es:MES[n]};
+  if (mode === 'tiles'){
+    const chars = [...m.h].map(c => ({h:c, p:PDIG[c]})), trap = m.h.includes('二') ? '两' : pick(['两','百']);
+    const extra = shuffle(NZH.slice(1).filter(c => !m.h.includes(c))).slice(0, 2).concat(trap).map(c => ({h:c, p:PDIG[c]}));
+    return {t:'tiles', item:'g-month', kind:'Escribe el mes en chino', q:`<div class="qtext">${MES[n]}</div>`, bank:shuffle([...chars, ...extra]), answer:m.h, rev};
+  }
+  if (mode === 'speak') return {t:'speak', item:'g-month', kind:'Dilo en voz alta', q:`<div class="qtext">${MES[n]}</div>`, rev};
+  const near = shuffle([...new Set([n - 1, n + 1, n + 10, n - 10, n + 2].filter(x => x >= 1 && x <= 12 && x !== n))]).slice(0, 3);
+  const options = shuffle([n, ...near]).map(x => ({v:String(x), html:esc(MES[x])}));
+  if (mode === 'listen') return {t:'mc', item:'g-month', kind:'Escucha y elige el mes', say:m.h, q:audioBtns(m.h, true), options, answer:String(n), rev};
+  return {t:'mc', item:'g-month', kind:'¿Qué mes es?', say:m.h, q:`${tzg(m.h)}<div class="pybig">${pyHint(m.p)}</div>`, options, answer:String(n), rev};
+}
+const SEASONS = {chun:{c:C('春天','chūn·tiān'), es:'primavera', el:'la primavera'}, xia:{c:C('夏天','xià·tiān'), es:'verano', el:'el verano'},
+  qiu:{c:C('秋天','qiū·tiān'), es:'otoño', el:'el otoño'}, dong:{c:C('冬天','dōng·tiān'), es:'invierno', el:'el invierno'}};
+// only months that clearly belong to one season (Lima is in the southern hemisphere)
+const SEAS_OF = {bj:{1:'dong',2:'dong',12:'dong',4:'chun',5:'chun',6:'xia',7:'xia',8:'xia',9:'qiu',10:'qiu'}, lm:{1:'xia',2:'xia',4:'qiu',5:'qiu',7:'dong',8:'dong',10:'chun',11:'chun'}};
+const CITY = {bj:{c:C('北京','Běi·jīng'), es:'Pekín'}, lm:{c:C('利马','Lì·mǎ'), es:'Lima'}};
+const REASON = {chun:[[C('不热不冷','bú rè bù lěng')], 'no hace ni calor ni frío'], qiu:[[C('不热不冷','bú rè bù lěng')], 'no hace ni calor ni frío'],
+  xia:[[C('很热','hěn rè')], 'hace mucho calor'], dong:[[C('很冷','hěn lěng')], 'hace mucho frío']};
+function seasonS(form, ck, n){
+  form = form || pick(['is','is','why']);
+  if (form === 'why'){
+    const sk = pick(Object.keys(SEASONS)), S = SEASONS[sk], like = sk === 'chun' || sk === 'qiu' || Math.random() < .5, r = REASON[sk];
+    const cs = [K.wo, ...(like ? [] : [K.bu]), K.xh, C(S.c.h + '，', S.c.p), C('因为','yīn·wèi'), S.c, ...r[0]];
+    return Object.assign(mkS(cs, `${like ? 'Me' : 'No me'} gusta ${S.el} porque ${r[1]}.`), {form});
+  }
+  ck = ck || pick(['bj','lm']); n = n || +pick(Object.keys(SEAS_OF[ck]));
+  const sk = SEAS_OF[ck][n], m = monthC(n);
+  return Object.assign(mkS([CITY[ck].c, m, K.shi, SEASONS[sk].c], `En ${CITY[ck].es}, ${MES[n]} es ${SEASONS[sk].es}.`, '。', [m.h + CITY[ck].c.h + '是' + SEASONS[sk].c.h]), {form, ck, n, sk});
+}
+function seasonEx(mode){
+  if (mode === 'reply'){
+    const s = seasonS('is'), q = mkS([CITY[s.ck].c, monthC(s.n), K.shi, K.sm, C('季节','jì·jié')], '', '？');
+    const wrongs = Object.keys(SEASONS).filter(k => k !== s.sk).map(k => mkS([CITY[s.ck].c, monthC(s.n), K.shi, SEASONS[k].c], `En ${CITY[s.ck].es}, ${MES[s.n]} es ${SEASONS[k].es}.`));
+    return replyEx('g-season', 'Responde', bubbleQ('Amiga', q), s, wrongs);
+  }
+  if (mode === 'why') return genEx('build', 'g-season', D6, () => seasonS('why'));
+  return genEx(mode, 'g-season', D6, seasonS);
+}
+const SYM = {
+  gm:{c:[C('感冒','gǎn·mào'), C('了','le')], es:'Me resfrié.', cue:'Estás resfriado.'},
+  tt:{c:[C('头疼','tóu téng')], es:'Me duele la cabeza.', cue:'Te duele la cabeza.'},
+  szt:{c:[C('嗓子疼','sǎng·zi téng')], es:'Me duele la garganta.', cue:'Te duele la garganta.'},
+  fs:{c:[C('发烧','fā·shāo')], es:'Tengo fiebre.', cue:'Tienes fiebre.'}
+};
+function sickS(form, k){
+  form = form || pick(['one','two']); k = k || pick(Object.keys(SYM));
+  if (form === 'two'){
+    const k2 = pick(Object.keys(SYM).filter(x => x !== k && x !== 'gm')), a = k === 'gm' ? SYM.gm : SYM[k];
+    const first = a.c.map((c, i) => i === a.c.length - 1 ? C(c.h + '，', c.p) : c);
+    // 我感冒了，我头疼 = 我感冒了，头疼
+    return Object.assign(mkS([K.wo, ...first, K.wo, ...SYM[k2].c], `${a.es} ${SYM[k2].es}`, '。', [[K.wo, ...first, ...SYM[k2].c].map(c => c.h).join('')]), {form});
+  }
+  return Object.assign(mkS([K.wo, ...SYM[k].c], SYM[k].es), {form, k});
+}
+function sickEx(mode){
+  if (mode === 'reply'){
+    const k = pick(Object.keys(SYM));
+    return replyEx('g-sick', 'Responde', bubbleQ(pick(['Doctora','Tu jefe','Mamá']), mkS([K.ni, C('怎么','zěn·me'), C('了','le')], '¿Qué te pasa?', '？'), `<div class="ask">${SYM[k].cue}</div>`),
+      sickS('one', k), Object.keys(SYM).filter(x => x !== k).map(x => sickS('one', x)));
+  }
+  return genEx(mode, 'g-sick', D6, sickS);
+}
+const S6 = (id, chunks, es, q, alt) => { S_(id, chunks, es, q, 'f6'); if (alt) ITEMS[id].alt = alt; };
+S6('fs1', [C('今天','jīn·tiān'), C('天气','tiān·qì'), C('怎么样','zěn·me·yàng')], '¿Qué tiempo hace hoy?', 1);
+S6('fs2', [C('今天','jīn·tiān'), C('下雨，','xià yǔ'), C('天气','tiān·qì'), C('不好','bù hǎo')], 'Hoy llueve: hace mal tiempo.');
+S6('fs3', [C('明天','míng·tiān'), C('下雪，','xià xuě'), C('天气','tiān·qì'), C('很冷','hěn lěng')], 'Mañana nevará: hará mucho frío.');
+S6('fs4', [C('今天','jīn·tiān'), C('多少','duō·shao'), C('度','dù')], '¿A cuántos grados estamos hoy?', 1);
+S6('fs5', [C('三十五度，','sān·shí·wǔ dù'), C('天气','tiān·qì'), C('很热','hěn rè')], 'Estamos a 35 grados: hace mucho calor.', 0, ['三十五度很热']);
+S6('fs6', [K.ni, K.xh, K.sm, C('季节','jì·jié')], '¿Qué estación te gusta?', 1);
+S6('fs7', [K.wo, K.xh, C('春天，','chūn·tiān'), C('因为','yīn·wèi'), C('春天','chūn·tiān'), C('不热不冷','bú rè bù lěng')], 'Me gusta la primavera porque no hace ni calor ni frío.');
+S6('fs8', [C('北京','Běi·jīng'), C('一月','yī·yuè'), K.shi, C('冬天','dōng·tiān')], 'En Pekín, enero es invierno.', 0, ['一月北京是冬天']);
+S6('fs9', [K.wo, C('感冒','gǎn·mào'), C('了，','le'), K.wo, C('头疼','tóu téng')], 'Me resfrié. Me duele la cabeza.', 0, ['我感冒了头疼']);
+S6('fs10', [C('昨天','zuó·tiān'), C('天气','tiān·qì'), C('太冷了','tài lěng le')], 'Ayer hizo demasiado frío.');
+
+/* ---------- content · Ruta 7: aficiones ---------- */
+W('hxq','h1','星期','xīng·qī','semana','星期 + número = día: 星期一 lunes … 星期六 sábado.');
+W('hxq1','h1','星期一','xīng·qī·yī','lunes','La semana empieza el lunes: día 1.');
+W('hxq3','h1','星期三','xīng·qī·sān','miércoles','');
+W('hxq5','h1','星期五','xīng·qī·wǔ','viernes','');
+W('hxqt','h1','星期天','xīng·qī·tiān','domingo','El único sin número: 天. Nunca 星期七.');
+W('hxqj','h1','星期几','xīng·qī jǐ','¿qué día (de la semana)?','几 va donde iría el número, como en 几点.');
+W('hjtxqj','h1','今天星期几？','jīn·tiān xīng·qī jǐ','¿Qué día es hoy?','No hace falta 是: 今天星期三。');
+ITEMS['g-week'] = {id:'g-week', unit:'h1', kind:'gen', es:'los días de la semana'};
+W('hwm','h2','我们','wǒ·men','nosotros','们 = plural de personas: 你们, 他们.');
+W('hyq','h2','一起','yì·qǐ','juntos','Va antes del verbo: 我们一起吃午饭.');
+W('hsj','h2','时间','shí·jiān','tiempo (libre)','');
+W('hysj','h2','有时间','yǒu shí·jiān','tener tiempo','No tener tiempo: 没有时间.');
+W('hmang','h2','忙','máng','ocupado','我很忙 = estoy muy ocupado.');
+W('hssm','h2','什么事？','shén·me shì','¿qué pasa?','Lo natural cuando te preguntan si tienes tiempo.');
+W('hhm','h2','好吗？','hǎo ma','¿vale? ¿te parece?','Al final de una propuesta.');
+ITEMS['g-invite'] = {id:'g-invite', unit:'h2', kind:'gen', es:'invitar'};
+W('hyd','h3','运动','yùn·dòng','deporte; hacer ejercicio','');
+W('hdlq','h3','打篮球','dǎ lán·qiú','jugar básquet','打 = golpear: deportes que juegas con la mano.');
+W('htzq','h3','踢足球','tī zú·qiú','jugar fútbol','踢 = patear. Lleva 足 (pie).');
+W('hyy','h3','游泳','yóu·yǒng','nadar','Los dos caracteres llevan 氵 (agua).');
+W('hpb','h3','跑步','pǎo·bù','correr','跑 lleva 足 (pie), como 踢.');
+W('hmxq6','h3','每星期六','měi xīng·qī·liù','todos los sábados','每 + día = cada …: 每天, 每星期六.');
+ITEMS['g-sport'] = {id:'g-sport', unit:'h3', kind:'gen', es:'deportes'};
+W('hkan','h4','看','kàn','ver, mirar; leer','Una mano 手 sobre el ojo 目: mirar a lo lejos.');
+W('hds','h4','电视','diàn·shì','televisión','电 electricidad + 视 ver.');
+W('hxw','h4','新闻','xīn·wén','noticias','新 nuevo + 闻 oír.');
+W('hdy','h4','电影','diàn·yǐng','película','电 + 影 sombra.');
+W('hdsj','h4','电视剧','diàn·shì·jù','serie de televisión','');
+W('hdhp','h4','动画片','dòng·huà·piàn','dibujos animados','动 moverse + 画 dibujo + 片 película.');
+W('hjm','h4','节目','jié·mù','programa (de TV)','你喜欢看什么节目？ = ¿qué programas te gusta ver?');
+ITEMS['g-tv'] = {id:'g-tv', unit:'h4', kind:'gen', es:'la tele'};
+W('hah','h5','爱好','ài·hào','afición','爱 amar + 好 (aquí hào: gustar).');
+W('hsw','h5','上网','shàng·wǎng','conectarse a internet','上 subir + 网 red.');
+W('hcc','h5','常常','cháng·cháng','a menudo','Va antes del verbo: 我常常上网.');
+W('htyy','h5','听音乐','tīng yīn·yuè','escuchar música','听 = oír. Lleva 口.');
+W('hks','h5','看书','kàn shū','leer (libros)','En chino los libros «se ven»: 看书.');
+W('hwyx','h5','玩儿游戏','wánr yóu·xì','jugar videojuegos','玩儿 = jugar, divertirse. La r es de Pekín.');
+W('hlt','h5','聊天','liáo·tiān','chatear, conversar','');
+W('hlx','h5','旅行','lǚ·xíng','viajar','lǚ con ü.');
+ITEMS['g-hobby'] = {id:'g-hobby', unit:'h5', kind:'gen', es:'aficiones'};
+
+const DIAS = ['', 'lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+const dayC = n => C('星期' + (n === 7 ? '天' : NZH[n]), 'xīng·qī·' + (n === 7 ? 'tiān' : NPY[n]));
+const calCard = (n, lab = 'hoy') => `<div class="cal"><small>${lab}</small><b>${DIAS[n]}</b></div>`;
+const D7 = [K.wo, K.ni, C('我们','wǒ·men'), C('一起','yì·qǐ'), K.you, C('时间','shí·jiān'), K.ma, K.hen, C('忙','máng'), C('今天','jīn·tiān'), C('明天','míng·tiān'), K.mt,
+  C('打','dǎ'), C('踢','tī'), C('骑','qí'), C('足球','zú·qiú'), C('篮球','lán·qiú'), C('游泳','yóu·yǒng'), C('跑步','pǎo·bù'), C('看','kàn'), C('听','tīng'), C('玩儿','wánr'),
+  C('电视','diàn·shì'), C('新闻','xīn·wén'), C('音乐','yīn·yuè'), C('游戏','yóu·xì'), C('书','shū'), C('常常','cháng·cháng'), C('上网','shàng·wǎng'), K.xh];
+function weekEx(mode){
+  const n = rint(1, 7), d = dayC(n), rev = {h:d.h, p:d.p, es:DIAS[n]};
+  const numTiles = (extraTrap) => {
+    const num = n === 7 ? '天' : NZH[n], trap = n === 7 ? '七' : n === 2 ? '两' : extraTrap;
+    return [C('星期','xīng·qī'), {h:num, p:n === 7 ? 'tiān' : NPY[n]}, ...shuffle(['一','二','三','四','五','六','天'].filter(c => c !== num && c !== trap)).slice(0, 2).map(c => ({h:c, p:c === '天' ? 'tiān' : NPY[NZH.indexOf(c)]})), {h:trap, p:PDIG[trap]}];
+  };
+  if (mode === 'tiles') return {t:'tiles', item:'g-week', kind:'Escribe el día en chino', q:`<div class="qtext">${DIAS[n]}</div>`, bank:shuffle(numTiles(pick(['七','两']))), answer:d.h, rev};
+  if (mode === 'next'){
+    const t = n === 1 ? 7 : n - 1;   // today is the day before
+    const s = mkS([C('明天','míng·tiān'), C('星期','xīng·qī'), C(n === 7 ? '天' : NZH[n], n === 7 ? 'tiān' : NPY[n])], `Mañana es ${DIAS[n]}.`);
+    const bank = shuffle([...s.chunks, ...numTiles(pick(['七','两'])).slice(2), C('今天','jīn·tiān')]);
+    return {t:'tiles', item:'g-week', kind:'¿Qué día es mañana?', q:`${calCard(t)}<div class="ask">Dilo en chino: <b>mañana es…</b></div>`, bank, answer:answersOf(s), rev:{h:s.h, p:s.p, es:s.es}};
+  }
+  if (mode === 'reply'){
+    const say = n2 => mkS([C('今天','jīn·tiān'), dayC(n2)], `Hoy es ${DIAS[n2]}.`);
+    const near = shuffle([1,2,3,4,5,6,7].filter(x => x !== n)).slice(0, 3);
+    return replyEx('g-week', 'Responde mirando el calendario', bubbleQ('Amigo', mkS([C('今天','jīn·tiān'), C('星期几','xīng·qī jǐ')], '', '？'), calCard(n)), say(n), near.map(say));
+  }
+  if (mode === 'speak') return {t:'speak', item:'g-week', kind:'Dilo en voz alta', q:`<div class="qtext">${DIAS[n]}</div>`, rev};
+  const options = shuffle([n, ...shuffle([1,2,3,4,5,6,7].filter(x => x !== n)).slice(0, 3)]).map(x => ({v:String(x), html:esc(DIAS[x])}));
+  return {t:'mc', item:'g-week', kind:'Escucha y elige el día', say:d.h, q:audioBtns(d.h, true), options, answer:String(n), rev};
+}
+const ACT7 = [{c:[C('吃','chī'), C('午饭','wǔ·fàn')], we:'almorzamos'}, {c:[C('吃','chī'), C('晚饭','wǎn·fàn')], we:'cenamos'},
+  {c:[C('喝','hē'), C('咖啡','kā·fēi')], we:'tomamos un café'}, {c:[C('去','qù'), C('超市','chāo·shì')], we:'vamos al supermercado'}];
+function inviteS(form, n){
+  form = form || pick(['ask','prop','prop']); n = n || rint(1, 7);
+  const d = dayC(n);
+  if (form === 'ask') return Object.assign(mkS([d, K.ni, K.you, C('时间','shí·jiān'), K.ma], `¿Tienes tiempo el ${DIAS[n]}?`, '？'), {form});
+  const a = pick(ACT7), cs = a.c.map((c, i) => i === a.c.length - 1 ? C(c.h + '，', c.p) : c);
+  return Object.assign(mkS([C('我们','wǒ·men'), d, C('一起','yì·qǐ'), ...cs, C('好吗','hǎo ma')], `¿${cap(a.we)} juntos el ${DIAS[n]}?`, '？'), {form});
+}
+function inviteEx(mode){
+  if (mode === 'reply'){
+    const n = rint(1, 7);
+    if (Math.random() < .6){
+      const lines = {yes:['Sí tienes tiempo: pregunta para qué.', mkS([C('有，','yǒu'), C('什么事','shén·me shì')], 'Sí. ¿Qué pasa?', '？')],
+        busy:['Estás muy ocupado.', mkS([C('对不起，','duì·bu·qǐ'), K.wo, K.hen, C('忙','máng')], 'Lo siento, estoy muy ocupado.')],
+        no:['No tienes tiempo.', mkS([C('对不起，','duì·bu·qǐ'), K.wo, C('没有','méi·yǒu'), C('时间','shí·jiān')], 'Lo siento, no tengo tiempo.')]};
+      const rk = pick(Object.keys(lines));
+      // two ways of saying no never appear together
+      const wrongs = Object.keys(lines).filter(k => k !== rk && !(rk !== 'yes' && k !== 'yes')).map(k => lines[k][1])
+        .concat(mkS([C('今天','jīn·tiān'), dayC(n)], `Hoy es ${DIAS[n]}.`), mkS([K.wo, K.yao, C('这个','zhè·ge')], 'Quiero este.'));
+      return replyEx('g-invite', 'Responde', bubbleQ('Amigo', inviteS('ask', n), `<div class="ask">${lines[rk][0]}</div>`), lines[rk][1], wrongs);
+    }
+    const right = mkS([C('好，','hǎo'), C('几点','jǐ diǎn')], 'Vale. ¿A qué hora?', '？');
+    return replyEx('g-invite', 'Responde', bubbleQ('Amiga', inviteS('prop', n), '<div class="ask">Acepta y pregunta a qué hora.</div>'), right,
+      [mkS([C('对不起，','duì·bu·qǐ'), K.wo, K.hen, C('忙','máng')], 'Lo siento, estoy muy ocupado.'), mkS([C('有，','yǒu'), C('什么事','shén·me shì')], 'Sí. ¿Qué pasa?', '？'), mkS([C('今天','jīn·tiān'), dayC(n)], `Hoy es ${DIAS[n]}.`)]);
+  }
+  return genEx(mode, 'g-invite', D7, inviteS);
+}
+const SPORTS7 = {
+  zq:{c:[C('踢','tī'), C('足球','zú·qiú')], yo:'juego fútbol', tu:'juegas fútbol', inf:'jugar fútbol', pic:'⚽'},
+  lq:{c:[C('打','dǎ'), C('篮球','lán·qiú')], yo:'juego básquet', tu:'juegas básquet', inf:'jugar básquet', pic:'🏀'},
+  yy:{c:[C('游泳','yóu·yǒng')], yo:'nado', tu:'nadas', inf:'nadar', pic:'🏊'},
+  pb:{c:[C('跑步','pǎo·bù')], yo:'corro', tu:'corres', inf:'correr', pic:'🏃'},
+  zxc:{c:[C('骑','qí'), C('自行车','zì·xíng·chē')], yo:'monto bicicleta', tu:'montas bicicleta', inf:'montar bicicleta', pic:'🚴'}
+};
+const WHEN7 = [{c:C('每天','měi·tiān'), es:'todos los días'}, {c:C('每天早上','měi·tiān zǎo·shang'), es:'todas las mañanas'}, {c:C('每天晚上','měi·tiān wǎn·shang'), es:'todas las noches'},
+  {c:C('每星期六','měi xīng·qī·liù'), es:'todos los sábados'}, {c:C('每星期天','měi xīng·qī·tiān'), es:'todos los domingos'}];
+function sportS(form, k){
+  form = form || pick(['yo','yo','q','like']); k = k || pick(Object.keys(SPORTS7));
+  const sp = SPORTS7[k], w = pick(WHEN7);
+  const s = form === 'q' ? mkS([K.ni, w.c, ...sp.c, K.ma], `¿${cap(sp.tu)} ${w.es}?`, '？')
+    : form === 'like' ? mkS([K.wo, K.xh, ...sp.c], `Me gusta ${sp.inf}.`)
+    : mkS([K.wo, w.c, ...sp.c], `${cap(sp.yo)} ${w.es}.`);
+  return Object.assign(s, {form, pic:form === 'q' ? '' : picBox(sp.pic)});
+}
+function sportEx(mode){
+  const ks = Object.keys(SPORTS7), k = pick(ks), sp = SPORTS7[k];
+  if (mode === 'pic') return replyEx('g-sport', '¿Qué deporte es?', {html:picBox(sp.pic)}, mkS(sp.c, sp.inf, ''), ks.filter(x => x !== k).map(x => mkS(SPORTS7[x].c, SPORTS7[x].inf, '')));
+  if (mode === 'reply') return replyEx('g-sport', 'Responde', bubbleQ('Compañero', mkS([K.ni, K.xh, K.sm, C('运动','yùn·dòng')], '', '？'), `<div class="ask">Tu deporte: ${picBox(sp.pic)}</div>`),
+    sportS('like', k), [...shuffle(ks.filter(x => x !== k)).slice(0, 2).map(x => sportS('like', x)), mkS([K.wo, K.xh, C('春天','chūn·tiān')], 'Me gusta la primavera.')]);
+  return genEx(mode, 'g-sport', D7, sportS);
+}
+const KAN = C('看','kàn');
+const VO7 = {
+  xw:{c:[KAN, C('新闻','xīn·wén')], inf:'ver las noticias', yo:'veo las noticias', tv:1, net:1},
+  dy:{c:[KAN, C('电影','diàn·yǐng')], inf:'ver películas', yo:'veo películas', tv:1, net:1},
+  dsj:{c:[KAN, C('电视剧','diàn·shì·jù')], inf:'ver series', yo:'veo series', tv:1, net:1},
+  dhp:{c:[KAN, C('动画片','dòng·huà·piàn')], inf:'ver dibujos animados', yo:'veo dibujos animados', tv:1},
+  ds:{c:[KAN, C('电视','diàn·shì')], inf:'ver televisión', yo:'veo televisión', tv:1},
+  yy:{c:[C('听','tīng'), C('音乐','yīn·yuè')], inf:'escuchar música', yo:'escucho música', net:1, hb:1, pic:'🎵'},
+  ks:{c:[KAN, C('书','shū')], inf:'leer', yo:'leo', hb:1, pic:'📚'},
+  yx:{c:[C('玩儿','wánr'), C('游戏','yóu·xì')], inf:'jugar videojuegos', yo:'juego videojuegos', net:1, hb:1, pic:'🎮'},
+  lt:{c:[C('聊天','liáo·tiān')], inf:'chatear', yo:'chateo', net:1, hb:1, pic:'💬'},
+  lx:{c:[C('旅行','lǚ·xíng')], inf:'viajar', yo:'viajo', hb:1, pic:'✈️'}
+};
+const voOf = f => Object.keys(VO7).filter(k => VO7[k][f]);
+function likeS(set, form, k){
+  const ks = voOf(set);
+  k = k || pick(ks); const v = VO7[k];
+  const forms = set === 'tv' ? ['like','night'] : ['like','hobby'].concat(v.net ? ['net'] : []);
+  form = forms.includes(form) ? form : pick(forms);
+  const s = form === 'night' ? mkS([K.wo, C('每天晚上','měi·tiān wǎn·shang'), ...v.c], `Todas las noches ${v.yo}.`)
+    : form === 'hobby' ? mkS([C('我的','wǒ de'), C('爱好','ài·hào'), K.shi, ...v.c], `Mi afición es ${v.inf}.`)
+    : form === 'net' ? mkS([K.wo, C('常常','cháng·cháng'), C('上网','shàng·wǎng'), ...v.c], `A menudo ${v.yo} por internet.`)
+    : mkS([K.wo, K.xh, ...v.c], `Me gusta ${v.inf}.`);
+  return Object.assign(s, {form, pic:set === 'hb' && v.pic ? picBox(v.pic) : ''});
+}
+function tvEx(mode){
+  if (mode === 'reply'){
+    const k = pick(voOf('tv'));
+    const wrongs = [sportS('like', 'yy'), sportS('like', 'zq'), mkS([K.wo, K.xh, C('春天','chūn·tiān')], 'Me gusta la primavera.'), mkS([K.wo, K.xh, colSe('hong')], 'Me gusta el rojo.')];
+    return replyEx('g-tv', 'Responde con un programa de tele', bubbleQ('Amiga', mkS([K.ni, K.xh, KAN, K.sm, C('节目','jié·mù')], '', '？')), likeS('tv', 'like', k), wrongs);
+  }
+  return genEx(mode, 'g-tv', D7, f => likeS('tv', f));
+}
+function hobbyEx(mode){
+  const ks = voOf('hb'), k = pick(ks), v = VO7[k];
+  if (mode === 'pic') return replyEx('g-hobby', '¿Qué afición es?', {html:picBox(v.pic)}, mkS(v.c, v.inf, ''), ks.filter(x => x !== k).map(x => mkS(VO7[x].c, VO7[x].inf, '')));
+  if (mode === 'reply') return replyEx('g-hobby', 'Responde', bubbleQ('Compañera', mkS([C('你的','nǐ de'), C('爱好','ài·hào'), K.shi, K.sm], '', '？'), `<div class="ask">Tu afición: ${picBox(v.pic)}</div>`),
+    likeS('hb', 'hobby', k), ks.filter(x => x !== k).map(x => likeS('hb', 'hobby', x)));
+  return genEx(mode, 'g-hobby', D7, f => likeS('hb', f));
+}
+const S7 = (id, chunks, es, q) => S_(id, chunks, es, q, 'h6');
+S7('hs1', [C('今天','jīn·tiān'), C('星期几','xīng·qī jǐ')], '¿Qué día es hoy?', 1);
+S7('hs2', [C('今天','jīn·tiān'), dayC(4)], 'Hoy es jueves.');
+S7('hs3', [dayC(6), K.ni, K.you, C('时间','shí·jiān'), K.ma], '¿Tienes tiempo el sábado?', 1);
+S7('hs4', [C('有，','yǒu'), C('什么事','shén·me shì')], 'Sí. ¿Qué pasa?', 1);
+S7('hs5', [C('我们','wǒ·men'), C('一起','yì·qǐ'), C('吃','chī'), C('午饭，','wǔ·fàn'), C('好吗','hǎo ma')], '¿Almorzamos juntos?', 1);
+S7('hs6', [C('对不起，','duì·bu·qǐ'), K.wo, K.hen, C('忙','máng')], 'Lo siento, estoy muy ocupado.');
+S7('hs7', [K.ni, K.mt, C('跑步','pǎo·bù'), K.ma], '¿Corres todos los días?', 1);
+S7('hs8', [K.wo, C('每天早上','měi·tiān zǎo·shang'), C('跑步','pǎo·bù')], 'Corro todas las mañanas.');
+S7('hs9', [K.wo, C('每天晚上','měi·tiān wǎn·shang'), KAN, C('新闻','xīn·wén')], 'Todas las noches veo las noticias.');
+S7('hs10', [C('你的','nǐ de'), C('爱好','ài·hào'), K.shi, K.sm], '¿Cuál es tu afición?', 1);
+
+/* ---------- units, dialogues and exams for rutas 4–7 ---------- */
+const rule = (kind, title, rows, tip, formula) => ({type:'rule', kind, title, rows, tip, formula});
+UNITS.push(
+  {id:'d1', mod:'m4', key:'色', title:'Colores', zh:'红色 黄色 蓝色 绿色', ref:'¿Qué color te gusta?', items:['dys','dhong','dhuang','dlan','dlv','dbai','dhei','dzi','dnxys','g-color'],
+   intro:[rule('La regla', 'Color + 色 o color + 的', [['红色','rojo (el color)'], ['我喜欢红色。','Me gusta el rojo.'], ['我要红的。','Quiero el rojo (el de color rojo).']], 'Con 的 hablas de una cosa de ese color: 黑的 = el negro, la negra.')]},
+  {id:'d2', mod:'m4', key:'件', title:'Este, ese y la talla', zh:'这件太大了', ref:'这个, 那个 y 件 para la ropa', items:['dzg','dng','djian','dda','dxiao','dtdl','dzmy','g-size'],
+   intro:[rule('La regla', '这 / 那 + palabra de medida', [['这个','este (cualquier cosa)'], ['这件','esta (prenda de ropa)'], ['这件太大了。','Esta es demasiado grande.'], ['那个怎么样？','¿Qué tal ese?']], 'Para tazas, bolsos y casi todo: 个. Para ropa: 件 (con 个 también te entienden).')]},
+  {id:'d3', mod:'m4', key:'钱', title:'¿Cuánto cuesta?', zh:'多少钱？ 两块', ref:'Precios en 块', items:['dqian','ddsh','dkuai','ddsq','dbai3','dlk','g-price'],
+   intro:[rule('La regla', 'Número + 块', [['一块','¥1'], ['两块','¥2: 两, no 二'], ['十二块','¥12'], ['一百六十块','¥160'], ['七块五','¥7.50']], 'La cosa va primero: 咖啡多少钱？ → 咖啡十块。')]},
+  {id:'d4', mod:'m4', key:'贵', title:'¡Demasiado caro!', zh:'太贵了！便宜一点儿', ref:'Regatear en el mercado', items:['dgui','dpy','dydr','dtgl','dpyhm','dbg','ddbq','dhd','g-shop'],
+   intro:[rule('En el mercado', 'Regatear en cuatro frases', [['太贵了！','¡Es demasiado caro!'], ['便宜一点儿，好吗？','¿Me lo deja un poco más barato?'], ['不贵，不贵。','No es caro (dice el vendedor).'], ['好的，我要这个。','De acuerdo, me llevo este.']], 'En los mercados chinos regatear es normal; en las tiendas con precio fijo, no.')]},
+  {id:'d5', mod:'m4', key:'买', title:'De compras', zh:'这个多少钱？', ref:'Frases completas para comprar', models:['ds5','ds7'], items:['ds1','ds2','ds3','ds4','ds5','ds6','ds7','ds8','ds9','ds10'],
+   intro:[rule('Repaso', 'Todo lo que dices en una tienda', [['你喜欢什么颜色？','el color'], ['这件太小了。','la talla'], ['这个多少钱？','el precio'], ['太贵了，便宜一点儿，好吗？','regatear'], ['好的，我要这个。','comprar']], 'Practicas las dos partes: lo que te dicen y lo que respondes.')]},
+  {id:'e1', mod:'m5', key:'车', title:'¿Cómo vas?', zh:'坐地铁 骑自行车', ref:'Transporte: 坐, 骑, 开车 y 走路', items:['ezm','emt','ezl','eqi','ezxc','ezuo','edt','egjqc','ekc','edx','g-go'],
+   intro:[rule('La regla', 'Quién · cuándo · cómo · a dónde', [['骑自行车','bicicleta: 骑, vas montado'], ['坐地铁 · 坐公共汽车','metro, bus: 坐, vas sentado'], ['开车','carro: 开 = manejar'], ['走路','a pie']], 'El medio va antes de 去: 我每天<b>坐地铁</b>去工作。', [['quién','我'], ['cuándo','每天'], ['cómo','坐地铁'], ['a dónde','去工作']])]},
+  {id:'e2', mod:'m5', key:'店', title:'¿Hay … cerca?', zh:'附近有超市吗？', ref:'Lugares, 有 y 没有', items:['efj','eyou','emy','ecs','esd','eyh','exsj','edtz','ezne','ebzd','g-near'],
+   intro:[rule('La regla', '有 = hay · 没有 = no hay', [['附近有银行吗？','¿Hay un banco cerca?'], ['有，在那儿。','Sí, está allí.'], ['附近没有银行。','No hay ningún banco cerca.'], ['对不起，我不知道。','Lo siento, no sé.']], 'La negación de 有 es siempre 没有. 不有 no existe.')]},
+  {id:'e3', mod:'m5', key:'左', title:'¿Dónde está?', zh:'银行在左边。', ref:'在 y los lados: 左边, 右边…', items:['ezai','ezb','eyb','eqb','ehb','esb','exb','ezn','g-where'],
+   intro:[rule('La regla', 'Cosa + 在 + lugar', [['银行在左边。','El banco está a la izquierda.'], ['洗手间在哪儿？','¿Dónde está el baño? (nǎr, 3.er tono)'], ['在那儿。','Está allí. (nàr, 4.º tono)']], 'Al revés que con 有: 附近<b>有</b>银行 (hay un banco cerca) · 银行<b>在</b>附近 (el banco está cerca).')]},
+  {id:'e4', mod:'m5', key:'拐', title:'¿Cómo llego?', zh:'往前走，往右拐', ref:'Dar y entender direcciones', items:['ewang','ezou','eguai','ewqz','ewzg','ewyg','ezmq','emgx','ebkq','g-route'],
+   intro:[rule('La regla', '往 + dirección + verbo', [['往前走','sigue recto'], ['往左拐','dobla a la izquierda'], ['往右拐','dobla a la derecha'], ['地铁站怎么去？','¿Cómo se llega a la estación de metro?']], 'Para agradecer: 谢谢！ → 不客气。 Para disculparte: 对不起！ → 没关系。')]},
+  {id:'e5', mod:'m5', key:'城', title:'En la ciudad', zh:'洗手间在哪儿？', ref:'Frases completas para moverte', models:['es2','es4'], items:['es1','es2','es3','es4','es5','es6','es7','es8','es9','es10'],
+   intro:[rule('Repaso', 'Cuatro preguntas para la calle', [['你每天怎么去工作？','cómo vas'], ['附近有超市吗？','qué hay cerca'], ['洗手间在哪儿？','dónde está'], ['地铁站怎么去？','cómo llegar']], 'Si no sabes la respuesta: 对不起，我不知道。')]},
+  {id:'f1', mod:'m6', key:'天', title:'¿Qué tiempo hace?', zh:'今天天气怎么样？', ref:'Hoy, mañana, ayer y 很', items:['ftq','fjt','fmt','fzt','fhen','fre','fleng','fjttq','g-wx1'],
+   intro:[rule('La regla', 'Cuándo · 天气 · 很 + adjetivo', [['今天天气很好。','Hoy hace buen tiempo.'], ['明天天气很冷。','Mañana hará mucho frío.'], ['昨天天气很热。','Ayer hizo mucho calor.']], 'El verbo no cambia con el tiempo: hoy, mañana o ayer, todo lo dice 今天, 明天, 昨天.')]},
+  {id:'f2', mod:'m6', key:'雨', title:'Lluvia, nieve y grados', zh:'下雨 下雪 三十度', ref:'下雨, 下雪 y 度', items:['fxy','fxx','fdu','fdsd','fbrbl','ftqbh','g-wx'],
+   intro:[rule('La regla', 'El cielo «baja» lluvia y nieve', [['下雨','llueve'], ['下雪','nieva'], ['三十五度','35 grados'], ['不热不冷','ni calor ni frío']], 'Para la temperatura: número + 度. 今天多少度？ → 二十度。')]},
+  {id:'f3', mod:'m6', key:'月', title:'Los meses', zh:'一月 七月 十二月', ref:'Número + 月', items:['fyue','fyy','fqy','fsey','fbj','flm','g-month'],
+   intro:[rule('La regla', 'Número + 月 = mes', [['一月','enero'], ['二月','febrero: 二, no 两'], ['十二月','diciembre']], 'Los doce meses salen solos si sabes contar hasta 12.')]},
+  {id:'f4', mod:'m6', key:'春', title:'Las estaciones', zh:'春天 夏天 秋天 冬天', ref:'¿Por qué? Porque…', items:['fjj','fct','fxt','fqt','fdt','fwsm','fyw','g-season'],
+   intro:[rule('Ojo con el hemisferio', 'En Lima, enero es verano', [['北京一月是冬天。','En Pekín, enero es invierno.'], ['利马一月是夏天。','En Lima, enero es verano.'], ['我喜欢春天，因为春天不热不冷。','Me gusta la primavera porque no hace ni calor ni frío.']], 'Lima está en el hemisferio sur: sus estaciones van al revés que en China.')]},
+  {id:'f5', mod:'m6', key:'冒', title:'Me resfrié', zh:'我感冒了。我头疼。', ref:'Decir cómo te sientes', items:['fgm','ftt','fszt','ffs','fxix','fnzml','g-sick'],
+   intro:[rule('La regla', 'Yo + lo que me duele', [['我感冒了。','Me resfrié.'], ['我头疼。','Me duele la cabeza.'], ['我发烧。','Tengo fiebre.'], ['你休息休息吧。','Descansa un poco.']], '了 al final indica un cambio: antes estabas bien; ahora, resfriado.')]},
+  {id:'f6', mod:'m6', key:'气', title:'Hablar del tiempo', zh:'明天下雪，天气很冷。', ref:'Frases completas sobre el clima', models:['fs2','fs7'], items:['fs1','fs2','fs3','fs4','fs5','fs6','fs7','fs8','fs9','fs10'],
+   intro:[rule('Repaso', 'Tres preguntas del tiempo', [['今天天气怎么样？','qué tiempo hace'], ['今天多少度？','cuántos grados'], ['你喜欢什么季节？','qué estación te gusta']], 'Responde con detalles: el tiempo, los grados y por qué.')]},
+  {id:'h1', mod:'m7', key:'期', title:'¿Qué día es hoy?', zh:'今天星期几？', ref:'星期 + número', items:['hxq','hxq1','hxq3','hxq5','hxqt','hxqj','hjtxqj','g-week'],
+   intro:[rule('La regla', '星期 + número = día', [['星期一','lunes (día 1)'], ['星期三','miércoles (día 3)'], ['星期六','sábado (día 6)'], ['星期天','domingo: 天, nunca 七']], 'Para preguntar, 几 va donde iría el número: 今天星期几？')]},
+  {id:'h2', mod:'m7', key:'约', title:'¿Tienes tiempo?', zh:'我们一起吃午饭，好吗？', ref:'Invitar, aceptar y decir que no', items:['hwm','hyq','hsj','hysj','hmang','hssm','hhm','g-invite'],
+   intro:[rule('La regla', 'Proponer con 一起 … 好吗？', [['星期六你有时间吗？','¿Tienes tiempo el sábado?'], ['有，什么事？','Sí. ¿Qué pasa?'], ['我们一起吃午饭，好吗？','¿Almorzamos juntos?'], ['对不起，我很忙。','Lo siento, estoy muy ocupado.']], 'El día puede ir antes o después de quien habla: 星期六你… o 你星期六…')]},
+  {id:'h3', mod:'m7', key:'球', title:'Deportes', zh:'踢足球 打篮球 游泳', ref:'Cada deporte con su verbo', items:['hyd','hdlq','htzq','hyy','hpb','hmxq6','g-sport'],
+   intro:[rule('La regla', 'Cada deporte tiene su verbo', [['踢足球','fútbol: 踢, patear'], ['打篮球','básquet: 打, golpear con la mano'], ['骑自行车','bicicleta: 骑, montar'], ['游泳 · 跑步','nadar, correr: ya son verbos']], 'Con la frecuencia antes: 我每天早上跑步。')]},
+  {id:'h4', mod:'m7', key:'视', title:'La tele', zh:'看电视 看新闻', ref:'看 + lo que ves', items:['hkan','hds','hxw','hdy','hdsj','hdhp','hjm','g-tv'],
+   intro:[rule('La regla', '看 sirve para todo lo que ves', [['看电视','ver televisión'], ['看新闻','ver las noticias'], ['看电影','ver películas'], ['看书','leer: los libros «se ven»']], '你喜欢看什么节目？ = ¿Qué programas te gusta ver?')]},
+  {id:'h5', mod:'m7', key:'网', title:'Internet y aficiones', zh:'我常常上网听音乐。', ref:'听, 玩儿 y 爱好', items:['hah','hsw','hcc','htyy','hks','hwyx','hlt','hlx','g-hobby'],
+   intro:[rule('La regla', 'Cada actividad con su verbo', [['听音乐','escuchar música: 听, oír'], ['玩儿游戏','jugar videojuegos: 玩儿'], ['我常常上网看新闻。','A menudo veo las noticias por internet.'], ['我的爱好是旅行。','Mi afición es viajar.']], '常常 va antes del verbo, igual que 每天.')]},
+  {id:'h6', mod:'m7', key:'好', title:'Mis aficiones', zh:'你的爱好是什么？', ref:'Frases completas sobre tu tiempo libre', models:['hs3','hs8'], items:['hs1','hs2','hs3','hs4','hs5','hs6','hs7','hs8','hs9','hs10'],
+   intro:[rule('Repaso', 'Para hacer planes con alguien', [['今天星期几？','el día'], ['星期六你有时间吗？','si tiene tiempo'], ['你每天跑步吗？','qué deporte hace'], ['你的爱好是什么？','su afición']], 'Practicas las dos partes: preguntar y responder.')]}
+);
+const DIALOGS4 = [
+  {where:'Tienda de ropa', who:'Vendedora', turns:[
+    {say:'你喜欢这件吗？', p:'nǐ xǐ·huan zhè jiàn ma', you:'Esta no me gusta: es demasiado pequeña.', ans:[K.wo, K.bu, K.xh, C('这件，','zhè jiàn'), C('太小了','tài xiǎo le')]},
+    {say:'那件怎么样？', p:'nà jiàn zěn·me·yàng', you:'Quiero esa. ¿Cuánto cuesta?', ans:[K.wo, K.yao, C('那件。','nà jiàn'), C('多少钱','duō·shao qián')]},
+    {say:'一百二十块。', p:'yì·bǎi èr·shí kuài', listen:['¥120', '¥102', '¥20', '¥12'], es:'120 yuanes.', ask:'¿Cuánto cuesta?'}]},
+  {where:'Mercado', who:'Vendedor', turns:[
+    {say:'你要什么？', p:'nǐ yào shén·me', you:'Disculpe, ¿cuánto cuestan los plátanos?', ans:[K.qw, C('香蕉','xiāng·jiāo'), C('多少钱','duō·shao qián')]},
+    {say:'香蕉四块。', p:'xiāng·jiāo sì kuài', you:'¡Es demasiado caro! ¿Me los deja un poco más barato?', ans:[C('太贵了，','tài guì le'), C('便宜','pián·yi'), C('一点儿，','yì·diǎnr'), C('好吗','hǎo ma')]},
+    {say:'好，三块。', p:'hǎo, sān kuài', listen:['¥3', '¥4', '¥30', '¥13'], es:'Bueno, 3 yuanes.', ask:'¿En cuánto te los deja?'}]}
+];
+const DIALOGS5 = [
+  {where:'En la calle', who:'Turista', turns:[
+    {say:'请问，附近有地铁站吗？', p:'qǐng·wèn, fù·jìn yǒu dì·tiě zhàn ma', you:'Sí. Sigue recto y dobla a la derecha.', ans:[C('有。','yǒu'), C('往前走，','wǎng qián zǒu'), C('往右拐','wǎng yòu guǎi')]},
+    {say:'谢谢！', p:'xiè·xie', you:'De nada.', ans:[C('不客气','bú kè·qi')]}]},
+  {where:'Camino al trabajo', who:'Amigo', turns:[
+    {say:'你每天怎么去工作？', p:'nǐ měi·tiān zěn·me qù gōng·zuò', you:'Todos los días voy en metro.', ans:[K.wo, K.mt, C('坐','zuò'), C('地铁','dì·tiě'), K.qu, C('工作','gōng·zuò')]},
+    {say:'我骑自行车去工作。', p:'wǒ qí zì·xíng·chē qù gōng·zuò', listen:['En bicicleta', 'En metro', 'En autobús', 'A pie'], es:'Voy al trabajo en bicicleta.', ask:'¿Cómo va tu amigo al trabajo?'}]}
+];
+const DIALOGS6 = [
+  {where:'Llamada desde Pekín', who:'Amiga', turns:[
+    {say:'利马今天天气怎么样？', p:'Lì·mǎ jīn·tiān tiān·qì zěn·me·yàng', you:'Hoy hace 25 grados: ni calor ni frío.', ans:[C('今天','jīn·tiān'), C('二十五度，','èr·shí·wǔ dù'), C('不热不冷','bú rè bù lěng')]},
+    {say:'北京今天下雪，天气很冷。', p:'Běi·jīng jīn·tiān xià xuě, tiān·qì hěn lěng', listen:['Nieva y hace mucho frío', 'Llueve y hace mal tiempo', 'Hace mucho calor', 'Ni calor ni frío'], es:'En Pekín hoy nieva y hace mucho frío.', ask:'¿Qué tiempo hace en Pekín?'}]},
+  {where:'Llamada a tu jefe', who:'Jefe', turns:[
+    {say:'你怎么了？', p:'nǐ zěn·me le', you:'Me resfrié. Me duele la cabeza.', ans:[K.wo, C('感冒','gǎn·mào'), C('了，','le'), K.wo, C('头疼','tóu téng')]},
+    {say:'你休息休息吧。', p:'nǐ xiū·xi xiū·xi ba', listen:['Que descanses un poco', 'Que vayas a trabajar', 'Que tomes un té', 'Que vayas al banco'], es:'Descansa un poco.', ask:'¿Qué te dice tu jefe?'}]}
+];
+const DIALOGS7 = [
+  {where:'Invitación', who:'Amigo', turns:[
+    {say:'星期六你有时间吗？', p:'xīng·qī·liù nǐ yǒu shí·jiān ma', you:'Sí. ¿Qué pasa?', ans:[C('有，','yǒu'), C('什么事','shén·me shì')]},
+    {say:'我们一起看电影，好吗？', p:'wǒ·men yì·qǐ kàn diàn·yǐng, hǎo ma', you:'Vale. ¿A qué hora?', ans:[C('好，','hǎo'), C('几点','jǐ diǎn')]},
+    {say:'晚上七点。', p:'wǎn·shang qī diǎn', listen:['A las 7 de la noche', 'A las 7 de la mañana', 'A las 2 de la tarde', 'El domingo'], es:'A las 7 de la noche.', ask:'¿A qué hora quedan?'}]},
+  {where:'Aficiones', who:'Compañera', turns:[
+    {say:'你的爱好是什么？', p:'nǐ de ài·hào shì shén·me', you:'Mi afición es nadar.', ans:[C('我的','wǒ de'), C('爱好','ài·hào'), K.shi, C('游泳','yóu·yǒng')]},
+    {say:'我喜欢踢足球。我每星期六踢足球。', p:'wǒ xǐ·huan tī zú·qiú. wǒ měi xīng·qī·liù tī zú·qiú', listen:['Fútbol', 'Básquet', 'Natación', 'Correr'], es:'Me gusta jugar fútbol. Juego fútbol todos los sábados.', ask:'¿Qué deporte le gusta?'}]}
+];
+// any route: sentences, two exercises per generator and a few words to type
+function examPlanR(modId){
+  LV = 1;
+  const M = MODULES[modId], all = UNITS.filter(u => u.mod === modId).flatMap(u => u.items), ex = [];
+  shuffle(all.filter(id => ITEMS[id].kind === 'sent')).slice(0, 6).forEach(id => ex.push(exFor(id, 'build')));
+  all.filter(id => ITEMS[id].kind === 'gen').forEach(id => shuffle([...new Set(GEN_MODES[id])]).slice(0, 2).forEach(m => ex.push(exFor(id, m))));
+  shuffle(all.filter(id => ITEMS[id].kind === 'word')).slice(0, 6).forEach(id => ex.push(exFor(id, pick(['type','hanzi','listen']))));
+  return {title:'Examen: ' + M.tab.toLowerCase(), exam:true, examKey:M.examKey, cards:[], ex:shuffle(ex)};
+}
+const mix = (fn, spec) => spec.flatMap(([m, n]) => times(n, () => fn(m)));
+
 const MODULES = {
   m1:{n:1, tab:'Preséntate', zh:'你叫什么名字？', p:'nǐ jiào shén·me míng·zi?', es:'¿Cómo te llamas? Saludos, tonos, de dónde eres, qué estudias y tu familia.', examKey:'examBest1'},
   m2:{n:2, tab:'La hora', zh:'你几点起床？', p:'nǐ jǐ diǎn qǐ·chuáng?', es:'¿A qué hora te levantas? Números, la hora, las partes del día y tu rutina.', examKey:'examBest'},
-  m3:{n:3, tab:'Comida', zh:'你喜欢吃什么？', p:'nǐ xǐ·huan chī shén·me?', es:'¿Qué te gusta comer? Platos, frutas, carnes, verduras y bebidas.', examKey:'examBest3'}
+  m3:{n:3, tab:'Comida', zh:'你喜欢吃什么？', p:'nǐ xǐ·huan chī shén·me?', es:'¿Qué te gusta comer? Platos, frutas, carnes, verduras y bebidas.', examKey:'examBest3'},
+  m4:{n:4, tab:'Compras', zh:'这个多少钱？', p:'zhè·ge duō·shao qián?', es:'¿Cuánto cuesta esto? Colores, tallas, precios y regatear.', examKey:'examBest4', dialogs:DIALOGS4, dlgItem:'g-shop', pool:D4, dlgSub:'Tienda de ropa y mercado'},
+  m5:{n:5, tab:'Ciudad', zh:'地铁站怎么去？', p:'dì·tiě zhàn zěn·me qù?', es:'¿Cómo llego al metro? Transporte, lugares y direcciones.', examKey:'examBest5', dialogs:DIALOGS5, dlgItem:'g-route', pool:D5, dlgSub:'Pedir y dar direcciones'},
+  m6:{n:6, tab:'Clima', zh:'今天天气怎么样？', p:'jīn·tiān tiān·qì zěn·me·yàng?', es:'¿Qué tiempo hace hoy? El clima, los meses, las estaciones y cómo te sientes.', examKey:'examBest6', dialogs:DIALOGS6, dlgItem:'g-wx', pool:D6, dlgSub:'Llamadas sobre el clima y la salud'},
+  m7:{n:7, tab:'Aficiones', zh:'你的爱好是什么？', p:'nǐ de ài·hào shì shén·me?', es:'¿Cuál es tu afición? Días, planes, deportes, la tele e internet.', examKey:'examBest7', dialogs:DIALOGS7, dlgItem:'g-invite', pool:D7, dlgSub:'Invitar y hablar de aficiones'}
 };
 
 // four everyday situations
 const DIALOGS = [
   {where:'Puesto de comida', who:'Vendedor', turns:[
-    {say:'你吃什么？', p:'nǐ chī shén·me', you:'Voy a comer baozi.', ans:[k3.wo, k3.chi, k3c('bz')]},
+    {say:'你吃什么？', p:'nǐ chī shén·me', you:'Voy a comer bollos al vapor.', ans:[k3.wo, k3.chi, k3c('bz')]},
     {say:'你喝什么？', p:'nǐ hē shén·me', you:'Tomo agua.', ans:[k3.wo, k3.he, k3c('sh')]}]},
   {where:'En casa de un amigo', who:'Amigo', turns:[
     {say:'你喜欢香蕉吗？', p:'nǐ xǐ·huan xiāng·jiāo ma', you:'Sí, me gustan los plátanos.', ans:[C('喜欢，','xǐ·huan'), k3.wo, k3.xh, k3c('xj')]},
@@ -762,18 +1590,19 @@ const DIALOGS = [
     {say:'你喝咖啡吗？', p:'nǐ hē kā·fēi ma', you:'No, gracias. Tomo té. ¿Tú qué tomas?', ans:[C('不，','bù'), C('谢谢。','xiè·xie'), k3.wo, k3.he, C('茶。','chá'), k3.ni, k3.he, k3.sm]},
     {say:'我喝可乐。', p:'wǒ hē kě·lè', listen:['Coca-Cola', 'Café', 'Té', 'Agua'], es:'Tomo Coca-Cola.', ask:'¿Qué va a tomar tu amiga?'}]}
 ];
-function dialogPlan(){
+function dialogPlan(list = DIALOGS, item = 'g-food', pool = DISTRACT3){
   LV = 1;
   const ex = [];
-  DIALOGS.forEach(d => d.turns.forEach((t, k) => {
+  list.forEach(d => d.turns.forEach((t, k) => {
     const head = `<div class="kind">${esc(d.where)} · ${k + 1}/${d.turns.length}</div><div class="bubble"><span class="who">${esc(d.who)}</span><span class="han">${esc(t.say)}</span><span>${pyHTML(t.p)}</span></div>${audioBtns(t.say)}`;
     if (t.listen){
-      ex.push({t:'mc', item:'g-food', kind:'Diálogo', say:t.say, q:head + `<div class="ask">${esc(t.ask)}</div>`, options:t.listen.map(o => ({v:o, html:esc(o)})), answer:t.listen[0], rev:{h:t.say, p:t.p, es:t.es}});
+      ex.push({t:'mc', item, kind:'Diálogo', say:t.say, q:head + `<div class="ask">${esc(t.ask)}</div>`, options:shuffle(t.listen.map(o => ({v:o, html:esc(o)}))), answer:t.listen[0], rev:{h:t.say, p:t.p, es:t.es}});
       return;
     }
     const h = t.ans.map(c => c.h).join('');
-    ex.push({t:'tiles', item:'g-food', kind:'Diálogo', say:t.say, q:head + `<div class="ask">Responde: <b>${esc(t.you)}</b></div>`, bank:tilesFrom(t.ans, 2), answer:h,
-      rev:{h:h + (t.you.endsWith('?') ? '？' : '。'), p:t.ans.map(c => c.p).join(' '), es:t.you}});
+    const extra = shuffle(uniqBy(pool, d => noPunct(d.h)).filter(d => !t.ans.some(c => noPunct(c.h) === noPunct(d.h)))).slice(0, 2);
+    ex.push({t:'tiles', item, kind:'Diálogo', say:t.say, q:head + `<div class="ask">Responde: <b>${esc(t.you)}</b></div>`, bank:shuffle([...t.ans, ...extra]), answer:expandAns(orders(t.ans)),
+      rev:{h:h + (t.you.endsWith('?') ? '？' : '。'), p:t.ans.map(c => c.p).filter(Boolean).join(' '), es:t.you}});
   }));
   return {title:'Diálogos', cards:[], ex};
 }
@@ -834,7 +1663,7 @@ function slowText(text){
     WORDSET = new Set();
     const add = h => { const w = String(h || '').replace(/[，。？\s]/g, ''); if (w.length > 1) WORDSET.add(w); };
     Object.values(ITEMS).forEach(it => { if (it.kind === 'word') add(it.h); (it.chunks || []).forEach(c => add(c.h)); });
-    [...DISTRACT, ...DISTRACT3, ...DISTRACT1, ...NAMES.map(n => n.c)].forEach(c => add(c.h));
+    [...DISTRACT, ...DISTRACT3, ...DISTRACT1, ...D4, ...D5, ...D6, ...D7, ...NAMES.map(n => n.c)].forEach(c => add(c.h));
   }
   return text.split(/([，。？！、])/).map(part => {
     if (/^[，。？！、]?$/.test(part)) return part;
@@ -861,7 +1690,7 @@ const audioBtns = (text, huge) => `<div class="arow"><button class="audio${huge 
 app.addEventListener('click', e => { const b = e.target.closest('[data-say]'); if (b) say(b.dataset.say, b.dataset.rate === 'slow' ? 'slow' : 0.85); });
 
 /* ---------- exercise builders ---------- */
-const tzg = h => `<div class="tzgrow">${[...h.replace(/[？。]/g,'')].map(c => `<div class="tzg"><span class="han">${esc(c)}</span></div>`).join('')}</div>`;
+const tzg = h => `<div class="tzgrow">${[...h.replace(/[？。，！]/g,'')].map(c => `<div class="tzg"><span class="han">${esc(c)}</span></div>`).join('')}</div>`;
 let LV = 1; // current session level: 2+ hides pinyin in prompts and tiles (feedback keeps it)
 const pyHint = p => LV >= 2 ? '' : pyHTML(p);
 const reveal = it => ({h: it.h, p: it.p, es: it.es});
@@ -896,7 +1725,7 @@ function wordEx(it, mode){
     case 'type': return {t:'type', item:it.id, kind:'Escribe el pinyin', q:`${tzg(it.h)}<div class="es">${esc(cue(it))}</div>${LV < 2 ? audioBtns(it.h) : ''}`,
       answer:pyPlain(it.p), rev:reveal(it)};
     case 'chars': case 'dict': {
-      const chars = [...it.h.replace(/[？。]/g, '')];
+      const chars = [...it.h.replace(/[？。，！]/g, '')];
       const pool = [...new Set(Object.values(ITEMS).filter(x => x.kind === 'word').flatMap(x => [...x.h.replace(/[？。]/g, '')]))].filter(c => !chars.includes(c) && !chars.some(x => HOMO[x] === c));
       const bank = shuffle([...chars, ...shuffle(pool).slice(0, Math.max(3, 6 - chars.length))].map(c => ({h:c, p:''})));
       return mode === 'chars'
@@ -909,11 +1738,12 @@ function wordEx(it, mode){
 function sentEx(it, mode){
   if (mode === 'speak') return {t:'speak', item:it.id, kind:'Dilo en voz alta', q:`<div class="qtext">${esc(it.es)}</div><div class="hint">${it.unit[0] === 'u' ? 'Primero cuándo, luego la acción.' : 'Dilo en chino antes de ver la respuesta.'}</div>`, rev:reveal(it)};
   const ans = it.chunks.map(c => c.h).join('');
-  const pool = it.unit[0] === 'c' ? DISTRACT3 : it.unit[0] === 'a' ? DISTRACT1 : DISTRACT;
-  const extra = shuffle(pool.filter(d => !it.chunks.some(c => c.h === d.h || homo(c, d)))).slice(0, 3);
+  const pool = {c:DISTRACT3, a:DISTRACT1, d:D4, e:D5, f:D6, h:D7}[it.unit[0]] || DISTRACT;
+  const extra = shuffle(uniqBy(pool, d => noPunct(d.h)).filter(d => !it.chunks.some(c => noPunct(c.h) === noPunct(d.h) || homo(c, d)))).slice(0, 3);
   const bank = shuffle([...it.chunks, ...extra]);
-  if (mode === 'listen') return {t:'tiles', item:it.id, kind:'Escucha y ordena', say:it.h, q:audioBtns(it.h), bank, answer:ans, rev:reveal(it)};
-  return {t:'tiles', item:it.id, kind:'Traduce al chino', q:`<div class="qtext">${esc(it.es)}</div>`, bank, answer:ans, rev:reveal(it)};
+  const answers = expandAns([...orders(it.chunks), ...(it.alt || [])]);
+  if (mode === 'listen') return {t:'tiles', item:it.id, kind:'Escucha y ordena', say:it.h, q:audioBtns(it.h), bank, answer:answers, rev:reveal(it)};
+  return {t:'tiles', item:it.id, kind:'Traduce al chino', q:`<div class="qtext">${esc(it.es)}</div>`, bank, answer:answers, rev:reveal(it)};
 }
 function numEx(mode){
   const n = rint(11, 99), zh = numZh(n), py = numPy(n);
@@ -1026,7 +1856,7 @@ function sentGenEx(mode, acts, forms){
     return {t:'mc', item:'g-sent', kind:'Escucha: ¿qué dice?', say:s.h, q:audioBtns(s.h), options:shuffle(opts).map(o => ({v:o.es, html:esc(o.es)})), answer:s.es, rev};
   }
   const extra = shuffle(DISTRACT.filter(d => !s.chunks.some(c => c.h === d.h))).slice(0, 3);
-  const bank = shuffle([...s.chunks, ...extra]), answer = s.chunks.map(c => c.h).join('');
+  const bank = shuffle([...s.chunks, ...extra]), answer = orders(s.chunks);
   if (mode === 'listen') return {t:'tiles', item:'g-sent', kind:'Dictado: ordena lo que oyes', say:s.h, q:audioBtns(s.h), bank, answer, rev};
   return {t:'tiles', item:'g-sent', kind:'Traduce al chino', q:`<div class="qtext">${esc(s.es)}</div>`, bank, answer, rev};
 }
@@ -1119,6 +1949,40 @@ const L3 = {
   c5: () => foodSet(['he'], ['ans','ma','neg','yes']),
   c6: () => foodSet(['chi','xh','yao','he'], ['swap','neg','yes','ma'])
 };
+Object.assign(GEN, {'g-color':colorEx, 'g-size':sizeEx, 'g-price':priceEx, 'g-shop':shopEx, 'g-go':goEx, 'g-near':nearEx, 'g-where':whereEx, 'g-route':routeEx,
+  'g-wx1':wx1Ex, 'g-wx':wxEx, 'g-month':monthEx, 'g-season':seasonEx, 'g-sick':sickEx, 'g-week':weekEx, 'g-invite':inviteEx, 'g-sport':sportEx, 'g-tv':tvEx, 'g-hobby':hobbyEx});
+Object.assign(GEN_MODES, {'g-color':['swatch','listen','build','reply'], 'g-size':['build','reply','build','listen'], 'g-price':['read','listen','mc','reply'], 'g-shop':['reply','build','reply','listen'],
+  'g-go':['pic','build','reply','listen'], 'g-near':['build','reply','reply','listen'], 'g-where':['pic','listen','reply','ask'], 'g-route':['pic','mc','ask','listen'],
+  'g-wx1':['pic','reply','listen','pic'], 'g-wx':['pic','reply','temp','listen'], 'g-month':['tiles','mc','listen','tiles'], 'g-season':['build','reply','why','listen'], 'g-sick':['reply','build','reply','listen'],
+  'g-week':['tiles','listen','next','reply'], 'g-invite':['build','reply','reply','listen'], 'g-sport':['pic','build','reply','listen'], 'g-tv':['build','reply','listen','build'], 'g-hobby':['pic','build','reply','listen']});
+Object.assign(L2_GEN, {'g-color':['listen','listen','reply','build'], 'g-size':['listen','reply','build'], 'g-price':['listen','mc','listen','read'], 'g-shop':['reply','listen','reply'],
+  'g-go':['listen','reply','build'], 'g-near':['listen','reply','build'], 'g-where':['listen','reply','pic'], 'g-route':['mc','listen','pic'],
+  'g-wx1':['listen','reply','pic'], 'g-wx':['listen','temp','reply'], 'g-month':['listen','listen','tiles'], 'g-season':['reply','listen','why'], 'g-sick':['listen','reply','build'],
+  'g-week':['listen','next','reply'], 'g-invite':['listen','reply','build'], 'g-sport':['listen','reply','build'], 'g-tv':['listen','reply','build'], 'g-hobby':['listen','reply','build']});
+Object.assign(L3, {
+  d1: () => mix(colorEx, [['swatch',3],['listen',3],['build',3],['reply',3],['speak',2]]),
+  d2: () => mix(sizeEx, [['build',4],['listen',3],['reply',3],['mc',2],['speak',2]]),
+  d3: () => mix(priceEx, [['listen',4],['mc',3],['read',3],['reply',2],['ask',2]]),
+  d4: () => mix(shopEx, [['reply',4],['build',3],['listen',3],['mc',2],['speak',2]]),
+  d5: () => [...mix(shopEx, [['reply',3],['speak',2]]), ...mix(sizeEx, [['build',3]]), ...mix(priceEx, [['mc',2],['reply',2]]), ...mix(colorEx, [['reply',2]])],
+  e1: () => mix(goEx, [['pic',2],['build',4],['listen',3],['reply',3],['speak',2]]),
+  e2: () => mix(nearEx, [['build',3],['reply',4],['listen',3],['mc',2],['speak',2]]),
+  e3: () => mix(whereEx, [['pic',3],['listen',3],['reply',3],['ask',2],['speak',2]]),
+  e4: () => mix(routeEx, [['pic',3],['mc',3],['listen',3],['ask',2],['speak',2]]),
+  e5: () => [...mix(goEx, [['reply',2],['speak',2]]), ...mix(nearEx, [['reply',2]]), ...mix(whereEx, [['listen',2],['reply',2]]), ...mix(routeEx, [['pic',2],['mc',2]])],
+  f1: () => mix(wx1Ex, [['pic',4],['reply',3],['listen',3],['mc',2],['speak',2]]),
+  f2: () => mix(wxEx, [['pic',4],['reply',3],['listen',3],['temp',2],['speak',2]]),
+  f3: () => mix(monthEx, [['tiles',4],['listen',4],['mc',3],['speak',2]]),
+  f4: () => mix(seasonEx, [['build',3],['reply',3],['why',3],['listen',2],['speak',2]]),
+  f5: () => mix(sickEx, [['reply',4],['build',3],['listen',3],['speak',2]]),
+  f6: () => [...mix(wxEx, [['pic',2],['reply',2],['speak',2]]), ...mix(seasonEx, [['reply',2],['why',2]]), ...mix(sickEx, [['reply',2],['listen',2]])],
+  h1: () => mix(weekEx, [['tiles',3],['listen',3],['next',3],['reply',3],['speak',2]]),
+  h2: () => mix(inviteEx, [['build',3],['reply',4],['listen',3],['mc',2],['speak',2]]),
+  h3: () => mix(sportEx, [['pic',3],['build',3],['reply',3],['listen',3],['speak',2]]),
+  h4: () => mix(tvEx, [['build',4],['reply',3],['listen',3],['mc',2],['speak',2]]),
+  h5: () => mix(hobbyEx, [['pic',3],['build',3],['reply',3],['listen',3],['speak',2]]),
+  h6: () => [...mix(weekEx, [['next',2],['reply',2]]), ...mix(inviteEx, [['reply',2],['build',2]]), ...mix(sportEx, [['build',2]]), ...mix(hobbyEx, [['reply',2],['speak',2]])]
+});
 function introSet(groups, item){
   return [...times(4, () => introEx('build', groups, item)), ...times(3, () => introEx('listen', groups, item)), ...times(3, () => introEx('reply', groups, item)),
           ...times(3, () => introEx('ask', groups, item)), ...times(2, () => introEx('speak', groups, item))];
@@ -1214,6 +2078,10 @@ function cardHTML(c){
       <div class="rule"><div><span class="han">你要什么？</span><div class="muted">en el mercado: 鸡肉, 鱼…</div></div><button class="audio" data-say="你要什么">${ICON.play}</button></div>
       <div class="rule"><div><span class="han">你喝什么？</span><div class="muted">bebidas: 茶, 咖啡…</div></div><button class="audio" data-say="你喝什么">${ICON.play}</button></div>
     </div><div class="tip">Para conversar necesitas dos cosas: responder preguntas y hacerlas. Aquí practicas ambas.</div></div>`;
+  if (c.type === 'rule') return `<div class="card center"><div class="kind">${esc(c.kind)}</div><h2>${esc(c.title)}</h2>
+    ${c.formula ? `<div class="formula">${c.formula.map(([l, h]) => `<div><small>${esc(l)}</small><span class="han">${esc(h)}</span></div>`).join('')}</div>` : ''}
+    <div class="rules">${c.rows.map(r => `<div class="rule"><div><span class="han">${esc(r[0])}</span><div class="muted">${esc(r[1])}</div></div><button class="audio" data-say="${esc(r[0].replace(/ · /g, '，'))}" aria-label="Escuchar">${ICON.play}</button></div>`).join('')}</div>
+    ${c.tip ? `<div class="tip">${c.tip}</div>` : ''}</div>`;
   if (c.type === 'lvl') return c.lv === 2
     ? `<div class="card center"><div class="kind">Nivel 2</div><h2>Sin pinyin, más oído</h2>
       <p class="es">Las preguntas y las fichas ya no muestran pinyin: lees los caracteres. Hay más dictados y armas cada palabra carácter por carácter.</p>
@@ -1283,7 +2151,7 @@ const noPunct = t => String(t).replace(/[，。？！、,.?!\s]/g, '');
 function renderEx(ex){
   let body = `<div class="card${ex.t === 'tiles' || ex.t === 'type' || ex.t === 'digits' ? '' : ''}"><div class="kind">${esc(ex.kind)}</div><div class="card center" style="padding:0">${ex.q}</div>`;
   if (ex.t === 'mc'){
-    body += `<div class="opts" role="group">${ex.options.map((o, k) => `<button class="opt" data-v="${esc(o.v)}"><span class="k">${k + 1}</span>${o.html}</button>`).join('')}</div>`;
+    body += `<div class="opts${ex.wide ? ' wide' : ''}" role="group">${ex.options.map((o, k) => `<button class="opt" data-v="${esc(o.v)}"><span class="k">${k + 1}</span>${o.html}</button>`).join('')}</div>`;
   } else if (ex.t === 'tiles'){
     body += `<div class="tray" id="tray" aria-label="Tu respuesta"></div><div class="bank" id="bank">${ex.bank.map((b, k) => `<button class="tile" data-k="${k}"><span class="han">${esc(b.h)}</span>${b.p && LV < 2 ? `<small>${pyHTML(b.p)}</small>` : ''}</button>`).join('')}</div>`;
   } else if (ex.t === 'type' || ex.t === 'digits'){
@@ -1498,7 +2366,7 @@ function renderHome(){
       ? `<button class="act" id="aEar"><b>Entrena el oído</b><span>Tonos y sonidos difíciles, en 3 minutos</span></button>`
       : modId === 'm2'
       ? `<button class="act" id="aG7"><b><span class="han">逢七过</span> No digas 7</b><span>${S.best7 ? `Récord: ${S.best7}` : 'Un juego clásico para contar'}</span></button>`
-      : `<button class="act" id="aDlg"><b>Diálogos</b><span>Restaurante, mercado y más</span></button>`}
+      : `<button class="act" id="aDlg"><b>Diálogos</b><span>${esc(M.dlgSub || 'Restaurante, mercado y más')}</span></button>`}
   </div>
   <section class="method"><h2>Cómo está pensado</h2><ol>
     <li><b>Lecciones cortas</b> de 3 a 5 minutos: primero ves y escuchas la palabra, luego la practicas.</li>
@@ -1512,14 +2380,14 @@ function renderHome(){
   document.getElementById('sync').onclick = showSync;
   app.querySelectorAll('[data-unit]').forEach(b => b.onclick = () => startSession(lessonPlan(UNITS.find(u => u.id === b.dataset.unit), lvPeek(b.dataset.unit).sel)));
   app.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { const L = lvState(b.dataset.u), n = +b.dataset.lv; if (n <= L.un && n !== L.sel){ L.sel = n; save(); renderHome(); } });
-  const exam = () => startSession(modId === 'm3' ? examPlan3() : modId === 'm1' ? examPlan1() : examPlan());
+  const exam = () => startSession(modId === 'm3' ? examPlan3() : modId === 'm1' ? examPlan1() : modId === 'm2' ? examPlan() : examPlanR(modId));
   const rv = document.getElementById('aRev'), go = document.getElementById('aGo');
   if (rv) rv.onclick = () => startSession(reviewPlan());
   if (go) go.onclick = () => nextU ? startSession(lessonPlan(nextU, lvPeek(nextU.id).sel)) : exam();
   document.getElementById('aExam').onclick = exam;
   if (modId === 'm1') document.getElementById('aEar').onclick = () => startSession(earPlan());
   else if (modId === 'm2') document.getElementById('aG7').onclick = startG7;
-  else document.getElementById('aDlg').onclick = () => startSession(dialogPlan());
+  else document.getElementById('aDlg').onclick = () => startSession(M.dialogs ? dialogPlan(M.dialogs, M.dlgItem, M.pool) : dialogPlan());
   app.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => { if (S.mod !== b.dataset.mod){ S.mod = b.dataset.mod; save(); renderHome(); } });
   const rs = document.getElementById('reset');
   rs.onclick = () => {
@@ -1560,7 +2428,7 @@ function cleanState(o){
   if (MODULES[o.mod]) N.mod = o.mod;
   N.xp = int(o.xp, 0, 1e7); N.streak = int(o.streak, 0, 1e5); N.best7 = int(o.best7, 0, 1e4);
   if (num(o.lastDay)) N.lastDay = Math.round(o.lastDay);
-  ['examBest', 'examBest1', 'examBest3'].forEach(k => { if (num(o[k])) N[k] = int(o[k], 0, 100); });
+  ['examBest', 'examBest1', 'examBest3', 'examBest4', 'examBest5', 'examBest6', 'examBest7'].forEach(k => { if (num(o[k])) N[k] = int(o[k], 0, 100); });
   for (const u of UNITS){
     if (o.done && o.done[u.id]) N.done[u.id] = int(o.done[u.id], 1, 1e5);
     const L = o.lvl && o.lvl[u.id];
