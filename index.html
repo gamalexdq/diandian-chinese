@@ -175,6 +175,22 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1
 .cal{display:inline-grid;justify-items:center;border:2px solid var(--line);border-top:12px solid var(--bad);border-radius:14px;padding:8px 22px;background:var(--surface)}
 .cal small{text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted);font-size:12px}.cal b{font-family:var(--f-display);font-size:26px}
 .mod.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 18%,transparent)}
+/* francés */
+html.fr .han{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
+.frbig{font-size:clamp(32px,10vw,48px);line-height:1.1;text-align:center;overflow-wrap:anywhere}
+.pron{font-family:var(--f-body);font-weight:600;color:var(--accent);letter-spacing:.02em}
+.pron::before{content:"["}.pron::after{content:"]"}
+html.fr .opt .han{font-size:20px;line-height:1.25;overflow-wrap:anywhere}
+html.fr .tile .han{font-size:20px}
+html.fr .unit .tzg .han{font-size:19px;font-weight:700}
+html.fr .hero .han{font-size:clamp(28px,8vw,44px)}
+html.fr .bubble .han{font-size:21px}
+html.fr .qtext.han{font-size:24px}
+.langs{display:flex;gap:4px;padding:4px;border-radius:20px;background:var(--sunk);width:max-content;max-width:100%;margin-top:14px}
+.lang{border:0;background:none;border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px;color:var(--muted)}
+.lang.on{background:var(--accent);color:var(--accent-ink)}
+.fiche{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:15px;margin:0 0 6px;width:100%}
+.fiche dt{color:var(--muted);font-weight:600}.fiche dd{margin:0;font-weight:700;overflow-wrap:anywhere}
 .bubble{display:grid;gap:4px;justify-items:start;text-align:left;background:var(--sunk);border-radius:16px 16px 16px 4px;padding:12px 16px;max-width:100%}
 .bubble .who{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .bubble .han{font-size:26px}
@@ -257,6 +273,15 @@ const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { c
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const today = () => { const d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 864e5); };
+// language being learned: Chinese (zh) or French (fr). ?lang=fr switches it and is remembered
+const LANG = (() => {
+  let l = null;
+  try { l = new URLSearchParams(location.search).get('lang'); } catch(e) {}
+  try { if (l === 'fr' || l === 'zh') localStorage.setItem('dd-lang', l); else l = localStorage.getItem('dd-lang'); } catch(e) {}
+  return l === 'fr' ? 'fr' : 'zh';
+})();
+function setLang(l, hash = ''){ try { localStorage.setItem('dd-lang', l); } catch(e) {} location.href = location.pathname + '?lang=' + l + hash; }
+if (LANG === 'fr' && document.documentElement && document.documentElement.classList){ document.documentElement.classList.add('fr'); document.title = 'Diǎn Diǎn · Francés'; }
 const ICON = {
   play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
   slow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>',
@@ -271,9 +296,9 @@ const ICON = {
 const TONES = {1:'āēīōūǖĀĒĪŌŪ', 2:'áéíóúǘÁÉÍÓÚ', 3:'ǎěǐǒǔǚǍĚǏǑǓ', 4:'àèìòùǜÀÈÌÒÙ'};
 const toneOf = s => { for (const t in TONES) for (const c of TONES[t]) if (s.includes(c)) return +t; return 0; };
 // internal pinyin: syllables joined by "·", words by spaces
-const pyHTML = p => p.split(' ').map(w => '<span class="pw">' + w.split('·').map(s => `<span class="t${toneOf(s)}">${esc(s)}</span>`).join('') + '</span>').join(' ');
+const pyHTML = p => LANG === 'fr' ? (p ? `<span class="pron">${esc(p)}</span>` : '') : p.split(' ').map(w => '<span class="pw">' + w.split('·').map(s => `<span class="t${toneOf(s)}">${esc(s)}</span>`).join('') + '</span>').join(' ');
 const pyPlain = p => p.replace(/·/g, '');
-const loose = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/v/g, 'u').replace(/[^a-z]/g, '');
+const loose = s => s.replace(/œ/g, 'oe').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/v/g, 'u').replace(/[^a-z]/g, '');
 const strict = s => s.normalize('NFC').toLowerCase().replace(/[\s·'’?？.,。!！]/g, '');
 
 /* ---------- numbers & time ---------- */
@@ -1617,7 +1642,7 @@ function examPlan3(){
 }
 
 /* ---------- state & saving ---------- */
-const LS_KEY = 'diandian-v1';
+const LS_KEY = LANG === 'fr' ? 'diandian-fr-v1' : 'diandian-v1';
 const fresh = () => ({mod:'m1', v:1, xp:0, streak:0, lastDay:null, done:{}, lvl:{}, srs:{}, best7:0, examBest:null, updatedAt:0});
 let S = fresh();
 try { const raw = localStorage.getItem(LS_KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch(e) {}
@@ -1647,12 +1672,13 @@ function bumpStreak(){
 }
 
 /* ---------- audio ---------- */
-let zhVoice = null, voicesChecked = false;
+let zhVoice = null, frVoice = null, voicesChecked = false;
 function loadVoices(){
   if (!('speechSynthesis' in window)) { voicesChecked = true; return; }
   const vs = speechSynthesis.getVoices();
   if (vs.length) voicesChecked = true;
   zhVoice = vs.find(v => /zh[-_]CN/i.test(v.lang) && /google/i.test(v.name)) || vs.find(v => /zh[-_]CN/i.test(v.lang)) || vs.find(v => /^zh/i.test(v.lang)) || null;
+  frVoice = vs.find(v => /fr[-_]FR/i.test(v.lang) && /google/i.test(v.name)) || vs.find(v => /fr[-_]FR/i.test(v.lang)) || vs.find(v => /^fr/i.test(v.lang)) || null;
 }
 if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = () => { loadVoices(); if (screen === 'home') renderHome(); }; }
 // Safari barely slows down short utterances, so slow mode also pauses between words
@@ -1676,10 +1702,24 @@ function slowText(text){
     return out.join('，');
   }).join('');
 }
+// French slow mode: short pauses between groups, never between a pronoun or article and its word
+function frSlow(text){
+  const glue = /^(je|j'|tu|il|elle|on|nous|vous|ils|elles|le|la|les|l'|un|une|des|de|du|au|aux|à|en|et|ne|n'|mon|ton|c'est|ça|très|quel|quelle)$/i;
+  const w = text.split(/\s+/);
+  return w.map((x, i) => x + (i < w.length - 1 ? (glue.test(x) || /[,.;?!]$/.test(x) ? ' ' : ', ') : '')).join('');
+}
 function say(text, rate = 0.85){
   if (!('speechSynthesis' in window)) return;
   try {
     speechSynthesis.cancel();
+    if (LANG === 'fr'){
+      text = String(text).replace(/，/g, ', ').replace(/_/g, ' ');
+      if (rate === 'slow') { text = frSlow(text); rate = IS_SAFARI ? 0.5 : 0.6; }
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'fr-FR'; u.rate = rate === 0.85 ? 0.95 : rate; if (frVoice) u.voice = frVoice;
+      speechSynthesis.speak(u);
+      return;
+    }
     if (rate === 'slow') { text = slowText(text); rate = IS_SAFARI ? 0.3 : 0.45; }
     const u = new SpeechSynthesisUtterance(text.replace(/[？。]/g, ''));
     u.lang = 'zh-CN'; u.rate = rate; if (zhVoice) u.voice = zhVoice;
@@ -2147,7 +2187,7 @@ function renderStep(){
 function bindQuit(){ document.getElementById('quit').onclick = () => { if (window.speechSynthesis) speechSynthesis.cancel(); screen = 'home'; renderHome(); }; }
 
 // tiles like 喜欢， and 喜欢 differ only by the comma: where it lands must not decide the answer
-const noPunct = t => String(t).replace(/[，。？！、,.?!\s]/g, '');
+const noPunct = t => String(t).replace(/[，。？！、,.?!;:«»…\s]/g, '');
 function renderEx(ex){
   let body = `<div class="card${ex.t === 'tiles' || ex.t === 'type' || ex.t === 'digits' ? '' : ''}"><div class="kind">${esc(ex.kind)}</div><div class="card center" style="padding:0">${ex.q}</div>`;
   if (ex.t === 'mc'){
@@ -2155,7 +2195,7 @@ function renderEx(ex){
   } else if (ex.t === 'tiles'){
     body += `<div class="tray" id="tray" aria-label="Tu respuesta"></div><div class="bank" id="bank">${ex.bank.map((b, k) => `<button class="tile" data-k="${k}"><span class="han">${esc(b.h)}</span>${b.p && LV < 2 ? `<small>${pyHTML(b.p)}</small>` : ''}</button>`).join('')}</div>`;
   } else if (ex.t === 'type' || ex.t === 'digits'){
-    body += `<div><input class="ans" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" ${ex.t === 'digits' ? 'inputmode="numeric" placeholder="Ej.: 47"' : 'placeholder="Ej.: xian zai o xiàn zài"'}><div class="hint" style="margin-top:6px">${ex.t === 'type' ? 'Los tonos son opcionales. Si los escribes bien, te lo digo.' : (ex.hint || 'Escribe el número con cifras.')}</div></div>`;
+    body += `<div><input class="ans" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" ${ex.t === 'digits' ? 'inputmode="numeric" placeholder="Ej.: 47"' : `placeholder="${esc(ex.ph || 'Ej.: xian zai o xiàn zài')}"`}><div class="hint" style="margin-top:6px">${ex.t === 'type' ? (ex.hint || 'Los tonos son opcionales. Si los escribes bien, te lo digo.') : (ex.hint || 'Escribe el número con cifras.')}</div></div>`;
   } else if (ex.t === 'speak'){
     body += '';
   }
@@ -2197,9 +2237,9 @@ function renderEx(ex){
     if (ex.t === 'speak') return showSelfGrade(ex);
     let ok = false, perfect = false;
     if (ex.t === 'mc') ok = String(value) === String(ex.answer);
-    else if (ex.t === 'tiles') ok = [].concat(ex.answer).some(a => noPunct(a) === noPunct(value));
+    else if (ex.t === 'tiles') ok = [].concat(ex.answer).some(a => noPunct(a).toLowerCase() === noPunct(value).toLowerCase());
     else if (ex.t === 'digits') ok = value.replace(/\D/g, '') === ex.answer;
-    else { ok = loose(value) === loose(ex.answer); perfect = ok && strict(value) === strict(ex.answer); }
+    else { const hit = [].concat(ex.answer).find(a => loose(value) === loose(a)); ok = hit != null; perfect = ok && strict(value) === strict(hit); }
     if (ex.t === 'mc') app.querySelectorAll('.opt').forEach(b => { if (b.dataset.v === String(ex.answer)) b.classList.add('ok'); else if (b.dataset.v === value) b.classList.add('no'); });
     grade(ex, ok, perfect);
   };
@@ -2217,7 +2257,7 @@ function grade(ex, ok, perfect){
   sess.locked = true;
   const feed = document.getElementById('feed');
   feed.className = 'feed ' + (ok ? 'ok' : 'no');
-  const praise = perfect ? '¡Perfecto, con tonos!' : pick(['¡Bien!', '¡Correcto!', '¡Eso es!', '对！ Duì!']);
+  const praise = LANG === 'fr' ? (perfect ? '¡Perfecto, con tildes!' : pick(['¡Bien!', '¡Correcto!', 'Très bien !', 'Bravo !'])) : perfect ? '¡Perfecto, con tonos!' : pick(['¡Bien!', '¡Correcto!', '¡Eso es!', '对！ Duì!']);
   feed.innerHTML = `<h3>${ok ? praise : 'Respuesta correcta:'}</h3>${revHTML(ex.rev)}${!ok && !sess.exam ? '<div class="hint">La volverás a ver antes de terminar.</div>' : ''}<button class="btn main big" id="cont">Continuar</button>`;
   say(ex.rev.h);
   const c = document.getElementById('cont'); c.focus({preventScroll:true});
@@ -2261,7 +2301,7 @@ function finish(){
     L.best[lv] = Math.max(L.best[lv] || 0, pct);
     if (lv < 3 && pct >= PASS_PCT && L.un <= lv){
       L.un = lv + 1; L.sel = lv + 1;
-      lvMsg = `<div class="unlock"><b>Nivel ${lv + 1} desbloqueado</b><span>${lv + 1 === 2 ? 'Sin pinyin y con más dictados.' : 'Frases nuevas cada vez, sin pinyin.'} Queda seleccionado para la próxima vez. Puedes volver a un nivel anterior cuando quieras.</span></div>`;
+      lvMsg = `<div class="unlock"><b>Nivel ${lv + 1} desbloqueado</b><span>${lv + 1 === 2 ? (LANG === 'fr' ? 'Sin pronunciación escrita y con más dictados.' : 'Sin pinyin y con más dictados.') : (LANG === 'fr' ? 'Frases nuevas cada vez.' : 'Frases nuevas cada vez, sin pinyin.')} Queda seleccionado para la próxima vez. Puedes volver a un nivel anterior cuando quieras.</span></div>`;
     } else if (lv < 3 && L.un <= lv){
       lvMsg = `<div class="hint">Con ${PASS_PCT}% o más desbloqueas el nivel ${lv + 1}. Esta vez: ${pct}%.</div>`;
     }
@@ -2330,11 +2370,12 @@ function renderStats(){
 function renderHome(){
   screen = 'home'; renderStats();
   const due = dueIds().length;
-  const modId = MODULES[S.mod] ? S.mod : 'm1', M = MODULES[modId];
+  const modId = MODULES[S.mod] ? S.mod : Object.keys(MODULES)[0], M = MODULES[modId];
   const units = UNITS.filter(u => u.mod === modId);
   const nextU = units.find(u => !S.done[u.id]);
-  const noVoice = voicesChecked && !zhVoice;
+  const noVoice = voicesChecked && !(LANG === 'fr' ? frVoice : zhVoice);
   app.innerHTML = `
+  <div class="langs" role="group" aria-label="Idioma que aprendes">${[['zh', '中文 Chino'], ['fr', 'Français · Francés']].map(([l, t]) => `<button class="lang${l === LANG ? ' on' : ''}" data-lang="${l}" aria-pressed="${l === LANG}">${t}</button>`).join('')}</div>
   <div class="mods" role="tablist" aria-label="Ruta">${Object.keys(MODULES).map(k => `<button class="mod${k === modId ? ' on' : ''}" role="tab" aria-selected="${k === modId}" data-mod="${k}">${MODULES[k].tab}</button>`).join('')}</div>
   <section class="hero"><div class="eyebrow">Ruta ${M.n} · ${M.tab}</div>
     <div class="han">${M.zh}</div>
@@ -2342,7 +2383,7 @@ function renderHome(){
     <div class="muted">${esc(M.es)}</div>
   </section>
   ${homeNote ? `<div class="note ok" role="status">${esc(homeNote)}</div>` : ''}
-  ${noVoice ? '<div class="note">Tu navegador no tiene voz en chino, así que no habrá audio. En Chrome o Edge con conexión suele funcionar; en Windows también puedes instalar el paquete de voz de chino (Configuración → Hora e idioma → Voz).</div>' : ''}
+  ${noVoice ? `<div class="note">Tu navegador no tiene voz en ${LANG === 'fr' ? 'francés' : 'chino'}, así que no habrá audio. En Chrome o Edge con conexión suele funcionar; en Windows también puedes instalar el paquete de voz de ${LANG === 'fr' ? 'francés' : 'chino'} (Configuración → Hora e idioma → Voz).</div>` : ''}
   ${due
     ? `<button class="cta" id="aRev"><div><b>${ICON.cards.replace('<svg', '<svg width="18" height="18"')} Repaso de hoy</b><span>${plural(due, 'palabra', 'palabras')} para recordar antes de seguir</span></div><span class="go" aria-hidden="true">→</span></button>`
     : nextU
@@ -2370,9 +2411,9 @@ function renderHome(){
   </div>
   <section class="method"><h2>Cómo está pensado</h2><ol>
     <li><b>Lecciones cortas</b> de 3 a 5 minutos: primero ves y escuchas la palabra, luego la practicas.</li>
-    <li><b>Recordar en lugar de releer.</b> Vas de reconocer (elegir) a producir (escribir pinyin, armar la oración, decirla en voz alta), que es lo que más fija.</li>
+    <li><b>Recordar en lugar de releer.</b> Vas de reconocer (elegir) a producir (${LANG === 'fr' ? 'escribir la palabra' : 'escribir pinyin'}, armar la oración, decirla en voz alta), que es lo que más fija.</li>
     <li><b>Lo que fallas vuelve</b> al final de la misma lección, hasta que te sale.</li>
-    <li><b>Tres niveles por unidad.</b> Con ${PASS_PCT}% se abre el siguiente: N2 quita el pinyin y suma dictados; N3 genera frases nuevas cada vez.</li>
+    <li><b>Tres niveles por unidad.</b> Con ${PASS_PCT}% se abre el siguiente: N2 quita ${LANG === 'fr' ? 'la pronunciación escrita' : 'el pinyin'} y suma dictados; N3 genera frases nuevas cada vez.</li>
     <li><b>Repaso espaciado.</b> Cada palabra vuelve en 1, 2, 4, 8 y 16 días si la aciertas; si la fallas, vuelve mañana. 10 minutos al día rinden más que 1 hora el domingo.</li>
   </ol></section>
   <div class="foot"><span>${esc(syncNote)}</span><button class="linkbtn" id="sync">Llevar mi progreso a otro dispositivo</button><button class="linkbtn" id="reset">Borrar mi progreso</button></div>`;
@@ -2387,7 +2428,8 @@ function renderHome(){
   document.getElementById('aExam').onclick = exam;
   if (modId === 'm1') document.getElementById('aEar').onclick = () => startSession(earPlan());
   else if (modId === 'm2') document.getElementById('aG7').onclick = startG7;
-  else document.getElementById('aDlg').onclick = () => startSession(M.dialogs ? dialogPlan(M.dialogs, M.dlgItem, M.pool) : dialogPlan());
+  else document.getElementById('aDlg').onclick = () => startSession(M.dlgPlan ? M.dlgPlan() : M.dialogs ? dialogPlan(M.dialogs, M.dlgItem, M.pool) : dialogPlan());
+  app.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => { if (b.dataset.lang !== LANG) setLang(b.dataset.lang); });
   app.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => { if (S.mod !== b.dataset.mod){ S.mod = b.dataset.mod; save(); renderHome(); } });
   const rs = document.getElementById('reset');
   rs.onclick = () => {
@@ -2406,6 +2448,7 @@ const pipeBytes = async (bytes, stream) => new Uint8Array(await new Response(new
 async function exportCode(){
   const o = JSON.parse(JSON.stringify(S));
   o.t = today(); // due days travel relative to this day: shorter code
+  o.lang = LANG;
   o.srs = Object.entries(S.srs).map(([id, s]) => [id, s.b, s.due - o.t]);
   delete o.updatedAt;
   const raw = new TextEncoder().encode(JSON.stringify(o));
@@ -2417,7 +2460,10 @@ async function importCode(text){
   const bytes = unb64u(code.slice(1));
   const raw = code[0] === 'D' ? await pipeBytes(bytes, new DecompressionStream('deflate-raw')) : code[0] === 'J' ? bytes : null;
   if (!raw) throw new Error('bad code');
-  return cleanState(JSON.parse(new TextDecoder().decode(raw)));
+  const o = JSON.parse(new TextDecoder().decode(raw));
+  // progress of the other language: open the app in that language with the same link
+  if (o && (o.lang || 'zh') !== LANG){ setLang(o.lang === 'fr' ? 'fr' : 'zh', '#p=' + code); return new Promise(() => {}); }
+  return cleanState(o);
 }
 // a link can come from anyone: keep only known fields, with the right types
 function cleanState(o){
@@ -2428,7 +2474,7 @@ function cleanState(o){
   if (MODULES[o.mod]) N.mod = o.mod;
   N.xp = int(o.xp, 0, 1e7); N.streak = int(o.streak, 0, 1e5); N.best7 = int(o.best7, 0, 1e4);
   if (num(o.lastDay)) N.lastDay = Math.round(o.lastDay);
-  ['examBest', 'examBest1', 'examBest3', 'examBest4', 'examBest5', 'examBest6', 'examBest7'].forEach(k => { if (num(o[k])) N[k] = int(o[k], 0, 100); });
+  [...new Set(['examBest', 'examBest1', 'examBest3', 'examBest4', 'examBest5', 'examBest6', 'examBest7', ...Object.values(MODULES).map(m => m.examKey)])].forEach(k => { if (num(o[k])) N[k] = int(o[k], 0, 100); });
   for (const u of UNITS){
     if (o.done && o.done[u.id]) N.done[u.id] = int(o.done[u.id], 1, 1e5);
     const L = o.lvl && o.lvl[u.id];
@@ -2525,6 +2571,913 @@ document.addEventListener('keydown', e => {
     const o = app.querySelectorAll('.opt')[+e.key - 1]; if (o) o.click();
   }
 });
+
+/* ====================================================================
+   Francés · segundo idioma. Con LANG === 'fr' se cambian los datos
+   (ITEMS, UNITS, MODULES, GEN…) y las piezas del motor que dependen del
+   idioma. Contenido propio, en el orden de las unidades 0 y 1 de un A1:
+   saludos, alfabeto, números, calendario y clase; luego presentarse.
+   ==================================================================== */
+if (LANG === 'fr') (() => {
+[ITEMS, MODULES, GEN, GEN_MODES, L2_GEN, L3].forEach(o => Object.keys(o).forEach(k => delete o[k]));
+UNITS.length = 0;
+
+/* ---------- helpers ---------- */
+const FR_NAMES = new Set();
+const lc1 = w => w[0].toLowerCase() + w.slice(1);
+// source sentences: "_" glues words into one tile, "|" splits one word in two tiles (n'|aime)
+const frText = s => s.replace(/_/g, ' ').replace(/\|/g, '');
+const frChunks = s => s.split(' ').flatMap(w => w.split('|')).map(w => w.replace(/_/g, ' ').replace(/^[«"]+|[.,!?;:»"]+$/g, '')).filter(w => w && !/^[?!:;«»]$/.test(w));
+const low = x => noPunct(x).toLowerCase();
+const FR_TYPE_HINT = 'Las tildes son opcionales; si las pones bien, te lo digo.';
+function fTiles(item, kind, q, s, es, traps = [], alts = [], extra = {}){
+  const words = frChunks(s).map((w, i) => i === 0 && !FR_NAMES.has(w) ? lc1(w) : w);
+  const tr = uniqBy(traps.map(t => t.replace(/_/g, ' ')).filter(t => !words.some(w => low(w) === low(t))), low);
+  const bank = shuffle([...words, ...shuffle(tr).slice(0, 3)]).map(h => ({h, p:''}));
+  return {t:'tiles', item, kind, q, bank, answer:[s, ...alts].map(frText), rev:{h:frText(s), p:'', es}, ...extra};
+}
+const oFr = (t, v = t, sub = '') => ({v, say:t, html:`<span class="han">${esc(t)}</span>${sub}`, len:t.length});
+const oEs = (t, v = t) => ({v, html:esc(t), len:t.length});
+function fMC(item, kind, q, opts, answer, rev, extra = {}){
+  return {t:'mc', item, kind, q, options:shuffle(opts.map(o => ({v:o.v, say:o.say, html:o.html}))), answer, rev, wide:opts.some(o => o.len > 14), ...extra};
+}
+const fq = (fr, audio = true) => `<div class="qtext han">${esc(frText(fr))}</div>${audio ? audioBtns(frText(fr)) : ''}`;
+const fcue = es => `<div class="qtext">${esc(es)}</div>`;
+const bub = (who, fr) => `<div class="bubble"><span class="who">${esc(who)}</span><span class="han">${esc(frText(fr))}</span></div>${audioBtns(frText(fr))}`;
+const fSpeak = (item, es, fr, hint = 'Dilo en francés antes de ver la respuesta.') => ({t:'speak', item, kind:'Dilo en voz alta', q:`${fcue(es)}<div class="hint">${esc(hint)}</div>`, rev:{h:frText(fr), p:'', es}});
+const others = (arr, x, n, key = y => y) => shuffle(arr.filter(y => key(y) !== key(x))).slice(0, n);
+
+/* ---------- items ---------- */
+const FW = (unit, cat, rows) => rows.forEach(([id, h, p, es, tip]) => (ITEMS[id] = {id, unit, cat, kind:'word', h, p, es, tip}));
+const FS = (unit, rows) => rows.forEach(([id, s, es, traps, alts]) => (ITEMS[id] = {id, unit, kind:'sent', s, h:frText(s), p:'', es, traps:traps || [], alts:alts || []}));
+const FG = (id, unit, es) => (ITEMS[id] = {id, unit, kind:'gen', es});
+
+/* ---------- numbers ---------- */
+const FR_U = ['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize'];
+const FR_T = {20:'vingt', 30:'trente', 40:'quarante', 50:'cinquante', 60:'soixante'};
+function frNum(n){
+  if (n <= 16) return FR_U[n];
+  if (n < 20) return 'dix-' + FR_U[n - 10];
+  if (n === 100) return 'cent';
+  if (n < 70){ const t = Math.floor(n / 10) * 10, u = n % 10; return FR_T[t] + (u === 0 ? '' : u === 1 ? ' et un' : '-' + FR_U[u]); }
+  if (n < 80) return 'soixante' + (n === 71 ? ' et onze' : '-' + frNum(n - 60));
+  if (n === 80) return 'quatre-vingts';
+  return 'quatre-vingt-' + frNum(n - 80);
+}
+// numbers a Spanish speaker mixes up: ±10, ±20 (70/90), reversed digits, neighbours
+function frConf(n, lo, hi, k = 3){
+  const rv = Number(String(n).split('').reverse().join(''));
+  const out = [];
+  for (const x of shuffle([n + 10, n - 10, n + 20, n - 20, rv, n % 10, n + 1, n - 1]).concat([n + 10, n - 10])) if (x >= lo && x <= hi && x !== n && !out.includes(x)) out.push(x);
+  while (out.length < k){ const x = rint(lo, hi); if (x !== n && !out.includes(x)) out.push(x); }
+  return out.slice(0, k);
+}
+
+/* =================== Ruta 1 · Bienvenue (unidad 0) =================== */
+FW('fa1', 'greet', [
+  ['g_bj', 'bonjour', 'bõ·zhur', 'hola / buenos días', 'Sirve desde la mañana hasta el atardecer.'],
+  ['g_bs', 'bonsoir', 'bõ·suar', 'buenas noches (al llegar)', 'Para saludar desde el atardecer. Para irse a dormir se dice bonne nuit.'],
+  ['g_sa', 'salut', 'sa·lü', 'hola / chau (con amigos)', 'Informal. La t final no suena.'],
+  ['g_ar', 'au revoir', 'o·rë·vuar', 'adiós'],
+  ['g_ab', 'à bientôt', 'a·biẽ·to', 'hasta pronto'],
+  ['g_me', 'merci', 'mèr·si', 'gracias'],
+  ['g_cv', 'ça va ?', 'sa·va', '¿qué tal? / ¿todo bien?', 'Se responde igual: «Ça va !». La ç suena como s.'],
+  ['g_tb', 'très bien', 'trè·biẽ', 'muy bien'],
+  ['g_ma', 'madame', 'ma·dam', 'señora'],
+  ['g_mo', 'monsieur', 'më·siö', 'señor', 'Se escribe monsieur, pero suena «më·siö».']]);
+FS('fa1', [
+  ['fs_g1', 'Bonjour, madame.', 'Buenos días, señora.', ['bonsoir', 'monsieur', 'salut']],
+  ['fs_g2', 'Salut, ça va ?', 'Hola, ¿qué tal? (a un amigo)', ['bonsoir', 'vous', 'très']],
+  ['fs_g3', 'Oui, ça va, et toi ?', 'Sí, todo bien, ¿y tú?', ['vous', 'moi', 'très']],
+  ['fs_g5', 'Très bien, merci. Et vous ?', 'Muy bien, gracias. ¿Y usted?', ['toi', 'bonjour', 'pas']],
+  ['fs_g6', 'Au_revoir, monsieur. À_bientôt !', 'Adiós, señor. ¡Hasta pronto!', ['bonsoir', 'madame', 'toi']]]);
+FG('f-greet', 'fa1', 'saludos en contexto');
+const GREET = [
+  {s:'8 a. m. Entras a una panadería y te atiende una señora.', a:'Bonjour, madame.', w:['Bonsoir, madame.', 'Au revoir, madame.', 'Bonjour, monsieur.']},
+  {s:'Ves a tu amiga Léa en la universidad.', a:'Salut, Léa !', w:['Au revoir, Léa !', 'Bonsoir, madame.', 'Merci, Léa !']},
+  {s:'8 p. m. Llegas a una cena y saludas al papá de un amigo.', a:'Bonsoir, monsieur.', w:['Bonjour, monsieur.', 'Salut, monsieur !', 'Au revoir, monsieur.']},
+  {s:'Sales de una tienda. Te atendió un señor.', a:'Au revoir, monsieur.', w:['Bonjour, monsieur.', 'Bonsoir, madame.', 'Salut, Léa !']},
+  {s:'Tu amigo te pregunta «Ça va ?». Estás bien.', a:'Oui, ça va, et toi ?', w:['Très bien, merci. Et vous ?', 'Au revoir !', 'Bonsoir, monsieur.']},
+  {s:'Tu profesora te pregunta «Vous allez bien ?». Estás muy bien.', a:'Très bien, merci. Et vous ?', w:['Oui, ça va, et toi ?', 'Salut !', 'Au revoir, madame.']},
+  {s:'Quieres preguntarle a tu vecina mayor cómo está.', a:'Vous allez bien, madame ?', w:['Tu vas bien, madame ?', 'Au revoir, madame.', 'Merci, madame.']},
+  {s:'Quieres preguntarle a tu hermano cómo está.', a:'Tu vas bien ?', w:['Vous allez bien ?', 'Bonsoir, monsieur.', 'Au revoir !']},
+  {s:'Una señora te abre la puerta.', a:'Merci, madame !', w:['Bonsoir, monsieur !', 'Au revoir, Léa !', 'Salut, madame !']},
+  {s:'Te despides de un amigo; lo verás pronto.', a:'Salut, à bientôt !', w:['Bonjour, monsieur.', 'Bonsoir, madame.', 'Très bien, merci.']}];
+const TV = [['tu mejor amiga', 'tu', 'con amigos se usa tu'], ['tu profesora', 'vous', 'por respeto se usa vous'], ['tu hermano menor', 'tu', 'en familia se usa tu'], ['un niño de 8 años', 'tu', 'con niños se usa tu'],
+  ['la recepcionista de un hotel', 'vous', 'con alguien que no conoces se usa vous'], ['tu abuela', 'tu', 'en familia se usa tu'], ['un policía', 'vous', 'con alguien que no conoces se usa vous'],
+  ['dos amigos a la vez', 'vous', 'para varias personas siempre se usa vous'], ['el director de la universidad', 'vous', 'por respeto se usa vous'], ['tu primo', 'tu', 'en familia se usa tu']];
+const GREET_L = [['Bonjour, madame.', 'Buenos días, señora.'], ['Bonjour, monsieur.', 'Buenos días, señor.'], ['Bonsoir, monsieur.', 'Buenas noches, señor.'], ['Bonsoir, madame.', 'Buenas noches, señora.'],
+  ['Au revoir, madame.', 'Adiós, señora.'], ['Salut, ça va ?', 'Hola, ¿qué tal?'], ['Très bien, merci.', 'Muy bien, gracias.'], ['À bientôt !', '¡Hasta pronto!'], ['Merci, monsieur.', 'Gracias, señor.']];
+function greetEx(mode){
+  if (mode === 'tuvous'){
+    const [who, a, why] = pick(TV);
+    return fMC('f-greet', '¿Tu o vous?', `<div class="qtext">Le hablas a ${esc(who)}.</div><div class="hint">¿Tuteas (tu) o hablas de usted (vous)?</div>`, [oFr('tu'), oFr('vous')], a,
+      {h:a === 'tu' ? 'Tu vas bien ?' : 'Vous allez bien ?', p:'', es:`A ${who}: ${why}.`});
+  }
+  if (mode === 'listen' || mode === 'speak'){
+    const [fr, es] = pick(GREET_L);
+    if (mode === 'speak') return fSpeak('f-greet', es, fr);
+    return fMC('f-greet', 'Escucha y elige', audioBtns(fr, true), [oEs(es), ...others(GREET_L, [fr, es], 3, g => g[1]).map(g => oEs(g[1]))], es, {h:fr, p:'', es}, {say:fr});
+  }
+  const g = pick(GREET);
+  return fMC('f-greet', '¿Qué dices?', `<div class="qtext" style="font-size:20px">${esc(g.s)}</div>`, [oFr(g.a), ...g.w.map(w => oFr(w))], g.a, {h:g.a, p:'', es:g.s});
+}
+
+FW('fa2', 'abc', [
+  ['a_le', 'une lettre', 'ün·lètr', 'una letra'],
+  ['a_vo', 'une voyelle', 'ün·vua·yèl', 'una vocal', 'Las vocales: a, e, i, o, u, y.'],
+  ['a_co', 'une consonne', 'ün·kõ·sòn', 'una consonante'],
+  ['a_ec', "Comment ça s'écrit ?", 'ko·mã·sa·sé·kri', '¿cómo se escribe?']]);
+FG('f-abc', 'fa2', 'deletrear');
+const LETTER_P = {A:'a', B:'bé', C:'sé', D:'dé', E:'ë', F:'èf', G:'zhé', H:'ash', I:'i', J:'zhi', K:'ka', L:'èl', M:'èm', N:'èn', O:'o', P:'pé', Q:'kü', R:'èr', S:'ès', T:'té', U:'ü', V:'vé', W:'du·blë·vé', X:'iks', Y:'i·grèk', Z:'zèd'};
+const ABC_SETS = [['E', 'I', 'U', 'A'], ['G', 'J', 'H', 'I'], ['C', 'S', 'K', 'Q'], ['Q', 'K', 'U', 'C'], ['Y', 'I', 'E', 'J'], ['V', 'W', 'B', 'F'], ['G', 'J', 'E', 'I'], ['A', 'H', 'R', 'E']];
+const SPELL = ['HUGO', 'JULES', 'EMMA', 'LOUIS', 'MANON', 'CAMILLE', 'QUENTIN', 'YANIS', 'GABRIEL', 'JULIE', 'XAVIER', 'GUY', 'AXEL', 'JEAN', 'ROGER', 'GILLES'];
+const SWAP = {G:'J', J:'G', E:'I', I:'E', U:'I', Q:'K', K:'Q', C:'S', S:'C', Y:'I', W:'V', V:'W', H:'A', A:'H'};
+const ACRO = [['SNCF', 'la red de trenes de Francia'], ['RATP', 'el metro y los buses de París'], ['SMS', 'un mensaje de texto'], ['TGV', 'el tren de alta velocidad'],
+  ['BD', 'un cómic (bande dessinée)'], ['PDG', 'el gerente general de una empresa'], ['UE', 'la Unión Europea']];
+// "EMMA" → "E, deux M, A"
+function spellSay(w){
+  const out = [];
+  for (let i = 0; i < w.length; i++){ if (w[i + 1] === w[i]){ out.push('deux ' + w[i]); i++; } else out.push(w[i]); }
+  return out.join(', ');
+}
+const cap = w => w[0] + w.slice(1).toLowerCase();
+function abcEx(mode){
+  if (mode === 'letter'){
+    const set = pick(ABC_SETS), x = pick(set);
+    return fMC('f-abc', 'Escucha la letra', audioBtns(x, true), set.map(l => oFr(l, l, LV >= 2 ? '' : `<small>${pyHTML(LETTER_P[l])}</small>`)), x, {h:x, p:LETTER_P[x], es:'la letra ' + x}, {say:x});
+  }
+  if (mode === 'acro'){
+    const [a, es] = pick(ACRO);
+    return fMC('f-abc', 'Escucha la sigla', audioBtns(spellSay(a), true), [oFr(a), ...others(ACRO, ACRO.find(r => r[0] === a), 3, r => r[0]).map(r => oFr(r[0]))], a, {h:a, p:'', es:`${a}: ${es}`}, {say:spellSay(a)});
+  }
+  const w = pick(SPELL), s = spellSay(w);
+  if (mode === 'speak') return fSpeak('f-abc', 'Deletrea en voz alta: ' + w, s, 'Di cada letra en francés; las dobles, con «deux».');
+  if (mode === 'type') return {t:'type', item:'f-abc', kind:'Escucha y escribe el nombre', say:s, q:audioBtns(s), answer:w, ph:'Escribe el nombre', hint:'Te lo deletrean letra por letra.', rev:{h:cap(w), p:'', es:'Se deletrea: ' + s}};
+  const vars = [];
+  for (const i of shuffle([...w].map((_, i) => i))) if (SWAP[w[i]]){ const v = w.slice(0, i) + SWAP[w[i]] + w.slice(i + 1); if (v !== w && !vars.includes(v)) vars.push(v); }
+  shuffle(SPELL).forEach(o => { if (o !== w && !vars.includes(o)) vars.push(o); });
+  return fMC('f-abc', 'Escucha y elige el nombre', audioBtns(s, true), [oFr(w, w), ...vars.slice(0, 3).map(v => oFr(v, v))].map(o => ({...o, say:undefined})), w, {h:cap(w), p:'', es:'Se deletrea: ' + s}, {say:s});
+}
+
+FW('fa3', 'name', [
+  ['n_je', "je m'appelle", 'zhë·ma·pèl', 'me llamo'],
+  ['n_il', "il s'appelle", 'il·sa·pèl', 'él se llama'],
+  ['n_el', "elle s'appelle", 'èl·sa·pèl', 'ella se llama'],
+  ['n_mo', 'moi', 'mua', 'yo (para reforzar)', 'Moi, je m\'appelle Ana. = Yo me llamo Ana.'],
+  ['n_to', 'toi', 'tua', 'tú (para reforzar)'],
+  ['n_ev', 'et vous ?', 'é·vu', '¿y usted?'],
+  ['n_et', 'et toi ?', 'é·tua', '¿y tú?'],
+  ['n_en', 'enchanté', 'ã·shã·té', 'encantado / encantada', 'En femenino se escribe enchantée, pero suena igual.']]);
+FS('fa3', [
+  ['fs_n1', "Comment tu t'appelles ?", '¿Cómo te llamas?', ['vous', 'appelez', "s'appelle"], ["Tu t'appelles comment ?"]],
+  ['fs_n2', 'Comment vous vous appelez ?', '¿Cómo se llama usted?', ['tu', "t'appelles", 'allez'], ['Vous vous appelez comment ?']],
+  ['fs_n3', "Je m'appelle Ana, et toi ?", 'Me llamo Ana, ¿y tú?', ['me', 'appelle', 'vous']],
+  ['fs_n4', "Moi, je m'appelle Hugo.", 'Yo me llamo Hugo.', ['toi', "s'appelle", 'tu'], ["Je m'appelle Hugo."]],
+  ['fs_n5', "Elle s'appelle Léa.", 'Ella se llama Léa.', ['il', "m'appelle", 'est']],
+  ['fs_n6', "Il s'appelle comment ?", '¿Cómo se llama él?', ['elle', 'tu', "t'appelles"], ["Comment il s'appelle ?"]]]);
+FG('f-name', 'fa3', 'presentarse');
+const PEOPLE = [['Hugo', 'm'], ['Léa', 'f'], ['Ana', 'f'], ['Diego', 'm'], ['Inès', 'f'], ['Paul', 'm'], ['Marie', 'f'], ['Lucas', 'm'], ['Nadia', 'f'], ['Karim', 'm']];
+PEOPLE.forEach(p => FR_NAMES.add(p[0]));
+const ASKNAME = [['a la profesora', 'vous'], ['a un compañero de clase', 'tu'], ['a un niño', 'tu'], ['al recepcionista del hotel', 'vous'], ['a una señora en el tren', 'vous'], ['a tu nueva vecina de 20 años, en una fiesta', 'tu']];
+function nameEx(mode){
+  const [nm, g] = pick(PEOPLE);
+  if (mode === 'reply'){
+    const tv = pick(['tu', 'vous']);
+    const qq = tv === 'tu' ? "Comment tu t'appelles ?" : 'Comment vous vous appelez ?';
+    return fTiles('f-name', 'Responde', bub(tv === 'tu' ? 'Compañero' : 'Profesora', qq) + `<div class="ask">Responde: te llamas <b>${esc(nm)}</b>.</div>`, `Je m'appelle ${nm}.`, `Me llamo ${nm}.`, ["t'appelles", "s'appelle", 'me', 'appelle'], [], {say:qq});
+  }
+  if (mode === 'ask'){
+    const [who, tv] = pick(ASKNAME);
+    return tv === 'tu'
+      ? fTiles('f-name', 'Pregunta', `<div class="ask">Pregúntale su nombre ${esc(who)}.</div>`, "Comment tu t'appelles ?", '¿Cómo te llamas?', ['vous', 'appelez', "s'appelle"], ["Tu t'appelles comment ?"])
+      : fTiles('f-name', 'Pregunta', `<div class="ask">Pregúntale su nombre ${esc(who)}.</div>`, 'Comment vous vous appelez ?', '¿Cómo se llama usted?', ['tu', "t'appelles", "s'appelle"], ['Vous vous appelez comment ?']);
+  }
+  const forms = [["m'appelle", 'je', 'Yo me llamo'], ["t'appelles", 'tu', 'Tú te llamas'], ["s'appelle", g === 'm' ? 'il' : 'elle', g === 'm' ? 'Él se llama' : 'Ella se llama']];
+  const [f, pr, es] = pick(forms);
+  const full = `${pr[0].toUpperCase() + pr.slice(1)} ${f} ${nm}.`;
+  if (mode === 'pron') return fMC('f-name', 'Completa', `<div class="qtext han">___ ${esc(f)} ${esc(nm)}.</div><div class="hint">${esc(es)} ${esc(nm)}.</div>`,
+    ['je', 'tu', 'il', 'elle'].map(x => oFr(x)), pr, {h:full, p:'', es:`${es} ${nm}.`});
+  if (mode === 'speak') return fSpeak('f-name', `${es} ${nm}.`, full);
+  const L = [[`Je m'appelle ${nm}.`, `Me llamo ${nm}.`], [`Il s'appelle ${nm}.`, `Él se llama ${nm}.`], [`Elle s'appelle ${nm}.`, `Ella se llama ${nm}.`], [`Tu t'appelles ${nm} ?`, `¿Te llamas ${nm}?`]];
+  const [fr, e] = pick(L.filter((_, k) => k !== (g === 'm' ? 2 : 1)));
+  return fMC('f-name', 'Escucha y elige', audioBtns(fr, true), L.map(r => oEs(r[1])), e, {h:fr, p:'', es:e}, {say:fr});
+}
+
+FW('fa4', 'num', [
+  ['z_0', 'zéro', 'zé·ro', '0'], ['z_1', 'un', 'ẽ', '1', 'Femenino: une (ün).'], ['z_2', 'deux', 'dö', '2', 'La x final no suena.'], ['z_3', 'trois', 'trua', '3'], ['z_4', 'quatre', 'katr', '4'],
+  ['z_5', 'cinq', 'sẽk', '5', 'La q suena «k».'], ['z_6', 'six', 'sis', '6', 'Solo, la x suena «s».'], ['z_7', 'sept', 'sèt', '7', 'La p no suena.'], ['z_8', 'huit', 'üit', '8', 'La h no suena.'],
+  ['z_9', 'neuf', 'nöf', '9'], ['z_10', 'dix', 'dis', '10', 'Solo, la x suena «s».']]);
+FG('f-n10', 'fa4', 'números 0–10');
+FW('fa5', 'num', [
+  ['z_11', 'onze', 'õz', '11'], ['z_12', 'douze', 'duz', '12'], ['z_13', 'treize', 'trèz', '13'], ['z_14', 'quatorze', 'ka·tòrz', '14'], ['z_15', 'quinze', 'kẽz', '15'],
+  ['z_16', 'seize', 'sèz', '16'], ['z_20', 'vingt', 'vẽ', '20', 'Ni la g ni la t suenan.'], ['z_30', 'trente', 'trãt', '30']]);
+FG('f-n31', 'fa5', 'números 11–31');
+function numGen(item, lo, hi){
+  return mode => {
+    let n = rint(lo, hi);
+    if (hi === 100 && Math.random() < 0.55) n = rint(60, 99);
+    const w = frNum(n), rev = {h:w, p:'', es:String(n)};
+    if (mode === 'listen') return {t:'digits', item, kind:'Escucha y escribe el número', say:w, q:audioBtns(w, true), answer:String(n), rev};
+    if (mode === 'read') return {t:'digits', item, kind:'¿Qué número es?', q:fq(w, LV < 2), answer:String(n), rev};
+    if (mode === 'speak') return fSpeak(item, String(n), w, 'Dilo en francés antes de ver la respuesta.');
+    if (mode === 'calc'){
+      const plus = Math.random() < 0.6;
+      let a, b, r;
+      if (plus){ r = rint(Math.max(2, lo), hi); a = rint(1, r - 1); b = r - a; } else { a = rint(Math.max(2, lo), hi); b = rint(1, a - 1); r = a - b; }
+      const op = plus ? 'plus' : 'moins', sign = plus ? '+' : '−';
+      const sp = `${frNum(a)} ${op} ${frNum(b)}`;
+      return {t:'digits', item, kind:'Escucha la cuenta y resuélvela', say:sp, q:`<div class="qtext han">${esc(frNum(a))} ${sign} ${esc(frNum(b))} = ?</div>${audioBtns(sp)}`, answer:String(r), hint:'Escribe el resultado con cifras.',
+        rev:{h:`${sp} égale ${frNum(r)}`, p:'', es:`${a} ${sign} ${b} = ${r}`}};
+    }
+    // mc / spell: the number in digits, choose how it is written
+    const opts = [n, ...frConf(n, lo === 32 ? 20 : 0, hi)];
+    return fMC(item, '¿Cómo se escribe?', `<div class="g7num">${n}</div>`, opts.map(x => oFr(frNum(x))), w, rev);
+  };
+}
+const n10Ex = numGen('f-n10', 0, 10), n31Ex = numGen('f-n31', 11, 31), n100Ex = numGen('f-n100', 32, 100);
+
+FW('fa6', 'day', [
+  ['d_1', 'lundi', 'lẽ·di', 'lunes', 'Los días van en minúscula y sin artículo.'], ['d_2', 'mardi', 'mar·di', 'martes'], ['d_3', 'mercredi', 'mèr·krë·di', 'miércoles'],
+  ['d_4', 'jeudi', 'zhö·di', 'jueves'], ['d_5', 'vendredi', 'vã·drë·di', 'viernes'], ['d_6', 'samedi', 'sam·di', 'sábado'], ['d_7', 'dimanche', 'di·mãsh', 'domingo'],
+  ['d_au', "aujourd'hui", 'o·zhur·düi', 'hoy'], ['d_de', 'demain', 'dë·mẽ', 'mañana', 'Mañana (el día siguiente). La mañana del día es le matin.']]);
+FG('f-day', 'fa6', 'días de la semana');
+const DAYS = [['lundi', 'lunes'], ['mardi', 'martes'], ['mercredi', 'miércoles'], ['jeudi', 'jueves'], ['vendredi', 'viernes'], ['samedi', 'sábado'], ['dimanche', 'domingo']];
+function dayEx(mode){
+  const i = rint(0, 6), [d, de] = DAYS[i], [n, ne] = DAYS[(i + 1) % 7];
+  if (mode === 'next'){
+    const s1 = `Aujourd'hui, c'est ${d}.`;
+    return fMC('f-day', 'Completa', `<div class="qtext han">${esc(s1)}<br>Demain, c'est…</div>${audioBtns(s1)}`, [(i + 1) % 7, i, (i + 2) % 7, (i + 6) % 7].map(k => oFr(DAYS[k][0])), n,
+      {h:`${s1} Demain, c'est ${n}.`, p:'', es:`Hoy es ${de}. Mañana es ${ne}.`});
+  }
+  if (mode === 'listen') return fMC('f-day', 'Escucha y elige', audioBtns(d, true), [oEs(de), ...others(DAYS, DAYS[i], 3, r => r[1]).map(r => oEs(r[1]))], de, {h:d, p:'', es:de}, {say:d});
+  const isToday = Math.random() < 0.6, other = pick(DAYS.filter((_, k) => k !== i))[0];
+  const fr = isToday ? `Aujourd'hui, c'est ${d}.` : `Demain, c'est ${d}.`, es = (isToday ? 'Hoy es ' : 'Mañana es ') + de + '.';
+  if (mode === 'speak') return fSpeak('f-day', es, fr);
+  return fTiles('f-day', 'Tradúcelo al francés', fcue(es), fr, es, [isToday ? 'demain' : "aujourd'hui", other, 'est']);
+}
+
+FW('fa7', 'season', [
+  ['s_pr', 'le printemps', 'lë·prẽ·tã', 'la primavera', 'Masculino en francés.'],
+  ['s_et', "l'été", 'lé·té', 'el verano'],
+  ['s_au', "l'automne", 'lo·tòn', 'el otoño', 'La m no suena.'],
+  ['s_hi', "l'hiver", 'li·vèr', 'el invierno', 'La h no suena.'],
+  ['s_1', 'le premier', 'lë·prë·mié', 'el primero (el día 1)', 'Para fechas: le premier mai = el 1 de mayo.']]);
+FG('f-month', 'fa7', 'meses y fechas');
+const MONTHS = [['janvier', 'enero'], ['février', 'febrero'], ['mars', 'marzo'], ['avril', 'abril'], ['mai', 'mayo'], ['juin', 'junio'], ['juillet', 'julio'], ['août', 'agosto'],
+  ['septembre', 'septiembre'], ['octobre', 'octubre'], ['novembre', 'noviembre'], ['décembre', 'diciembre']];
+const SEASON_OF = {0:'hi', 1:'hi', 3:'pr', 4:'pr', 6:'et', 7:'et', 9:'au', 10:'au'};
+const SEASONS = {pr:['le printemps', 'la primavera'], et:["l'été", 'el verano'], au:["l'automne", 'el otoño'], hi:["l'hiver", 'el invierno']};
+const dayFr = d => d === 1 ? 'premier' : frNum(d);
+function monthEx(mode){
+  const i = rint(0, 11), [m, me] = MONTHS[i];
+  if (mode === 'listen'){
+    const opts = uniqBy([MONTHS[(i + 1) % 12], MONTHS[(i + 11) % 12], ...shuffle(MONTHS)].filter(r => r[0] !== m), r => r[0]).slice(0, 3);
+    return fMC('f-month', 'Escucha y elige', audioBtns(m, true), [oEs(me), ...opts.map(r => oEs(r[1]))], me, {h:m, p:'', es:me}, {say:m});
+  }
+  if (mode === 'pick'){
+    const opts = uniqBy([MONTHS[(i + 1) % 12], ...shuffle(MONTHS)].filter(r => r[0] !== m), r => r[0]).slice(0, 3);
+    return fMC('f-month', 'Elige en francés', fcue(me), [oFr(m), ...opts.map(r => oFr(r[0]))], m, {h:m, p:'', es:me});
+  }
+  if (mode === 'season'){
+    const k = +pick(Object.keys(SEASON_OF)), [mm, mme] = MONTHS[k], s = SEASONS[SEASON_OF[k]];
+    return fMC('f-month', 'En Francia', `<div class="qtext han">${esc(mm)}</div>${audioBtns(mm)}<div class="ask">¿Qué estación es en Francia?</div>`, Object.values(SEASONS).map(x => oFr(x[0])), s[0],
+      {h:`${mm} : ${s[0]}`, p:'', es:`En Francia, ${mme} es ${s[1]}. En Perú es al revés.`});
+  }
+  const d = rint(1, 28), fr = `le ${dayFr(d)} ${m}`, es = `el ${d} de ${me}`;
+  if (mode === 'date'){
+    const [d2] = frConf(d, 1, 28, 1), [d3] = frConf(d, 1, 28, 1).concat(rint(1, 28));
+    const m2 = MONTHS[(i + 1) % 12][1], m3 = MONTHS[(i + 11) % 12][1];
+    const cands = uniqBy([`${d} de ${me}`, `${d2} de ${me}`, `${d} de ${m2}`, `${d3} de ${m3}`, `${d2} de ${m2}`, `${d} de ${m3}`], x => x).slice(0, 4);
+    return fMC('f-month', 'Escucha la fecha', audioBtns(fr, true), cands.map(x => oEs(x)), `${d} de ${me}`, {h:fr, p:'', es}, {say:fr});
+  }
+  if (mode === 'speak') return fSpeak('f-month', es, fr);
+  const src = `le ${d === 1 ? 'premier' : d} ${m}`;
+  return fTiles('f-month', 'Escribe la fecha en francés', fcue(es), src, es, ['de', d === 1 ? 'un' : 'premier', MONTHS[(i + 1) % 12][0]]);
+}
+
+FS('fa8', [
+  ['fs_c1', 'Je ne comprends pas.', 'No entiendo.', ["n'", 'comprend', 'suis']],
+  ['fs_c2', "Vous pouvez répéter, s'il_vous_plaît ?", '¿Puede repetir, por favor?', ["s'il_te_plaît", 'tu', 'comprends']],
+  ['fs_c3', 'Comment on dit merci en espagnol ?', '¿Cómo se dice «merci» en español?', ['écrit', 'français', 'vous']],
+  ['fs_c4', 'Excusez-moi, je suis en retard.', 'Disculpe, llego tarde.', ['excuse-moi', 'es', 'tu']],
+  ['fs_c5', "Tu peux répéter, s'il_te_plaît ?", '¿Puedes repetir, por favor?', ["s'il_vous_plaît", 'pouvez', 'vous'], ["S'il_te_plaît, tu peux répéter ?"]],
+  ['fs_c6', "J'ai une question.", 'Tengo una pregunta.', ['suis', 'un', 'as']]]);
+FG('f-class', 'fa8', 'frases de la clase');
+const CLASS = [
+  {id:'rv', s:'El profesor habla muy rápido y no captas nada.', a:"Vous pouvez répéter, s'il vous plaît ?", es:'¿Puede repetir, por favor?', not:['nc']},
+  {id:'nc', s:'No entiendes la explicación.', a:'Je ne comprends pas.', es:'No entiendo.', not:['rv', 'rt']},
+  {id:'lt', s:'Llegas 10 minutos tarde a clase.', a:'Excusez-moi, je suis en retard.', es:'Disculpe, llego tarde.', not:['pd']},
+  {id:'cd', s:'Quieres saber cómo se dice «gracias» en francés.', a:'Comment on dit « gracias » en français ?', es:'¿Cómo se dice «gracias» en francés?', not:[]},
+  {id:'ce', s:'No sabes cómo se escribe una palabra.', a:"Comment ça s'écrit ?", es:'¿Cómo se escribe?', not:[]},
+  {id:'pd', s:'Chocas con alguien sin querer en el pasillo.', a:'Pardon !', es:'¡Perdón!', not:['lt']},
+  {id:'rt', s:'Tu compañero de clase habla muy rápido.', a:"Tu peux répéter, s'il te plaît ?", es:'¿Puedes repetir, por favor?', not:['nc']},
+  {id:'qu', s:'Quieres hacerle una pregunta a la profesora.', a:"J'ai une question.", es:'Tengo una pregunta.', not:[]}];
+function classEx(mode){
+  const c = pick(CLASS);
+  const pool = shuffle(CLASS.filter(x => x.id !== c.id && !c.not.includes(x.id))).slice(0, 3);
+  if (mode === 'listen') return fMC('f-class', 'Escucha y elige', audioBtns(c.a, true), [c, ...pool].map(x => oEs(x.es)), c.es, {h:c.a, p:'', es:c.es}, {say:c.a});
+  if (mode === 'speak') return fSpeak('f-class', c.s, c.a, 'Dilo en francés.');
+  return fMC('f-class', '¿Qué dices?', `<div class="qtext" style="font-size:20px">${esc(c.s)}</div>`, [c, ...pool].map(x => oFr(x.a)), c.a, {h:c.a, p:'', es:c.es});
+}
+
+/* =================== Ruta 2 · Et vous ? (unidad 1) =================== */
+const NATS = [
+  {m:'français', f:'française', em:'francés', ef:'francesa'}, {m:'péruvien', f:'péruvienne', em:'peruano', ef:'peruana'}, {m:'espagnol', f:'espagnole', em:'español', ef:'española'},
+  {m:'italien', f:'italienne', em:'italiano', ef:'italiana'}, {m:'mexicain', f:'mexicaine', em:'mexicano', ef:'mexicana'}, {m:'chinois', f:'chinoise', em:'chino', ef:'china'},
+  {m:'anglais', f:'anglaise', em:'inglés', ef:'inglesa'}, {m:'allemand', f:'allemande', em:'alemán', ef:'alemana'}, {m:'belge', f:'belge', em:'belga', ef:'belga'},
+  {m:'canadien', f:'canadienne', em:'canadiense', ef:'canadiense'}, {m:'suisse', f:'suisse', em:'suizo', ef:'suiza'}, {m:'brésilien', f:'brésilienne', em:'brasileño', ef:'brasileña'},
+  {m:'colombien', f:'colombienne', em:'colombiano', ef:'colombiana'}, {m:'coréen', f:'coréenne', em:'coreano', ef:'coreana'}, {m:'russe', f:'russe', em:'ruso', ef:'rusa'},
+  {m:'sénégalais', f:'sénégalaise', em:'senegalés', ef:'senegalesa'}];
+const natOf = m => NATS.find(n => n.m === m);
+FW('fb1', 'nat', [
+  ['nt_fr', 'français', 'frã·sè', 'francés', 'Femenino: française. Ahí la s sí suena: frã·sèz.'],
+  ['nt_pe', 'péruvien', 'pé·rü·viẽ', 'peruano', 'Femenino: péruvienne, que suena pé·rü·vièn.'],
+  ['nt_es', 'espagnol', 'ès·pa·ñòl', 'español', 'Femenino: espagnole. Suena igual.'],
+  ['nt_it', 'italien', 'i·ta·liẽ', 'italiano', 'Femenino: italienne (i·ta·lièn).'],
+  ['nt_mx', 'mexicain', 'mèk·si·kẽ', 'mexicano', 'Femenino: mexicaine (mèk·si·kèn).'],
+  ['nt_cn', 'chinois', 'shi·nua', 'chino', 'Femenino: chinoise (shi·nuaz).'],
+  ['nt_en', 'anglais', 'ã·glè', 'inglés', 'Femenino: anglaise (ã·glèz).'],
+  ['nt_de', 'allemand', 'al·mã', 'alemán', 'Femenino: allemande (al·mãd).'],
+  ['nt_be', 'belge', 'bèlzh', 'belga', 'Termina en e: igual en femenino.'],
+  ['nt_ca', 'canadien', 'ka·na·diẽ', 'canadiense', 'Femenino: canadienne (ka·na·dièn).']]);
+FG('f-nat', 'fb1', 'nacionalidades');
+const pron3 = g => g === 'f' ? ['Elle', 'Ella'] : ['Il', 'Él'];
+function natEx(mode){
+  const gendered = NATS.filter(n => n.m !== n.f);
+  if (mode === 'agree'){
+    const x = pick(gendered), g = pick(['m', 'f']), y = pick(gendered.filter(n => n !== x)), [P, E] = pron3(g);
+    return fMC('f-nat', 'Elige la forma correcta', `<div class="qtext">${E} es ${esc(g === 'f' ? x.ef : x.em)}.</div><div class="qtext han">${P} est ___.</div>`,
+      [x.f, x.m, y.f, y.m].map(t => oFr(t)), x[g], {h:`${P} est ${x[g]}.`, p:'', es:`${E} es ${g === 'f' ? x.ef : x.em}.`});
+  }
+  const x = pick(NATS), g = pick(['m', 'f']);
+  if (mode === 'listen'){
+    const y = pick(NATS.filter(n => n !== x)), [P] = pron3(g);
+    const fr = `${P} est ${x[g]}.`;
+    const es = (n, gg) => `${pron3(gg)[1]} es ${gg === 'f' ? n.ef : n.em}.`;
+    const og = g === 'f' ? 'm' : 'f';
+    return fMC('f-nat', 'Escucha y elige', audioBtns(fr, true), [es(x, g), es(x, og), es(y, g), es(y, og)].map(t => oEs(t)), es(x, g), {h:fr, p:'', es:es(x, g)}, {say:fr});
+  }
+  const me = Math.random() < 0.5, [P, E] = pron3(g), adj = g === 'f' ? x.ef : x.em;
+  const fr = me ? `Je suis ${x[g]}.` : `${P} est ${x[g]}.`;
+  // canadiense, belga…: when Spanish hides the gender, say it
+  const es = me ? `Soy ${adj}${x.em === x.ef && x.m !== x.f ? (g === 'f' ? ' (mujer)' : ' (hombre)') : ''}.` : `${E} es ${adj}.`;
+  if (mode === 'speak') return fSpeak('f-nat', es, fr);
+  const other = x.m !== x.f ? x[g === 'f' ? 'm' : 'f'] : pick(NATS.filter(n => n !== x))[g];
+  return fTiles('f-nat', 'Tradúcelo al francés', fcue(es), fr, es, [other, me ? 'es' : 'suis', me ? 'est' : (g === 'f' ? 'il' : 'elle')]);
+}
+
+FW('fb2', 'person', [
+  ['p_ho', 'un homme', 'ẽ·nòm', 'un hombre', 'La h no suena y la n se une a la palabra: ẽ·nòm.'],
+  ['p_fe', 'une femme', 'ün·fam', 'una mujer', 'Se escribe femme, pero suena «fam».'],
+  ['p_ga', 'un garçon', 'ẽ·gar·sõ', 'un chico'],
+  ['p_fi', 'une fille', 'ün·fiy', 'una chica / una hija', 'Fille quiere decir chica y también hija.'],
+  ['p_en', 'un enfant', 'ẽ·nã·fã', 'un niño / una niña'],
+  ['p_qa', 'quel âge ?', 'kè·lazh', '¿qué edad?'],
+  ['p_an', 'un an', 'ẽ·nã', 'un año', 'En plural, ans, suena igual. Tengo 20 años = J\'ai vingt ans.']]);
+FG('f-age', 'fb2', 'la edad');
+const PEOPLE_PIC = [['👨', 'un homme', 'un hombre'], ['👩', 'une femme', 'una mujer'], ['👦', 'un garçon', 'un chico'], ['👧', 'une fille', 'una chica']];
+function ageEx(mode){
+  const a = mode === 'reply' ? rint(15, 31) : rint(2, 31);
+  if (mode === 'pic'){
+    const [e, fr, es] = pick(PEOPLE_PIC);
+    return fMC('f-age', '¿Quién es?', `<div class="pic">${e}</div><div class="qtext han">C'est ___.</div>`, PEOPLE_PIC.map(r => oFr(r[1])), fr, {h:`C'est ${fr}.`, p:'', es:`Es ${es}.`});
+  }
+  if (mode === 'reply'){
+    const tv = pick(['tu', 'vous']), qq = tv === 'tu' ? 'Tu as quel âge ?' : 'Vous avez quel âge ?';
+    return fTiles('f-age', 'Responde', bub(tv === 'tu' ? 'Amigo' : 'Señora', qq) + `<div class="ask">Responde: tienes <b>${a}</b> años.</div>`, `J'ai ${a} ans.`, `Tengo ${a} años.`, ['suis', 'an', 'a', 'je'], [], {say:qq});
+  }
+  if (mode === 'ask'){
+    const tu = Math.random() < 0.5;
+    return tu
+      ? fTiles('f-age', 'Pregunta', `<div class="ask">Pregúntale la edad a tu amiga Léa.</div>`, 'Tu as quel âge ?', '¿Cuántos años tienes?', ['vous', 'es', 'a'], ['Quel âge tu as ?'])
+      : fTiles('f-age', 'Pregunta', `<div class="ask">Pregúntale la edad a un señor que conoces en el tren.</div>`, 'Vous avez quel âge ?', '¿Cuántos años tiene usted?', ['tu', 'as', 'êtes'], ['Quel âge vous avez ?']);
+  }
+  const g = pick(['m', 'f']), [P, E] = pron3(g), fr = `${P} a ${a} ans.`;
+  if (mode === 'speak') return fSpeak('f-age', `${E} tiene ${a} años.`, fr);
+  const [a2, a3] = frConf(a, 2, 31, 2), O = pron3(g === 'f' ? 'm' : 'f')[1];
+  const opts = [`${E} tiene ${a} años.`, `${O} tiene ${a} años.`, `${E} tiene ${a2} años.`, `${E} tiene ${a3} años.`];
+  return fMC('f-age', 'Escucha y elige', audioBtns(fr, true), opts.map(t => oEs(t)), opts[0], {h:fr, p:'', es:opts[0]}, {say:fr});
+}
+
+FW('fb3', 'verb', [
+  ['w_et', 'être', 'ètr', 'ser / estar', 'Je suis péruvien (soy) · Je suis à Lima (estoy).'],
+  ['w_av', 'avoir', 'a·vuar', 'tener', 'La edad va con avoir: j\'ai 20 ans.']]);
+FG('f-conj', 'fb3', 'être, avoir, s\'appeler');
+const SUBJ = [{k:'je', fr:'Je', es:'Yo'}, {k:'tu', fr:'Tu', es:'Tú'}, {k:'il', fr:'Il', es:'Él', g:'m'}, {k:'elle', fr:'Elle', es:'Ella', g:'f'}, {k:'nous', fr:'Nous', es:'Nosotros', pl:1},
+  {k:'vous', fr:'Vous', es:'Usted'}, {k:'vous2', fr:'Vous', es:'Ustedes', pl:1}, {k:'ils', fr:'Ils', es:'Ellos', pl:1}, {k:'elles', fr:'Elles', es:'Ellas', pl:1}];
+const VERBS = {
+  etre:{inf:'être', gloss:'ser / estar', f:{je:'suis', tu:'es', il:'est', elle:'est', nous:'sommes', vous:'êtes', vous2:'êtes', ils:'sont', elles:'sont'},
+    es:{je:'estoy', tu:'estás', il:'está', elle:'está', nous:'estamos', vous:'está', vous2:'están', ils:'están', elles:'están'},
+    comp:() => pick([['à Lima', 'en Lima'], ['à Paris', 'en París'], ['à Montréal', 'en Montreal']]), traps:['suis', 'es', 'est', 'sommes', 'êtes', 'sont']},
+  avoir:{inf:'avoir', gloss:'tener', f:{je:'ai', tu:'as', il:'a', elle:'a', nous:'avons', vous:'avez', vous2:'avez', ils:'ont', elles:'ont'},
+    es:{je:'tengo', tu:'tienes', il:'tiene', elle:'tiene', nous:'tenemos', vous:'tiene', vous2:'tienen', ils:'tienen', elles:'tienen'},
+    comp:() => { const n = rint(12, 31); return [`${n} ans`, `${n} años`]; }, traps:['ai', 'as', 'a', 'avons', 'avez', 'ont']},
+  appeler:{inf:"s'appeler", gloss:'llamarse', f:{je:"m'appelle", tu:"t'appelles", il:"s'appelle", elle:"s'appelle", nous:'nous appelons', vous:'vous appelez', vous2:'vous appelez', ils:"s'appellent", elles:"s'appellent"},
+    es:{je:'me llamo', tu:'te llamas', il:'se llama', elle:'se llama', nous:'nos llamamos', vous:'se llama', vous2:'se llaman', ils:'se llaman', elles:'se llaman'},
+    comp:s => { const pool = PEOPLE.filter(p => !s.g || p[1] === s.g); if (!s.pl) return [pick(pool)[0], null]; const [a, b] = shuffle(PEOPLE.filter(p => s.k !== 'ils' && s.k !== 'elles' || p[1] === (s.k === 'ils' ? 'm' : 'f'))); return [`${a[0]} et ${b[0]}`, `${a[0]} y ${b[0]}`]; },
+    traps:["m'appelle", "t'appelles", "s'appelle", 'appelons', 'appelez', "s'appellent"]}};
+function conjSentence(vk, s){
+  const V = VERBS[vk], [cf, ce0] = V.comp(s), ce = ce0 == null ? cf : ce0;
+  const fr = vk === 'avoir' && s.k === 'je' ? `J'ai ${cf}.` : `${s.fr} ${V.f[s.k]} ${cf}.`;
+  const es = `${s.es} ${V.es[s.k]} ${ce}.`;
+  return {fr, es, cf, ce};
+}
+function conjEx(mode){
+  const vk = pick(Object.keys(VERBS)), V = VERBS[vk];
+  if (mode === 'pron'){
+    const choices = SUBJ.filter(s => s.k !== 'vous2' && !(vk === 'avoir' && s.k === 'je'));
+    const s = pick(choices), f = V.f[s.k];
+    const wrong = shuffle(choices.filter(x => V.f[x.k] !== f)).slice(0, 3);
+    const { cf, ce } = conjSentence(vk, s);
+    return fMC('f-conj', 'Elige el pronombre', `<div class="qtext han">___ ${esc(f)} ${esc(cf)}.</div><div class="hint">verbo ${esc(V.inf)} (${esc(V.gloss)})</div>`,
+      [s, ...wrong].map(x => oFr(x.k)), s.k, {h:`${s.fr} ${f} ${cf}.`, p:'', es:`${s.es} ${V.es[s.k]} ${ce}.`});
+  }
+  const s = pick(SUBJ.filter(x => !(mode === 'form' && vk === 'avoir' && x.k === 'je')));
+  const {fr, es, cf} = conjSentence(vk, s);
+  if (mode === 'form'){
+    const f = V.f[s.k], forms = uniqBy(Object.values(V.f), x => x).filter(x => x !== f);
+    return fMC('f-conj', `Conjuga ${V.inf}`, `<div class="qtext han">${esc(s.fr)} ___ ${esc(cf)}.</div><div class="hint">${esc(es)}</div>`,
+      [f, ...shuffle(forms).slice(0, 3)].map(x => oFr(x)), f, {h:fr, p:'', es});
+  }
+  if (mode === 'speak') return fSpeak('f-conj', es, fr);
+  const used = frChunks(fr).map(low);
+  return fTiles('f-conj', 'Tradúcelo al francés', fcue(es), fr, es, shuffle(V.traps.filter(t => !used.includes(low(t)))).slice(0, 2));
+}
+
+FW('fb4', 'hobby', [
+  ['l_ai', "j'aime", 'zhèm', 'me gusta', 'je + aime = j\'aime. «Je aime» no existe.'],
+  ['l_ci', 'le cinéma', 'lë·si·né·ma', 'el cine'],
+  ['l_mu', 'la musique', 'la·mü·zik', 'la música'],
+  ['l_le', 'la lecture', 'la·lèk·tür', 'la lectura', 'Ojo: lecture es lectura, no «conferencia».'],
+  ['l_da', 'la danse', 'la·dãs', 'el baile'],
+  ['l_na', 'la natation', 'la·na·ta·siõ', 'la natación'],
+  ['l_te', 'le tennis', 'lë·té·nis', 'el tenis'],
+  ['l_pe', 'la peinture', 'la·pẽ·tür', 'la pintura'],
+  ['l_sp', 'le sport', 'lë·spòr', 'el deporte']]);
+FG('f-art', 'fb4', 'gustos y artículos');
+const NOUNS = [{h:'musique', g:'f', es:'la música', e:'🎵'}, {h:'cinéma', g:'m', es:'el cine', e:'🎬'}, {h:'lecture', g:'f', es:'la lectura', e:'📖'}, {h:'danse', g:'f', es:'el baile', e:'💃'},
+  {h:'natation', g:'f', es:'la natación', e:'🏊'}, {h:'tennis', g:'m', es:'el tenis', e:'🎾'}, {h:'peinture', g:'f', es:'la pintura', e:'🎨'}, {h:'sport', g:'m', es:'el deporte', e:'🏅', nopic:1},
+  {h:'athlétisme', g:'m', es:'el atletismo', e:'🏃'}, {h:'escalade', g:'f', es:'la escalada', e:'🧗'}, {h:'films', g:'p', es:'las películas', e:'🎞️'}, {h:'voyages', g:'p', es:'los viajes', e:'✈️'},
+  {h:'chocolat', g:'m', es:'el chocolate', e:'🍫'}];
+const art = n => n.g === 'p' ? 'les' : /^[aeiouéèêh]/i.test(n.h) ? "l'" : n.g === 'm' ? 'le' : 'la';
+const phrase = n => art(n) === "l'" ? "l'" + n.h : art(n) + ' ' + n.h;
+const tilePhrase = n => art(n) === "l'" ? "l'|" + n.h : art(n) + ' ' + n.h;
+const gusta = n => (n.g === 'p' ? 'Me gustan ' : 'Me gusta ') + n.es;
+function artEx(mode){
+  const n = pick(NOUNS);
+  if (mode === 'art') return fMC('f-art', 'Elige el artículo', `<div class="pic">${n.e}</div><div class="qtext han">J'aime ___ ${esc(n.h)}.</div>`, ['le', 'la', "l'", 'les'].map(x => oFr(x)), art(n),
+    {h:`J'aime ${phrase(n)}.`, p:'', es:gusta(n) + '.'});
+  if (mode === 'pic'){
+    const pool = NOUNS.filter(x => !x.nopic), x = pick(pool);
+    return fMC('f-art', '¿Qué le gusta?', `<div class="pic">${x.e}</div><div class="qtext han">J'aime…</div>`, [x, ...others(pool, x, 3, y => y.h)].map(y => oFr(phrase(y))), phrase(x),
+      {h:`J'aime ${phrase(x)}.`, p:'', es:gusta(x) + '.'});
+  }
+  if (mode === 'listen'){
+    const fr = `J'aime ${phrase(n)}.`;
+    return fMC('f-art', 'Escucha y elige', audioBtns(fr, true), [n, ...others(NOUNS, n, 3, y => y.h)].map(y => oEs(gusta(y) + '.')), gusta(n) + '.', {h:fr, p:'', es:gusta(n) + '.'}, {say:fr});
+  }
+  const wrongArts = ['le', 'la', 'les'].filter(a => a !== art(n));
+  if (mode === 'reply'){
+    const qq = `Tu aimes ${phrase(n)} ?`;
+    return fTiles('f-art', 'Responde', bub('Amiga', qq) + `<div class="ask">Responde que sí.</div>`, `Oui, j'aime ${tilePhrase(n)}.`, `Sí, ${gusta(n).toLowerCase()}.`, [pick(wrongArts), 'aimes', 'tu'], [], {say:qq});
+  }
+  const me = Math.random() < 0.55, g = pick(['m', 'f']), [P, E] = pron3(g);
+  const fr = me ? `J'aime ${tilePhrase(n)}.` : `${P} aime ${tilePhrase(n)}.`;
+  const es = me ? gusta(n) + '.' : `A ${E.toLowerCase()} le gusta${n.g === 'p' ? 'n' : ''} ${n.es}.`;
+  if (mode === 'speak') return fSpeak('f-art', es, fr);
+  return fTiles('f-art', 'Tradúcelo al francés', fcue(es), fr, es, [...shuffle(wrongArts).slice(0, 2), 'aimes']);
+}
+
+FW('fb5', 'num', [
+  ['z_40', 'quarante', 'ka·rãt', '40'], ['z_50', 'cinquante', 'sẽ·kãt', '50'], ['z_60', 'soixante', 'sua·sãt', '60', 'La x suena «s».'],
+  ['z_70', 'soixante-dix', 'sua·sãt·dis', '70', '60 + 10. En Bélgica y Suiza: septante.'], ['z_80', 'quatre-vingts', 'ka·trë·vẽ', '80', '4 × 20. En Suiza también huitante.'],
+  ['z_90', 'quatre-vingt-dix', 'ka·trë·vẽ·dis', '90', '4 × 20 + 10. En Bélgica y Suiza: nonante.'], ['z_100', 'cent', 'sã', '100']]);
+FG('f-n100', 'fb5', 'números 32–100');
+
+const COUNTRIES = [
+  {h:'France', a:'la', p:'en', es:'Francia', city:'Paris', ce:'París'}, {h:'Pérou', a:'le', p:'au', es:'Perú', city:'Lima', ce:'Lima'},
+  {h:'Espagne', a:"l'", p:'en', es:'España', city:'Madrid', ce:'Madrid'}, {h:'Mexique', a:'le', p:'au', es:'México', city:'Guadalajara', ce:'Guadalajara'},
+  {h:'Canada', a:'le', p:'au', es:'Canadá', city:'Montréal', ce:'Montreal'}, {h:'États-Unis', a:'les', p:'aux', es:'Estados Unidos', city:'New_York', ce:'Nueva York'},
+  {h:'Belgique', a:'la', p:'en', es:'Bélgica', city:'Bruxelles', ce:'Bruselas'}, {h:'Suisse', a:'la', p:'en', es:'Suiza', city:'Genève', ce:'Ginebra'},
+  {h:'Italie', a:"l'", p:'en', es:'Italia', city:'Rome', ce:'Roma'}, {h:'Brésil', a:'le', p:'au', es:'Brasil', city:'Rio', ce:'Río'},
+  {h:'Chine', a:'la', p:'en', es:'China', city:'Pékin', ce:'Pekín'}, {h:'Japon', a:'le', p:'au', es:'Japón', city:'Tokyo', ce:'Tokio'},
+  {h:'Argentine', a:"l'", p:'en', es:'Argentina', city:'Buenos_Aires', ce:'Buenos Aires'}, {h:'Colombie', a:'la', p:'en', es:'Colombia', city:'Bogota', ce:'Bogotá'},
+  {h:'Chili', a:'le', p:'au', es:'Chile', city:'Santiago', ce:'Santiago'}, {h:'Équateur', a:"l'", p:'en', es:'Ecuador', city:'Quito', ce:'Quito'},
+  {h:'Pays-Bas', a:'les', p:'aux', es:'Países Bajos', city:'Amsterdam', ce:'Ámsterdam'}, {h:'Maroc', a:'le', p:'au', es:'Marruecos', city:'Rabat', ce:'Rabat'},
+  {h:'Sénégal', a:'le', p:'au', es:'Senegal', city:'Dakar', ce:'Dakar'}, {h:'Portugal', a:'le', p:'au', es:'Portugal', city:'Lisbonne', ce:'Lisboa'}];
+COUNTRIES.forEach(c => { FR_NAMES.add(c.h); FR_NAMES.add(c.city.replace(/_/g, ' ')); });
+FW('fb6', 'country', [
+  ['c_hab', "j'habite", 'zha·bit', 'vivo (en)', 'La h no suena: je + habite = j\'habite.'],
+  ['c_par', 'je parle', 'zhë·parl', 'hablo'],
+  ['c_fr', 'la France', 'la·frãs', 'Francia'], ['c_pe', 'le Pérou', 'lë·pé·ru', 'el Perú'], ['c_es', "l'Espagne", 'lès·pañ', 'España'],
+  ['c_mx', 'le Mexique', 'lë·mèk·sik', 'México', 'Termina en -e pero es masculino: au Mexique.'], ['c_us', 'les États-Unis', 'lé·zé·ta·zü·ni', 'Estados Unidos'],
+  ['c_be', 'la Belgique', 'la·bèl·zhik', 'Bélgica'], ['c_ch', 'la Suisse', 'la·süis', 'Suiza'], ['c_it', "l'Italie", 'li·ta·li', 'Italia']]);
+FG('f-prep', 'fb6', 'à, au, en, aux');
+const LANGS_FR = [['espagnol', 'español'], ['anglais', 'inglés'], ['français', 'francés'], ['italien', 'italiano'], ['allemand', 'alemán'], ['chinois', 'chino'], ['portugais', 'portugués']];
+const withArt = c => c.a === "l'" ? "l'" + c.h : c.a + ' ' + c.h;
+function prepEx(mode){
+  const c = pick(COUNTRIES), city = c.city.replace(/_/g, ' ');
+  if (mode === 'prep'){
+    const isCity = Math.random() < 0.25, [P, E] = pick([["J'habite", 'Vivo'], ['Il habite', 'Él vive'], ['Elle habite', 'Ella vive']]);
+    const place = isCity ? city : c.h, pr = isCity ? 'à' : c.p;
+    return fMC('f-prep', 'Elige la preposición', `<div class="qtext han">${P} ___ ${esc(place)}.</div><div class="hint">${E} en ${esc(isCity ? c.ce : c.es)}.</div>`,
+      ['à', 'au', 'en', 'aux'].map(x => oFr(x)), pr, {h:`${P} ${pr} ${place}.`, p:'', es:`${E} en ${isCity ? c.ce : c.es}.`});
+  }
+  if (mode === 'pays') return fMC('f-prep', 'Elige el artículo', `<div class="qtext han">J'aime ___ ${esc(c.h)}.</div><div class="hint">${esc(c.es)}</div>`, ['le', 'la', "l'", 'les'].map(x => oFr(x)), c.a,
+    {h:`J'aime ${withArt(c)}.`, p:'', es:`Me gusta ${c.es}.`});
+  if (mode === 'listen'){
+    const [P, E] = pick([['Il', 'Él'], ['Elle', 'Ella']]), fr = `${P} habite ${c.p} ${c.h}.`;
+    return fMC('f-prep', 'Escucha y elige', audioBtns(fr, true), [c, ...others(COUNTRIES, c, 3, x => x.h)].map(x => oEs(`${E} vive en ${x.es}.`)), `${E} vive en ${c.es}.`, {h:fr, p:'', es:`${E} vive en ${c.es}.`}, {say:fr});
+  }
+  if (mode === 'reply'){
+    const qq = pick(['Tu habites où ?', 'Où tu habites ?']);
+    return fTiles('f-prep', 'Responde', bub('Karim', qq) + `<div class="ask">Responde con la ciudad: vives en <b>${esc(c.ce)}</b>.</div>`, `J'habite à ${c.city}.`, `Vivo en ${c.ce}.`, ['au', 'en', 'habites'], [], {say:qq});
+  }
+  const wrongP = ['à', 'au', 'en', 'aux'].filter(x => x !== c.p && x !== 'à');
+  const kind = pick(['live', 'live', 'born', 'lang']);
+  let fr, es, traps, alts = [];
+  if (kind === 'live'){ fr = `J'habite à ${c.city}, ${c.p} ${c.h}.`; es = `Vivo en ${c.ce}, ${c.es}.`; alts = [`J'habite ${c.p} ${c.h}, à ${c.city}.`]; traps = [...wrongP, 'le']; }
+  else if (kind === 'born'){ const g = pick(['m', 'f']), [P, E] = pron3(g); fr = `${P} est ${g === 'f' ? 'née' : 'né'} à ${c.city}.`; es = `${E} nació en ${c.ce}.`; traps = [g === 'f' ? 'né' : 'née', c.p === 'à' ? 'au' : c.p, 'a']; }
+  else { const [l1, l2] = shuffle(LANGS_FR); fr = `Je parle ${l1[0]} et ${l2[0]}.`; es = `Hablo ${l1[1]} y ${l2[1]}.`; alts = [`Je parle ${l2[0]} et ${l1[0]}.`]; traps = ['parles', 'le', l1[0] === 'espagnol' ? 'espagnole' : 'la']; }
+  if (mode === 'speak') return fSpeak('f-prep', es, fr);
+  return fTiles('f-prep', 'Tradúcelo al francés', fcue(es), fr, es, traps, alts);
+}
+
+FW('fb7', 'contact', [
+  ['t_nu', 'le numéro', 'lë·nü·mé·ro', 'el número'],
+  ['t_po', 'le portable', 'lë·pòr·tabl', 'el celular'],
+  ['t_fi', 'le téléphone fixe', 'lë·té·lé·fòn·fiks', 'el teléfono fijo'],
+  ['t_ma', "l'adresse mail", 'la·drès·mèl', 'el correo electrónico', 'También se dice le mail. En Quebec: le courriel.'],
+  ['t_ar', 'arobase', 'a·ro·baz', 'arroba (@)'],
+  ['t_pt', 'point', 'puẽ', 'punto (.)'],
+  ['t_ti', 'tiret', 'ti·rè', 'guion (-)']]);
+FG('f-phone', 'fb7', 'teléfono y correo');
+const pad2 = n => String(n).padStart(2, '0');
+const pairFr = n => n < 10 ? 'zéro ' + FR_U[n] : frNum(n);
+const phoneText = ps => ps.map(pad2).join(' ');
+const phoneSay = ps => ps.map(pairFr).join(', ');
+const MAILS = [['lea.martin@mail.fr', 'léa, point, martin, arobase, mail, point, F, R'], ['hugo-roux@net.fr', 'hugo, tiret, roux, arobase, net, point, F, R'],
+  ['ana.rojas@correo.pe', 'ana, point, rojas, arobase, correo, point, P, E'], ['karim.diallo@mail.sn', 'karim, point, diallo, arobase, mail, point, S, N'],
+  ['ines-dubois@web.be', 'inès, tiret, dubois, arobase, web, point, B, E'], ['paul.moreau@mail.ca', 'paul, point, moreau, arobase, mail, point, C, A']];
+const ASKC = [['Pregúntale su número a tu amiga.', 'Quel est ton numéro ?', '¿Cuál es tu número?', ['quelle', 'mon', 'es']],
+  ['Pregúntale su correo a tu amigo.', 'Quelle est ton adresse mail ?', '¿Cuál es tu correo?', ['quel', 'ta', 'mon']],
+  ['Pregúntale a tu compañero si tiene tu correo.', 'Tu as mon adresse mail ?', '¿Tienes mi correo?', ['ton', 'es', 'ma']]];
+function phoneEx(mode){
+  if (mode === 'mail'){
+    const [m, s] = pick(MAILS), [loc, dom] = m.split('@');
+    const sep = loc.includes('.') ? '.' : '-', alt = sep === '.' ? '-' : '.';
+    const vars = [loc.replace(sep, alt) + '@' + dom, loc.replace(sep, '') + '@' + dom, loc + '@' + dom.replace(/\.\w+$/, '.com')];
+    return fMC('f-phone', 'Escucha y elige el correo', audioBtns(s, true), [m, ...vars].map(x => oEs(x)), m, {h:m, p:'', es:'Se dice: ' + s}, {say:s});
+  }
+  if (mode === 'ask'){
+    const [ins, fr, es, traps] = pick(ASKC);
+    return fTiles('f-phone', 'Pregunta', `<div class="ask">${esc(ins)}</div>`, fr, es, traps);
+  }
+  const ps = [pick([6, 7]), rint(10, 99), rint(0, 99), rint(10, 99), rint(0, 99)];
+  const text = phoneText(ps), sp = phoneSay(ps), rev = {h:text, p:'', es:'Se dice de dos en dos: ' + sp};
+  if (mode === 'type') return {t:'digits', item:'f-phone', kind:'Escucha y escribe el número', say:sp, q:audioBtns(sp, true), answer:ps.map(pad2).join(''), hint:'Escribe los 10 dígitos; los espacios no importan.', rev};
+  const vars = [];
+  for (let tries = 0; vars.length < 3 && tries < 50; tries++){
+    const k = rint(1, 4), v = ps.slice(); v[k] = frConf(ps[k], 0, 99, 1)[0];
+    const t = phoneText(v); if (t !== text && !vars.includes(t)) vars.push(t);
+  }
+  return fMC('f-phone', 'Escucha y elige el número', audioBtns(sp, true), [text, ...vars].map(x => oEs(x)), text, rev, {say:sp});
+}
+
+FS('fb8', [
+  ['fs_x1', 'Je ne suis pas français.', 'No soy francés.', ["n'", 'française', 'est']],
+  ['fs_x2', "Je n'|aime pas le sport.", 'No me gusta el deporte.', ['ne', 'la', 'aimes']],
+  ['fs_x3', "Elle n'|habite pas à Paris.", 'Ella no vive en París.', ['ne', 'en', 'habites']],
+  ['fs_x4', 'Tu ne parles pas espagnol ?', '¿No hablas español?', ["n'", 'parle', 'espagnole']]]);
+FG('f-neg', 'fb8', 'la negación');
+const NEG = [
+  ["J'aime le sport.", "Je n'|aime pas le sport.", 'Me gusta el deporte.', 'No me gusta el deporte.', 'aimes'],
+  ['Il est mexicain.', "Il n'|est pas mexicain.", 'Él es mexicano.', 'Él no es mexicano.', 'es'],
+  ['Elle habite à Paris.', "Elle n'|habite pas à Paris.", 'Ella vive en París.', 'Ella no vive en París.', 'habites'],
+  ['Je parle chinois.', 'Je ne parle pas chinois.', 'Hablo chino.', 'No hablo chino.', 'parles'],
+  ['Tu es étudiant.', "Tu n'|es pas étudiant.", 'Eres estudiante.', 'No eres estudiante.', 'est'],
+  ['Nous sommes à Lima.', 'Nous ne sommes pas à Lima.', 'Estamos en Lima.', 'No estamos en Lima.', 'sont'],
+  ['Il a vingt ans.', "Il n'|a pas vingt ans.", 'Él tiene veinte años.', 'Él no tiene veinte años.', 'as'],
+  ["Elle s'appelle Léa.", "Elle ne s'appelle pas Léa.", 'Ella se llama Léa.', 'Ella no se llama Léa.', "s'appelles"],
+  ["J'ai le numéro de Marie.", "Je n'|ai pas le numéro de Marie.", 'Tengo el número de Marie.', 'No tengo el número de Marie.', 'as'],
+  ['Vous aimez la musique.', "Vous n'|aimez pas la musique.", 'A usted le gusta la música.', 'A usted no le gusta la música.', 'aime'],
+  ['Ils parlent anglais.', 'Ils ne parlent pas anglais.', 'Ellos hablan inglés.', 'Ellos no hablan inglés.', 'parle'],
+  ['Elle aime la danse.', "Elle n'|aime pas la danse.", 'A ella le gusta el baile.', 'A ella no le gusta el baile.', 'aimes']];
+const elided = n => n[1].includes("n'|");
+function negEx(mode){
+  const n = pick(NEG), [aff, neg, ea, en, wf] = n, other = elided(n) ? 'ne' : "n'";
+  if (mode === 'elide'){
+    const gap = elided(n) ? neg.replace("n'|", '___ ') : neg.replace(' ne ', ' ___ ');
+    return fMC('f-neg', 'Completa la negación', `<div class="qtext han">${esc(gap)}</div><div class="hint">${esc(en)}</div>`, ['ne', "n'", 'pas', 'non'].map(x => oFr(x)), elided(n) ? "n'" : 'ne',
+      {h:frText(neg), p:'', es:en});
+  }
+  if (mode === 'listen'){
+    const said = Math.random() < 0.5 ? 1 : 0, fr = frText(said ? neg : aff), es = said ? en : ea;
+    const m = pick(NEG.filter(x => x !== n));
+    return fMC('f-neg', 'Escucha y elige', audioBtns(fr, true), [ea, en, m[2], m[3]].map(t => oEs(t)), es, {h:fr, p:'', es}, {say:fr});
+  }
+  if (mode === 'speak') return fSpeak('f-neg', en, neg);
+  if (mode === 'reply'){
+    const thirds = NEG.filter(x => /^(Il|Elle|Ils) /.test(x[0])), t = pick(thirds), [ta, tn, , tes] = t;
+    const qq = ta.replace(/\.$/, ' ?');
+    const ans = 'Non, ' + lc1(tn);
+    return fTiles('f-neg', 'Responde', bub('Amiga', qq) + `<div class="ask">Responde que no.</div>`, ans, 'No, ' + lc1(tes), [elided(t) ? 'ne' : "n'", t[4]], [], {say:qq});
+  }
+  // neg: affirmative → negative
+  return fTiles('f-neg', 'Ponla en negativo', fq(aff), neg, en, [other, wf]);
+}
+
+FW('fb9', 'job', [
+  ['j_me', 'médecin', 'méd·sẽ', 'médico / médica', 'Igual para mujeres: elle est médecin.'],
+  ['j_av', 'avocat', 'a·vo·ka', 'abogado', 'Femenino: avocate (a·vo·kat).'],
+  ['j_ar', 'architecte', 'ar·shi·tèkt', 'arquitecto / arquitecta'],
+  ['j_pi', 'pilote', 'pi·lòt', 'piloto'],
+  ['j_jo', 'journaliste', 'zhur·na·list', 'periodista'],
+  ['j_ac', 'acteur', 'ak·tör', 'actor', 'Femenino: actrice (ak·tris).'],
+  ['j_ch', 'chanteur', 'shã·tör', 'cantante', 'Femenino: chanteuse (shã·töz).'],
+  ['j_ec', 'écrivain', 'é·kri·vẽ', 'escritor', 'Femenino: écrivaine (é·kri·vèn).'],
+  ['j_et', 'étudiant', 'é·tü·diã', 'estudiante', 'Femenino: étudiante; ahí la t suena.'],
+  ['j_in', 'informaticien', 'ẽ·for·ma·ti·siẽ', 'informático', 'Femenino: informaticienne.']]);
+FG('f-job', 'fb9', 'profesiones');
+const JOBS = [
+  {m:'médecin', f:'médecin', em:'médico', ef:'médica', e:'🩺'}, {m:'avocat', f:'avocate', em:'abogado', ef:'abogada', e:'⚖️'},
+  {m:'architecte', f:'architecte', em:'arquitecto', ef:'arquitecta', e:'📐'}, {m:'pilote', f:'pilote', em:'piloto', ef:'piloto', e:'✈️'},
+  {m:'journaliste', f:'journaliste', em:'periodista', ef:'periodista', e:'📰'}, {m:'acteur', f:'actrice', em:'actor', ef:'actriz', e:'🎬'},
+  {m:'chanteur', f:'chanteuse', em:'cantante', ef:'cantante', e:'🎤'}, {m:'écrivain', f:'écrivaine', em:'escritor', ef:'escritora', e:'✍️'},
+  {m:'étudiant', f:'étudiante', em:'estudiante', ef:'estudiante', e:'🎓'}, {m:'informaticien', f:'informaticienne', em:'informático', ef:'informática', e:'💻'},
+  {m:'professeur', f:'professeure', em:'profesor', ef:'profesora', e:'🧑‍🏫'}];
+function jobEx(mode){
+  const x = pick(JOBS), g = pick(['m', 'f']), [P, E] = pron3(g), jes = g === 'f' ? x.ef : x.em;
+  const fr = `${P} est ${x[g]}.`, es = `${E} es ${jes}.`;
+  if (mode === 'pic'){
+    return fMC('f-job', '¿Qué profesión es?', `<div class="pic">${x.e}</div><div class="qtext han">Il est…</div>`, [x, ...others(JOBS, x, 3, j => j.m)].map(j => oFr(j.m)), x.m, {h:`Il est ${x.m}.`, p:'', es:`Él es ${x.em}.`});
+  }
+  if (mode === 'agree'){
+    const y = pick(JOBS.filter(j => j !== x && j.m !== j.f));
+    const opts = uniqBy([x[g], x[g === 'f' ? 'm' : 'f'], y[g], y[g === 'f' ? 'm' : 'f'], ...shuffle(JOBS).map(j => j[g])], t => t).slice(0, 4);
+    return fMC('f-job', 'Elige la forma correcta', `<div class="qtext">${esc(es)}</div><div class="qtext han">${P} est ___.</div>`, opts.map(t => oFr(t)), x[g], {h:fr, p:'', es});
+  }
+  if (mode === 'listen'){
+    const y = pick(JOBS.filter(j => j !== x)), og = g === 'f' ? 'm' : 'f';
+    const e = (j, gg) => `${pron3(gg)[1]} es ${gg === 'f' ? j.ef : j.em}.`;
+    return fMC('f-job', 'Escucha y elige', audioBtns(fr, true), uniqBy([e(x, g), e(x, og), e(y, g), e(y, og)], t => t).map(t => oEs(t)), e(x, g), {h:fr, p:'', es}, {say:fr});
+  }
+  if (mode === 'speak') return fSpeak('f-job', es, fr);
+  return fTiles('f-job', 'Tradúcelo al francés', fcue(es) + '<div class="hint">Sin artículo, como en español.</div>', fr, es, [g === 'f' ? 'une' : 'un', x.m !== x.f ? x[g === 'f' ? 'm' : 'f'] : (g === 'f' ? 'il' : 'elle')]);
+}
+
+FS('fb10', [
+  ['fs_p1', "Je m'appelle Diego, je suis péruvien et j'ai 30 ans.", 'Me llamo Diego, soy peruano y tengo 30 años.', ['péruvienne', 'es', 'an']],
+  ['fs_p2', 'Elle est architecte et elle habite à Montréal.', 'Ella es arquitecta y vive en Montreal.', ['une', 'au', 'il']],
+  ['fs_p3', 'Il parle français et anglais.', 'Él habla francés e inglés.', ['parles', 'le', 'elle'], ['Il parle anglais et français.']],
+  ['fs_p4', "Je n'|habite pas en France, j'habite au Pérou.", 'No vivo en Francia, vivo en el Perú.', ['ne', 'à', 'aux']]]);
+FG('f-id', 'fb10', 'ficha de identidad');
+const ORIG = [{c:'Pérou', nat:'péruvien', city:'Lima', l:'espagnol'}, {c:'France', nat:'français', city:'Paris', l:'français'}, {c:'Belgique', nat:'belge', city:'Bruxelles', l:'français'},
+  {c:'Canada', nat:'canadien', city:'Montréal', l:'français'}, {c:'Mexique', nat:'mexicain', city:'Guadalajara', l:'espagnol'}, {c:'Italie', nat:'italien', city:'Rome', l:'italien'},
+  {c:'Suisse', nat:'suisse', city:'Genève', l:'français'}, {c:'Espagne', nat:'espagnol', city:'Madrid', l:'espagnol'}, {c:'Sénégal', nat:'sénégalais', city:'Dakar', l:'français'}];
+const ID_M = ['Marc', 'Hugo', 'Diego', 'Karim', 'Paul', 'Lucas', 'Omar', 'Thomas'], ID_F = ['Ana', 'Léa', 'Inès', 'Nadia', 'Marie', 'Sofia', 'Camille', 'Julia'];
+const ID_L = ['Martin', 'Dubois', 'Rojas', 'Diallo', 'Tremblay', 'Bernard', 'Moreau', 'Quispe'];
+[...ID_M, ...ID_F, ...ID_L].forEach(n => FR_NAMES.add(n));
+function person(){
+  const g = pick(['m', 'f']), o = pick(ORIG), N = natOf(o.nat), J = pick(JOBS);
+  const l2 = pick(LANGS_FR.filter(l => l[0] !== o.l && ['anglais', 'français', 'espagnol'].includes(l[0])));
+  return {g, first:pick(g === 'f' ? ID_F : ID_M), last:pick(ID_L), age:rint(20, 69), o, N, nat:N[g], natEs:g === 'f' ? N.ef : N.em, J, job:J[g], jobEs:g === 'f' ? J.ef : J.em,
+    langs:[o.l, l2[0]], langsEs:[LANGS_FR.find(l => l[0] === o.l)[1], l2[1]], ce:COUNTRIES.find(c => c.h === o.c)};
+}
+const fiche = p => `<dl class="fiche"><dt>Nom</dt><dd>${esc(p.last)}</dd><dt>Prénom</dt><dd>${esc(p.first)}</dd><dt>Âge</dt><dd>${p.age} ans</dd><dt>Nationalité</dt><dd>${esc(p.nat)}</dd>
+  <dt>Profession</dt><dd>${esc(p.job)}</dd><dt>Ville</dt><dd>${esc(p.o.city)} (${esc(p.o.c)})</dd><dt>Langues</dt><dd>${esc(p.langs.join(', '))}</dd></dl>`;
+function idFacts(p){
+  const [P, E] = pron3(p.g);
+  return {
+    name:{q:`${P} s'appelle comment ?`, a:`${P} s'appelle ${p.first} ${p.last}.`, es:`${E} se llama ${p.first} ${p.last}.`, tr:[p.g === 'f' ? 'il' : 'elle', "m'appelle"]},
+    age:{q:`${P} a quel âge ?`, a:`${P} a ${p.age} ans.`, es:`${E} tiene ${p.age} años.`, tr:['est', 'an']},
+    nat:{q:`${P} est de quelle nationalité ?`, a:`${P} est ${p.nat}.`, es:`${E} es ${p.natEs}.`, tr:[p.N.m !== p.N.f ? p.N[p.g === 'f' ? 'm' : 'f'] : (p.g === 'f' ? 'il' : 'elle'), 'a']},
+    job:{q:'Quelle est sa profession ?', a:`${P} est ${p.job}.`, es:`${E} es ${p.jobEs}.`, tr:[p.g === 'f' ? 'une' : 'un', 'a']},
+    city:{q:`${P} habite où ?`, a:`${P} habite à ${p.o.city}.`, es:`${E} vive en ${p.ce.ce}.`, tr:['au', 'en']},
+    lang:{q:`${P} parle quelles langues ?`, a:`${P} parle ${p.langs[0]} et ${p.langs[1]}.`, es:`${E} habla ${p.langsEs[0]} y ${p.langsEs[1]}.`, tr:['parles', 'le'], alt:[`${P} parle ${p.langs[1]} et ${p.langs[0]}.`]}};
+}
+const FIELD_ES = {name:'su nombre', age:'su edad', nat:'su nacionalidad', job:'su profesión', city:'dónde vive', lang:'qué idiomas habla'};
+function idEx(mode){
+  const p = person(), F = idFacts(p), k = pick(Object.keys(F)), f = F[k];
+  if (mode === 'present') return fTiles('f-id', 'Presenta a la persona', fiche(p) + `<div class="ask">Di <b>${FIELD_ES[k]}</b>.</div>`, f.a, f.es, f.tr, f.alt || []);
+  if (mode === 'ask'){
+    const opts = [k, ...shuffle(Object.keys(F).filter(x => x !== k)).slice(0, 3)];
+    return fMC('f-id', 'Responde la pregunta', fiche(p) + bub('Pregunta', f.q), opts.map(x => oFr(F[x].a)), f.a, {h:f.a, p:'', es:f.es}, {say:f.q});
+  }
+  if (mode === 'q'){
+    const opts = [k, ...shuffle(Object.keys(F).filter(x => x !== k)).slice(0, 3)];
+    return fMC('f-id', '¿Cuál es la pregunta?', `<div class="ask">Respuesta:</div>${fq(f.a)}`, opts.map(x => oFr(F[x].q)), f.q, {h:f.q, p:'', es:f.es});
+  }
+  if (mode === 'speak') return fSpeak('f-id', f.es, f.a);
+  // listen: a self-introduction
+  const fr = `Je m'appelle ${p.first}. Je suis ${p.nat} et j'ai ${p.age} ans.`;
+  const n2 = pick(NATS.filter(n => n !== p.N)), a2 = frConf(p.age, 20, 69, 1)[0];
+  const s = (natEs, age) => `${p.first}: ${natEs}, ${age} años`;
+  const o2 = p.g === 'f' ? n2.ef : n2.em;
+  const opts = uniqBy([s(p.natEs, p.age), s(o2, p.age), s(p.natEs, a2), s(o2, a2)], t => t);
+  return fMC('f-id', 'Escucha y elige', audioBtns(fr, true), opts.map(t => oEs(t)), opts[0], {h:fr, p:'', es:`Me llamo ${p.first}. Soy ${p.natEs} y tengo ${p.age} años.`}, {say:fr});
+}
+
+/* ---------- generators, modes and levels ---------- */
+Object.assign(GEN, {'f-greet':greetEx, 'f-abc':abcEx, 'f-name':nameEx, 'f-n10':n10Ex, 'f-n31':n31Ex, 'f-day':dayEx, 'f-month':monthEx, 'f-class':classEx,
+  'f-nat':natEx, 'f-age':ageEx, 'f-conj':conjEx, 'f-art':artEx, 'f-n100':n100Ex, 'f-prep':prepEx, 'f-phone':phoneEx, 'f-neg':negEx, 'f-job':jobEx, 'f-id':idEx});
+Object.assign(GEN_MODES, {'f-greet':['reply','tuvous','listen','reply'], 'f-abc':['letter','spell','acro','type'], 'f-name':['reply','pron','ask','listen'], 'f-n10':['listen','read','calc','mc'],
+  'f-n31':['listen','read','spell','calc'], 'f-day':['next','listen','build','next'], 'f-month':['listen','pick','season','date','build'], 'f-class':['reply','listen','reply'],
+  'f-nat':['agree','build','listen','agree'], 'f-age':['pic','reply','ask','listen'], 'f-conj':['form','pron','build','form','build','pron','build'], 'f-art':['art','pic','build','listen','reply'],
+  'f-n100':['listen','read','spell','listen'], 'f-prep':['prep','pays','build','listen','reply'], 'f-phone':['listen','mail','ask','type'], 'f-neg':['elide','build','neg','listen','reply'],
+  'f-job':['pic','agree','build','listen'], 'f-id':['present','ask','q','listen']});
+Object.assign(L2_GEN, {'f-greet':['listen','reply','tuvous'], 'f-abc':['letter','spell','type'], 'f-name':['listen','reply','ask'], 'f-n10':['listen','listen','calc'], 'f-n31':['listen','spell','calc'],
+  'f-day':['listen','next','build'], 'f-month':['listen','date','build'], 'f-class':['listen','reply'], 'f-nat':['listen','agree','build'], 'f-age':['listen','reply','ask'],
+  'f-conj':['form','build','pron'], 'f-art':['listen','art','build'], 'f-n100':['listen','spell','read'], 'f-prep':['listen','prep','build'], 'f-phone':['listen','type','mail'],
+  'f-neg':['listen','neg','reply'], 'f-job':['listen','agree','build'], 'f-id':['listen','present','ask']});
+// GEN_MODES 'build' maps to the tiles mode of each generator
+const wordProd = (uid, n) => shuffle(UNITS.find(u => u.id === uid).items.filter(id => ITEMS[id].kind === 'word')).slice(0, n).map(id => withRedo(() => exFor(id, pick(['dict', 'type', 'speak']))));
+const sentProd = (uid, n) => shuffle(UNITS.find(u => u.id === uid).items.filter(id => ITEMS[id].kind === 'sent')).slice(0, n).map(id => withRedo(() => exFor(id, pick(['build', 'listen']))));
+Object.assign(L3, {
+  fa1: () => [...mix(greetEx, [['reply',4],['tuvous',3],['listen',3],['speak',2]]), ...sentProd('fa1', 2), ...wordProd('fa1', 2)],
+  fa2: () => mix(abcEx, [['letter',5],['spell',4],['type',4],['acro',2]]),
+  fa3: () => [...mix(nameEx, [['reply',4],['ask',3],['pron',3],['listen',3],['speak',2]]), ...sentProd('fa3', 2)],
+  fa4: () => [...mix(n10Ex, [['listen',5],['calc',4],['read',2],['mc',2],['speak',2]])],
+  fa5: () => [...mix(n31Ex, [['listen',5],['spell',3],['calc',3],['read',2],['speak',2]])],
+  fa6: () => [...mix(dayEx, [['next',4],['listen',3],['build',3],['speak',2]]), ...wordProd('fa6', 2)],
+  fa7: () => mix(monthEx, [['listen',3],['pick',2],['season',3],['date',3],['build',3],['speak',1]]),
+  fa8: () => [...mix(classEx, [['reply',5],['listen',4],['speak',2]]), ...sentProd('fa8', 3)],
+  fb1: () => mix(natEx, [['agree',4],['build',4],['listen',4],['speak',2]]),
+  fb2: () => mix(ageEx, [['reply',4],['ask',3],['listen',4],['pic',2],['speak',2]]),
+  fb3: () => mix(conjEx, [['form',4],['pron',3],['build',5],['speak',2]]),
+  fb4: () => mix(artEx, [['art',4],['build',4],['reply',3],['listen',3],['speak',2]]),
+  fb5: () => mix(n100Ex, [['listen',6],['spell',4],['read',3],['speak',2]]),
+  fb6: () => mix(prepEx, [['prep',4],['pays',2],['build',4],['reply',3],['listen',2],['speak',2]]),
+  fb7: () => mix(phoneEx, [['listen',4],['type',4],['mail',3],['ask',3]]),
+  fb8: () => [...mix(negEx, [['elide',3],['neg',4],['reply',4],['listen',3],['speak',2]]), ...sentProd('fb8', 2)],
+  fb9: () => mix(jobEx, [['agree',4],['build',4],['listen',3],['pic',2],['speak',2]]),
+  fb10: () => [...mix(idEx, [['present',5],['ask',3],['q',3],['listen',4]]), ...sentProd('fb10', 2)]
+});
+
+/* ---------- units ---------- */
+const R = (kind, title, rows, tip, formula) => ({type:'rule', kind, title, rows, tip, formula});
+const U = (id, mod, key, title, zh, ref, intro, models) => {
+  UNITS.push({id, mod, key, title, zh, ref, intro, models, items:Object.values(ITEMS).filter(it => it.unit === id).map(it => it.id)});
+};
+U('fa1', 'fa', 'Bj', 'Hola y adiós', 'Bonjour ! Ça va ?', 'Saludar, despedirse, tu y vous', [{type:'frpron'},
+  R('La regla', 'Tu o vous', [['Tu vas bien ?', 'a amigos, familia y niños'], ['Vous allez bien ?', 'a alguien que no conoces, por respeto o a varias personas']],
+    'En Francia, entre amigos se saluda con besos en la mejilla (la bise); con alguien que no conoces, con un apretón de manos.')], ['fs_g2', 'fs_g5']);
+U('fa2', 'fa', 'ABC', 'El alfabeto', "Comment ça s'écrit ?", 'Las letras y deletrear tu nombre', [
+  R('El alfabeto', 'Las letras que confunden', [['E', '«ë», una e relajada'], ['I', '«i»'], ['U', '«ü»: labios de u, di i'], ['G', '«zhé»'], ['J', '«zhi»'], ['H', '«ash»; la h nunca suena'], ['Q', '«kü»'], ['R', '«èr»'], ['W', '«du·blë·vé»'], ['Y', '«i·grèk»']],
+    'Las letras dobles se dicen «deux L»: CAMILLE = C, A, M, I, deux L, E. Las tildes: é es «e accent aigu», è es «e accent grave» y ç es «c cédille».')]);
+U('fa3', 'fa', 'Je', 'Me llamo…', 'Je m\'appelle Ana, et vous ?', 'Decir y preguntar el nombre', [
+  R('Los pronombres', 'Je, tu, il, elle…', [['je · moi', 'yo'], ['tu · toi', 'tú'], ['il · elle', 'él · ella'], ['nous', 'nosotros'], ['vous', 'usted · ustedes'], ['ils · elles', 'ellos · ellas']],
+    'En francés el pronombre siempre va con el verbo: «Je m\'appelle Ana», nunca «M\'appelle Ana». Moi y toi refuerzan: Moi, je m\'appelle Hugo.')], ['fs_n2', 'fs_n3']);
+U('fa4', 'fa', '10', 'Números 0–10', 'un, deux, trois…', 'Contar y hacer cuentas', [
+  R('Las cuentas', 'Plus, moins, égale', [['trois plus quatre égale sept', '3 + 4 = 7'], ['dix moins deux égale huit', '10 − 2 = 8']], 'Repite cada número en voz alta: las letras finales casi nunca suenan.')]);
+U('fa5', 'fa', '31', 'Números 11–31', 'onze, douze… trente et un', 'Del 11 al 31', [
+  R('La regla', 'Del 17 en adelante se suma', [['dix-sept', '17 = 10 + 7'], ['vingt et un', '21: «et un», sin guion'], ['vingt-deux', '22 = 20 + 2'], ['trente et un', '31']],
+    'Del 11 al 16 tienen nombre propio: onze, douze, treize, quatorze, quinze, seize.')]);
+U('fa6', 'fa', 'Lu', 'Los días', "Aujourd'hui, c'est lundi.", 'Los días de la semana, hoy y mañana', [
+  R('La regla', 'Hoy y mañana', [["Aujourd'hui, c'est lundi.", 'Hoy es lunes.'], ["Demain, c'est mardi.", 'Mañana es martes.']], 'Los días se escriben con minúscula y sin artículo.')]);
+U('fa7', 'fa', 'Mai', 'Meses y estaciones', 'le premier mai', 'Las fechas y las estaciones', [
+  R('La fecha', 'le + número + mes', [['le quatorze juillet', 'el 14 de julio'], ['le premier mai', 'el 1 de mayo']], 'Sin «de» entre el número y el mes. El día 1 es «le premier». En Francia, julio es verano; en Perú, invierno.')]);
+U('fa8', 'fa', '?!', 'En clase', 'Je ne comprends pas.', 'Pedir ayuda, disculparte y preguntar', [], ['fs_c1', 'fs_c2']);
+U('fb1', 'fb', 'FR', 'Nacionalidades', 'Je suis péruvien.', 'Masculino y femenino', [
+  R('La regla', 'El femenino de la nacionalidad', [['français · française', '+ e: la s empieza a sonar'], ['mexicain · mexicaine', '+ e: la n empieza a sonar'], ['italien · italienne', '-ien pasa a -ienne'], ['belge · belge', 'si ya termina en e, no cambia']],
+    'Oído: en masculino la consonante final no suena; en femenino, sí.', [['masculino', 'péruvien'], ['femenino', 'péruvienne']])]);
+U('fb2', 'fb', 'Âge', 'Personas y edad', 'Tu as quel âge ?', 'Preguntar y decir la edad', [
+  R('La regla', 'La edad se dice con avoir', [["J'ai vingt ans.", 'Tengo 20 años.'], ['Tu as quel âge ?', '¿Cuántos años tienes?'], ['Vous avez quel âge ?', '¿Cuántos años tiene usted?']],
+    'Igual que en español: se «tiene» la edad. Je + ai = j\'ai, porque delante de vocal je pierde la e.')]);
+U('fb3', 'fb', 'Être', 'Ser, tener, llamarse', 'Nous sommes à Lima.', 'Être, avoir y s\'appeler', [
+  R('Conjugación', 'Los tres verbos de la unidad', [['je suis · j\'ai · je m\'appelle', 'yo'], ['tu es · tu as · tu t\'appelles', 'tú'], ['il est · il a · il s\'appelle', 'él (ella igual)'],
+    ['nous sommes · nous avons · nous nous appelons', 'nosotros'], ['vous êtes · vous avez · vous vous appelez', 'usted · ustedes'], ['ils sont · ils ont · ils s\'appellent', 'ellos (ellas igual)']],
+    'Ojo al oído: ils ont (tienen) suena «il·zõ»; ils sont (son, están) suena «il·sõ».')]);
+U('fb4', 'fb', 'Le', 'Me gusta…', "J'aime la musique.", 'Gustos y le, la, l\', les', [
+  R('Los artículos', 'Le, la, l\', les', [['le cinéma', 'masculino'], ['la musique', 'femenino'], ["l'athlétisme · l'escalade", 'delante de vocal o h'], ['les films', 'plural']],
+    'Con los gustos va el artículo, como en español: J\'aime la musique = Me gusta la música.')]);
+U('fb5', 'fb', '80', 'Números 32–100', 'soixante-dix, quatre-vingts', 'Las decenas y el 70, 80 y 90', [
+  R('La regla', 'Del 70 al 99 se cuenta distinto', [['soixante-dix', '70 = 60 + 10'], ['soixante et onze', '71 = 60 + 11'], ['quatre-vingts', '80 = 4 × 20'], ['quatre-vingt-dix', '90 = 4 × 20 + 10'], ['quatre-vingt-dix-neuf', '99 = 4 × 20 + 19']],
+    'En Bélgica y Suiza dicen septante (70) y nonante (90); en Suiza, también huitante (80).')]);
+U('fb6', 'fb', 'Au', 'Países y ciudades', "J'habite à Lima, au Pérou.", 'Dónde vives, dónde naciste y qué idiomas hablas', [
+  R('Las preposiciones', 'À, au, en, aux', [['à Lima', 'ciudad'], ['au Pérou', 'país masculino'], ['en France · en Équateur', 'país femenino o que empieza con vocal'], ['aux États-Unis', 'país en plural']],
+    'Casi todos los países que terminan en -e son femeninos (la France, la Chine). Excepciones: le Mexique, le Cambodge, le Mozambique.')]);
+U('fb7', 'fb', '@', 'Teléfono y correo', 'Quel est ton numéro ?', 'Dar y pedir tus datos', [
+  R('Los datos', 'De dos en dos', [['06 12 34 56 78', 'zéro six, douze, trente-quatre, cinquante-six, soixante-dix-huit'], ['arobase', '@'], ['point', '.'], ['tiret', '-']],
+    'Los números de teléfono en Francia tienen 10 cifras y se leen en pares.')]);
+U('fb8', 'fb', 'Pas', 'La negación', 'Je ne suis pas français.', 'Ne… pas', [
+  R('La regla', 'Ne + verbo + pas', [['Je ne suis pas français.', 'No soy francés.'], ["Je n'aime pas le sport.", 'ne → n\' delante de vocal'], ["Il n'habite pas à Paris.", 'también delante de h']],
+    'Al hablar, muchos franceses omiten el ne («J\'aime pas»), pero al escribir van las dos partes.', [['negación', 'ne'], ['verbo', 'suis'], ['negación', 'pas']])], ['fs_x1', 'fs_x2']);
+U('fb9', 'fb', 'Pro', 'Profesiones', 'Elle est médecin.', 'Qué haces y el femenino de la profesión', [
+  R('La regla', 'Sin artículo', [['Il est médecin.', 'Él es médico: sin un, como en español'], ['acteur · actrice', '-teur pasa a -trice'], ['chanteur · chanteuse', '-eur pasa a -euse'], ['étudiant · étudiante', '+ e']],
+    'Médecin, architecte, pilote y journaliste no cambian en femenino.')]);
+U('fb10', 'fb', 'ID', 'Mi ficha', "Je m'appelle Diego, j'ai 30 ans.", 'Presentarte con todos tus datos', [
+  R('Pronunciación', 'Grupos rítmicos', [["Je m'appelle Arthur, je suis péruvien, j'ai trente ans.", 'tres grupos, tres pausas cortas']],
+    'En francés no se separa palabra por palabra: cada grupo suena como una sola palabra larga, con el acento en la última sílaba. La voz sube al final de cada grupo y baja al final de la frase. En una pregunta sin palabra interrogativa, sube.')], ['fs_p1']);
+
+/* ---------- dialogs ---------- */
+const DLG_A = [
+  {where:'En la universidad', who:'Léa', turns:[
+    {say:'Salut ! Ça va ?', you:'Sí, todo bien, ¿y tú?', ans:'Oui, ça va, et toi ?', traps:['vous', 'bonsoir', 'très']},
+    {say:'Très bien, merci ! À plus !', listen:['Muy bien, gracias. ¡Hasta luego!', 'Muy bien, gracias. ¡Buenas noches!', 'Bien, gracias. ¿Y usted?', 'Gracias. ¡Hasta mañana!'], ask:'¿Qué te dijo Léa?', es:'¡Muy bien, gracias! ¡Hasta luego!'}]},
+  {where:'Primer día de clase', who:'Profesora', turns:[
+    {say:'Bonjour ! Comment vous vous appelez ?', you:'Me llamo Diego Rojas.', ans:"Je m'appelle Diego_Rojas.", traps:["t'appelles", "s'appelle", 'me']},
+    {say:'Rojas ? Ça s\'écrit R, O, J, A, S ?', listen:['Pregunta si tu apellido se escribe R, O, J, A, S.', 'Pregunta cuántos años tienes.', 'Pregunta de dónde eres.', 'Dice que llegas tarde.'], ask:'¿Qué te pregunta la profesora?', es:'¿Rojas? ¿Se escribe R, O, J, A, S?'},
+    {say:'Vous êtes en retard ?', you:'Sí. Disculpe, llego tarde.', ans:'Oui. Excusez-moi, je suis en retard.', traps:['excuse-moi', 'tu', 'es']}]},
+  {where:'En clase', who:'Profesor', turns:[
+    {say:'Vous comprenez ?', you:'No, no entiendo. ¿Puede repetir, por favor?', ans:"Non, je ne comprends pas. Vous pouvez répéter, s'il_vous_plaît ?", traps:["s'il_te_plaît", 'tu', 'peux']},
+    {say:"Aujourd'hui, c'est lundi.", listen:['Hoy es lunes.', 'Mañana es lunes.', 'Hoy es martes.', 'Hoy es domingo.'], ask:'¿Qué dijo el profesor?', es:'Hoy es lunes.'}]},
+  {where:'Con un amigo', who:'Hugo', turns:[
+    {say:"Quelle est la date aujourd'hui ?", you:'Es el 1 de mayo.', ans:"C'est le premier mai.", traps:['un', 'de', 'la']},
+    {say:"Demain, c'est samedi !", listen:['Mañana es sábado.', 'Hoy es sábado.', 'Mañana es domingo.', 'Mañana es lunes.'], ask:'¿Qué dijo Hugo?', es:'¡Mañana es sábado!'}]}];
+const DLG_B = [
+  {where:'En el tren', who:'Camille', turns:[
+    {say:'Bonjour ! Vous êtes français ?', you:'No, soy peruano. ¿Y usted?', ans:'Non, je suis péruvien. Et vous ?', traps:['péruvienne', 'toi', 'es']},
+    {say:"Moi, je suis belge. Je m'appelle Camille.", listen:['Es belga y se llama Camille.', 'Es suiza y se llama Camille.', 'Es francesa y se llama Camille.', 'Es belga y se llama Emma.'], ask:'¿Quién es ella?', es:'Yo soy belga. Me llamo Camille.'},
+    {say:'Vous avez quel âge ?', you:'Tengo 28 años.', ans:"J'ai 28 ans.", traps:['suis', 'a', 'an']}]},
+  {where:'Encuentro de voluntarios', who:'Karim', turns:[
+    {say:'Tu habites où ?', you:'Vivo en Lima, en el Perú.', ans:"J'habite à Lima, au Pérou.", alts:["J'habite au Pérou, à Lima."], traps:['en', 'le', 'aux']},
+    {say:'Tu parles quelles langues ?', you:'Hablo español, inglés y francés.', ans:'Je parle espagnol, anglais et français.',
+      alts:['Je parle anglais, espagnol et français.', 'Je parle espagnol, français et anglais.', 'Je parle français, espagnol et anglais.', 'Je parle anglais, français et espagnol.', 'Je parle français, anglais et espagnol.'], traps:['parles', 'le', 'espagnole']},
+    {say:"Moi, j'habite au Niger. Je suis né à Niamey.", listen:['Vive en Níger y nació en Niamey.', 'Vive en Niamey y nació en Senegal.', 'Vive en Malí y nació en Bamako.', 'Vive en Níger y nació en París.'], ask:'¿Qué dijo Karim?', es:'Yo vivo en Níger. Nací en Niamey.'}]},
+  {where:'Intercambiar contactos', who:'Inès', turns:[
+    {say:"Mon numéro, c'est le zéro six, quarante-deux, dix-sept, quatre-vingt-dix, soixante et onze.", listen:['06 42 17 90 71', '06 42 17 80 71', '06 42 70 90 71', '06 52 17 90 61'], ask:'¿Cuál es el número de Inès?', es:'Mi número es el 06 42 17 90 71.'},
+    {say:'Tu as mon adresse mail ?', you:'No. ¿Cuál es tu correo?', ans:'Non. Quelle est ton adresse mail ?', traps:['quel', 'ta', 'mon']},
+    {say:"C'est inès, point, martin, arobase, mail, point, F, R.", listen:['ines.martin@mail.fr', 'ines-martin@mail.fr', 'inesmartin@mail.fr', 'ines.martin@mail.com'], ask:'¿Cuál es su correo?', es:'Es ines.martin@mail.fr.'}]},
+  {where:'Gustos', who:'Hugo', turns:[
+    {say:'Tu aimes le sport ?', you:'Sí, me gusta el tenis y la natación.', ans:"Oui, j'aime le tennis et la natation.", alts:["Oui, j'aime la natation et le tennis."], traps:['les', 'aimes', 'pas']},
+    {say:"Moi, je n'aime pas le sport. J'aime la lecture et le cinéma.", listen:['No le gusta el deporte; le gusta leer y el cine.', 'Le gusta el deporte, la lectura y el cine.', 'No le gusta el cine; le gusta leer y el deporte.', 'No le gusta leer; le gusta el deporte y el cine.'], ask:'¿Qué le gusta a Hugo?', es:'A mí no me gusta el deporte. Me gusta la lectura y el cine.'}]}];
+['Diego', 'Rojas'].forEach(n => FR_NAMES.add(n));
+function frDialogPlan(list, item){
+  LV = 1;
+  const ex = [];
+  list.forEach(d => d.turns.forEach((t, k) => {
+    const head = `<div class="kind">${esc(d.where)} · ${k + 1}/${d.turns.length}</div>${bub(d.who, t.say)}`;
+    if (t.listen) ex.push(fMC(item, 'Diálogo', head + `<div class="ask">${esc(t.ask)}</div>`, t.listen.map(o => oEs(o)), t.listen[0], {h:frText(t.say), p:'', es:t.es}, {say:frText(t.say)}));
+    else ex.push(fTiles(item, 'Diálogo', head + `<div class="ask">Responde: <b>${esc(t.you)}</b></div>`, t.ans, t.you, t.traps, t.alts || [], {say:frText(t.say)}));
+  }));
+  return {title:'Diálogos', cards:[], ex};
+}
+
+MODULES.fa = {n:1, tab:'Bienvenue', zh:'Bonjour ! Ça va ?', p:'bõ·zhur · sa·va', es:'Unidad 0 · Saludos, el alfabeto, los números hasta 31, el calendario y el francés de la clase.',
+  examKey:'examBestFa', dlgPlan:() => frDialogPlan(DLG_A, 'f-greet'), dlgSub:'Saludar, presentarte y pedir ayuda en clase'};
+MODULES.fb = {n:2, tab:'Et vous ?', zh:'Comment vous vous appelez ?', p:'ko·mã·vu·vu·za·plé', es:'Unidad 1 · Nacionalidad, edad, gustos, países, teléfono, profesión y cómo presentarte.',
+  examKey:'examBestFb', dlgPlan:() => frDialogPlan(DLG_B, 'f-id'), dlgSub:'En el tren, entre voluntarios y al dar tu número'};
+
+/* ---------- engine pieces that depend on the language ---------- */
+function frOthers(it, n){
+  const fair = x => x.kind === 'word' && x.id !== it.id && x.h !== it.h && x.es !== it.es && loose(x.p) !== loose(it.p) && loose(x.h) !== loose(it.h);
+  const all = Object.values(ITEMS).filter(fair);
+  const tiers = [all.filter(x => x.unit === it.unit && x.cat === it.cat), all.filter(x => x.unit === it.unit), all.filter(x => x.cat === it.cat), all];
+  const out = [];
+  for (const t of tiers) for (const x of shuffle(t)) if (out.length < n && !out.includes(x) && !out.some(o => o.h === x.h || o.es === x.es || loose(o.p) === loose(x.p))) out.push(x);
+  return out;
+}
+wordEx = function(it, mode){
+  if (mode === 'hanzi') mode = 'pick';
+  if (mode === 'chars') mode = 'dict';
+  const all = shuffle([it, ...frOthers(it, 3)]);
+  const rev = {h:it.h, p:it.p, es:it.es};
+  const frO = x => ({v:x.id, say:x.h, html:`<span class="han">${esc(x.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(x.p)}</small>`}`});
+  const wide = all.some(x => x.h.length > 14);
+  switch (mode){
+    case 'meaning': return {t:'mc', item:it.id, kind:'¿Qué significa?', say:it.h, q:`<div class="frbig han">${esc(it.h)}</div><div class="pybig">${pyHint(it.p)}</div>${audioBtns(it.h)}`,
+      options:all.map(x => ({v:x.id, html:esc(x.es)})), answer:it.id, rev, wide:all.some(x => x.es.length > 16)};
+    case 'pick': return {t:'mc', item:it.id, kind:'Elige en francés', q:fcue(it.es), options:all.map(frO), answer:it.id, rev, wide};
+    case 'listen': return {t:'mc', item:it.id, kind:'Escucha y elige', say:it.h, q:audioBtns(it.h, true), options:all.map(frO), answer:it.id, rev, wide};
+    case 'type': return {t:'type', item:it.id, kind:'Escríbelo en francés', q:`${fcue(it.es)}${LV < 2 ? audioBtns(it.h) : ''}`, answer:it.h, ph:'Escribe en francés', hint:FR_TYPE_HINT, rev};
+    case 'dict': return {t:'type', item:it.id, kind:'Dictado: escribe lo que oyes', say:it.h, q:audioBtns(it.h), answer:it.h, ph:'Escribe en francés', hint:FR_TYPE_HINT, rev};
+    default: return {t:'speak', item:it.id, kind:'Dilo en voz alta', q:`${fcue(it.es)}<div class="hint">Dilo en francés antes de ver la respuesta. Recordar sin pistas es lo que fija la palabra.</div>`, rev};
+  }
+};
+sentEx = function(it, mode){
+  if (mode === 'speak') return fSpeak(it.id, it.es, it.s);
+  if (mode === 'listen') return fTiles(it.id, 'Escucha y ordena', audioBtns(it.h), it.s, it.es, it.traps, it.alts, {say:it.h});
+  return fTiles(it.id, 'Tradúcelo al francés', fcue(it.es), it.s, it.es, it.traps, it.alts);
+};
+const FR_PRON = [['ü', 'tu', 'di «i» con los labios redondos de «u»'], ['ö', 'deux', 'di «e» con los labios redondos'], ['ë', 'je', 'una e corta y relajada'],
+  ['zh', 'bonjour', 'como la «ll» de Buenos Aires: zumba'], ['sh', 'chinois', 'como cuando pides silencio: «shhh»'], ['ã · õ · ẽ', 'enfant · bon · vin', 'vocales nasales: el aire sale por la nariz y la n no suena'],
+  ['r', 'merci', 'en la garganta, parecida a una j suave'], ['è · é', 'très · été', 'è abierta; é cerrada, como sonriendo']];
+const baseCard = cardHTML;
+cardHTML = function(c){
+  if (c.type === 'word'){
+    const it = ITEMS[c.id];
+    return `<div class="card center"><div class="kind">Palabra nueva</div><div class="frbig han">${esc(it.h)}</div><div class="pybig">${pyHTML(it.p)}</div>${audioBtns(it.h)}<div class="es">${esc(it.es)}</div>${it.tip ? `<div class="tip">${esc(it.tip)}</div>` : ''}</div>`;
+  }
+  if (c.type === 'sent'){
+    const it = ITEMS[c.id];
+    return `<div class="card center"><div class="kind">Frase modelo</div><div class="frbig han" style="font-size:30px">${esc(it.h)}</div>${audioBtns(it.h)}<div class="es">${esc(it.es)}</div></div>`;
+  }
+  if (c.type === 'frpron') return `<div class="card center"><div class="kind">Antes de empezar</div><h2>Cómo leer la pronunciación</h2>
+    <p class="es">Debajo de cada palabra ves cómo suena, con letras del español. Las sílabas van separadas por «·» y el acento cae siempre en la última.</p>
+    <div class="rules">${FR_PRON.map(r => `<div class="rule"><div><b class="pron">${esc(r[0])}</b> <span class="han">${esc(r[1])}</span><div class="muted">${esc(r[2])}</div></div><button class="audio" data-say="${esc(r[1].replace(/ · /g, ', '))}" aria-label="Escuchar">${ICON.play}</button></div>`).join('')}</div>
+    <div class="tip">Es solo una ayuda: escucha siempre el audio. Desde el nivel 2 ya no aparece.</div></div>`;
+  if (c.type === 'lvl') return c.lv === 2
+    ? `<div class="card center"><div class="kind">Nivel 2</div><h2>Sin pronunciación escrita, más oído</h2>
+      <p class="es">Ya no ves cómo suena cada palabra: la reconoces al oírla. Hay más dictados y escribes las palabras completas.</p>
+      <div class="tip">Después de cada respuesta sigues viendo la pronunciación, para corregirte.</div></div>`
+    : `<div class="card center"><div class="kind">Nivel 3</div><h2>Frases que nunca viste</h2>
+      <p class="es">Cada vez se generan frases nuevas con lo de la unidad: otros nombres, números, países y personas. Respondes y preguntas.</p>
+      <div class="tip">No memorices frases: aplica la regla de la unidad.</div></div>`;
+  return baseCard(c);
+};
+})();
 
 renderHome();
 </script>

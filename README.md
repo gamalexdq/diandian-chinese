@@ -1,12 +1,34 @@
 # Diǎn Diǎn 点点
 
-Aprende chino mandarín en sesiones cortas: repaso espaciado, pinyin coloreado por tono y ejercicios generados. Un solo archivo HTML, sin instalar nada.
+Aprende chino mandarín o francés en sesiones cortas: repaso espaciado, pronunciación escrita y ejercicios generados. Un solo archivo HTML, sin instalar nada.
 
-*Learn Mandarin in short bursts: spaced repetition, tone-colored pinyin, and generated exercises. Single HTML file, no install. (UI in Spanish.)*
+*Learn Mandarin or French in short bursts: spaced repetition, written pronunciation, and generated exercises. Single HTML file, no install. (UI in Spanish.)*
 
-**Pruébalo:** https://gamalexdq.github.io/diandian-chinese/
+**Pruébalo:** https://gamalexdq.github.io/diandian-chinese/ (chino) · https://gamalexdq.github.io/diandian-chinese/?lang=fr (francés)
 
-## Qué tiene
+El idioma se cambia arriba, en el inicio. Cada idioma guarda su propio progreso.
+
+## Francés (nivel A1)
+
+Dos rutas que siguen el orden de las unidades 0 y 1 de un manual A1. El contenido es propio: los temas y el vocabulario vienen del temario, pero los textos y los ejercicios están escritos para la app.
+
+- **Bienvenue (unidad 0), con 8 unidades:** saludos y tu/vous, el alfabeto (deletrear y siglas), presentarse, números del 0 al 31 con cuentas, días, meses, estaciones y fechas, y frases para la clase.
+- **Et vous ? (unidad 1), con 10 unidades:**
+  - nacionalidades en masculino y femenino;
+  - la edad;
+  - être, avoir y s'appeler;
+  - gustos con le, la, l' y les;
+  - números del 32 al 100;
+  - à, au, en y aux con países y ciudades;
+  - teléfono y correo;
+  - ne… pas;
+  - profesiones;
+  - la ficha de identidad.
+- **Pronunciación escrita con letras del español** (por ejemplo `bõ·zhur`). Solo se muestra en N1, igual que el pinyin.
+- **Trampas a propósito:** «Je ai», «le 14 de juillet», «Il est un médecin», «Je suis 20 ans», ils ont / ils sont.
+- **Diálogos:** en clase, en el tren, entre voluntarios y al intercambiar contactos.
+
+## Chino
 
 - **Siete rutas**
   - **Preséntate:** saludos, los cuatro tonos, sonidos difíciles, nacionalidades, estudios y familia.
@@ -40,7 +62,7 @@ El progreso se guarda en `localStorage`, así que queda solo en ese navegador y 
 - El progreso va después del `#`, así que nunca llega a ningún servidor.
 - Es una copia del momento en que lo generas, no una sincronización.
 
-**Audio:** Android, iOS y macOS ya traen voz china. En Windows, si no se oye nada, instala el paquete de voz «Chino (simplificado)» en *Configuración → Hora e idioma → Voz*.
+**Audio:** Android, iOS y macOS ya traen voz china y francesa. En Windows, si no se oye nada, instala el paquete de voz «Chino (simplificado)» en *Configuración → Hora e idioma → Voz*.
 
 ## Estructura
 
@@ -51,5 +73,6 @@ Todo está en `index.html`:
 - **`lessonPlan`, `lessonPlan2` y `lessonPlan3`:** generan cada nivel.
 - **`startSession` → `renderEx` → `grade` → `advance`:** el motor de la sesión.
 - **`srsMark` y `dueIds`:** el repaso espaciado.
+- **`LANG`:** el idioma (`?lang=fr` o `?lang=zh`). El bloque «Francés» al final del script reemplaza `ITEMS`, `UNITS`, `MODULES` y los generadores, y adapta `wordEx`, `sentEx` y `cardHTML`. En las frases, `_` une dos palabras en una ficha y `|` separa una palabra en dos (`n'|aime`).
 
 Para agregar vocabulario, crea un ítem con `W(id, unidad, hanzi, pinyin, español, pista)` y agrega su `id` a la unidad que corresponda en `UNITS`.
