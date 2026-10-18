@@ -1344,6 +1344,8 @@ W('hdlq','h3','打篮球','dǎ lán·qiú','jugar básquet','打 = golpear: depo
 W('htzq','h3','踢足球','tī zú·qiú','jugar fútbol','踢 = patear. Lleva 足 (pie).');
 W('hyy','h3','游泳','yóu·yǒng','nadar','Los dos caracteres llevan 氵 (agua).');
 W('hpb','h3','跑步','pǎo·bù','correr','跑 lleva 足 (pie), como 踢.');
+W('hty','h3','体育','tǐ·yù','deportes (en la tele, en la escuela)','体育课 = clase de educación física.');
+W('hbs','h3','比赛','bǐ·sài','partido, competencia','足球比赛 = partido de fútbol.');
 W('hmxq6','h3','每星期六','měi xīng·qī·liù','todos los sábados','每 + día = cada …: 每天, 每星期六.');
 ITEMS['g-sport'] = {id:'g-sport', unit:'h3', kind:'gen', es:'deportes'};
 W('hkan','h4','看','kàn','ver, mirar; leer','Una mano 手 sobre el ojo 目: mirar a lo lejos.');
@@ -1352,11 +1354,13 @@ W('hxw','h4','新闻','xīn·wén','noticias','新 nuevo + 闻 oír.');
 W('hdy','h4','电影','diàn·yǐng','película','电 + 影 sombra.');
 W('hdsj','h4','电视剧','diàn·shì·jù','serie de televisión','');
 W('hdhp','h4','动画片','dòng·huà·piàn','dibujos animados','动 moverse + 画 dibujo + 片 película.');
+W('hjlp','h4','纪录片','jì·lù·piàn','documental','纪录 registro + 片 película, como 动画片.');
 W('hjm','h4','节目','jié·mù','programa (de TV)','你喜欢看什么节目？ = ¿qué programas te gusta ver?');
 ITEMS['g-tv'] = {id:'g-tv', unit:'h4', kind:'gen', es:'la tele'};
 W('hah','h5','爱好','ài·hào','afición','爱 amar + 好 (aquí hào: gustar).');
 W('hsw','h5','上网','shàng·wǎng','conectarse a internet','上 subir + 网 red.');
 W('hcc','h5','常常','cháng·cháng','a menudo','Va antes del verbo: 我常常上网.');
+W('hyinyue','h5','音乐','yīn·yuè','música','音 sonido + 乐 alegría (aquí yuè, no lè).');
 W('htyy','h5','听音乐','tīng yīn·yuè','escuchar música','听 = oír. Lleva 口.');
 W('hks','h5','看书','kàn shū','leer (libros)','En chino los libros «se ven»: 看书.');
 W('hwyx','h5','玩儿游戏','wánr yóu·xì','jugar videojuegos','玩儿 = jugar, divertirse. La r es de Pekín.');
@@ -1535,11 +1539,11 @@ UNITS.push(
    intro:[rule('La regla', '星期 + número = día', [['星期一','lunes (día 1)'], ['星期三','miércoles (día 3)'], ['星期六','sábado (día 6)'], ['星期天','domingo: 天, nunca 七']], 'Para preguntar, 几 va donde iría el número: 今天星期几？')]},
   {id:'h2', mod:'m7', key:'约', title:'¿Tienes tiempo?', zh:'我们一起吃午饭，好吗？', ref:'Invitar, aceptar y decir que no', items:['hwm','hyq','hsj','hysj','hmang','hssm','hhm','g-invite'],
    intro:[rule('La regla', 'Proponer con 一起 … 好吗？', [['星期六你有时间吗？','¿Tienes tiempo el sábado?'], ['有，什么事？','Sí. ¿Qué pasa?'], ['我们一起吃午饭，好吗？','¿Almorzamos juntos?'], ['对不起，我很忙。','Lo siento, estoy muy ocupado.']], 'El día puede ir antes o después de quien habla: 星期六你… o 你星期六…')]},
-  {id:'h3', mod:'m7', key:'球', title:'Deportes', zh:'踢足球 打篮球 游泳', ref:'Cada deporte con su verbo', items:['hyd','hdlq','htzq','hyy','hpb','hmxq6','g-sport'],
+  {id:'h3', mod:'m7', key:'球', title:'Deportes', zh:'踢足球 打篮球 游泳', ref:'Cada deporte con su verbo', items:['hyd','hty','hbs','hdlq','htzq','hyy','hpb','hmxq6','g-sport'],
    intro:[rule('La regla', 'Cada deporte tiene su verbo', [['踢足球','fútbol: 踢, patear'], ['打篮球','básquet: 打, golpear con la mano'], ['骑自行车','bicicleta: 骑, montar'], ['游泳 · 跑步','nadar, correr: ya son verbos']], 'Con la frecuencia antes: 我每天早上跑步。')]},
-  {id:'h4', mod:'m7', key:'视', title:'La tele', zh:'看电视 看新闻', ref:'看 + lo que ves', items:['hkan','hds','hxw','hdy','hdsj','hdhp','hjm','g-tv'],
+  {id:'h4', mod:'m7', key:'视', title:'La tele', zh:'看电视 看新闻', ref:'看 + lo que ves', items:['hkan','hds','hxw','hdy','hdsj','hdhp','hjlp','hjm','g-tv'],
    intro:[rule('La regla', '看 sirve para todo lo que ves', [['看电视','ver televisión'], ['看新闻','ver las noticias'], ['看电影','ver películas'], ['看书','leer: los libros «se ven»']], '你喜欢看什么节目？ = ¿Qué programas te gusta ver?')]},
-  {id:'h5', mod:'m7', key:'网', title:'Internet y aficiones', zh:'我常常上网听音乐。', ref:'听, 玩儿 y 爱好', items:['hah','hsw','hcc','htyy','hks','hwyx','hlt','hlx','g-hobby'],
+  {id:'h5', mod:'m7', key:'网', title:'Internet y aficiones', zh:'我常常上网听音乐。', ref:'听, 玩儿 y 爱好', items:['hah','hsw','hcc','hyinyue','htyy','hks','hwyx','hlt','hlx','g-hobby'],
    intro:[rule('La regla', 'Cada actividad con su verbo', [['听音乐','escuchar música: 听, oír'], ['玩儿游戏','jugar videojuegos: 玩儿'], ['我常常上网看新闻。','A menudo veo las noticias por internet.'], ['我的爱好是旅行。','Mi afición es viajar.']], '常常 va antes del verbo, igual que 每天.')]},
   {id:'h6', mod:'m7', key:'好', title:'Mis aficiones', zh:'你的爱好是什么？', ref:'Frases completas sobre tu tiempo libre', models:['hs3','hs8'], items:['hs1','hs2','hs3','hs4','hs5','hs6','hs7','hs8','hs9','hs10'],
    intro:[rule('Repaso', 'Para hacer planes con alguien', [['今天星期几？','el día'], ['星期六你有时间吗？','si tiene tiempo'], ['你每天跑步吗？','qué deporte hace'], ['你的爱好是什么？','su afición']], 'Practicas las dos partes: preguntar y responder.')]}
