@@ -175,6 +175,16 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1
 .cal{display:inline-grid;justify-items:center;border:2px solid var(--line);border-top:12px solid var(--bad);border-radius:14px;padding:8px 22px;background:var(--surface)}
 .cal small{text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted);font-size:12px}.cal b{font-family:var(--f-display);font-size:26px}
 .mod.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 18%,transparent)}
+/* sections: Principiante and HSK 1. HSK 1 gets its own accent so you always know where you are */
+.secs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.sec{display:grid;gap:2px;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:var(--r);padding:8px 14px;min-width:0}
+.sec b{font-family:var(--f-display);font-size:17px}
+.sec small{font-size:13px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.sec.on{border-color:var(--accent);background:var(--accent-soft)}
+.sec:hover{border-color:var(--accent)}
+:root[data-sec="hsk"]{--accent:#4338CA;--accent-ink:#FFFFFF;--accent-soft:#E2E3FB}
+@media (prefers-color-scheme: dark){:root[data-sec="hsk"]:not([data-theme="light"]){--accent:#A3ADFF;--accent-ink:#141638;--accent-soft:#242A57}}
+:root[data-theme="dark"][data-sec="hsk"]{--accent:#A3ADFF;--accent-ink:#141638;--accent-soft:#242A57}
 /* francés */
 html.fr .han{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em}
 .frbig{font-size:clamp(32px,10vw,48px);line-height:1.1;text-align:center;overflow-wrap:anywhere}
@@ -790,7 +800,7 @@ function examPlan1(){
 // a generated sentence: chunks + Spanish; alt = other valid answers for the tiles
 const mkS = (chunks, es, end = '。', alt) => ({chunks, es, alt, h:chunks.map(c => c.h).join('') + end, p:chunks.map(c => c.p).filter(Boolean).join(' ')});
 // a time word can go before or after the subject: 我每天… = 每天我…
-const TIME_RE = /^(早上|上午|中午|下午|晚上|现在|今天|明天|昨天|每天|每天早上|每天晚上|每星期.|星期.|[一二三四五六七八九十两]+点)$/;
+const TIME_RE = /^(早上|上午|中午|下午|晚上|现在|今天|明天|昨天|今年|去年|明年|每天|每天早上|每天晚上|每星期.|星期.|[一二三四五六七八九十两]+点(半|[零一二三四五六七八九十]+分)?)$/;
 function orders(chunks){
   const j = cs => cs.map(c => c.h).join(''), np = c => c.h.replace(/[，。？！、]/g, ''), subj = ['我','你','我们'];
   const out = [j(chunks)];
@@ -1693,7 +1703,7 @@ function slowText(text){
     WORDSET = new Set();
     const add = h => { const w = String(h || '').replace(/[，。？\s]/g, ''); if (w.length > 1) WORDSET.add(w); };
     Object.values(ITEMS).forEach(it => { if (it.kind === 'word') add(it.h); (it.chunks || []).forEach(c => add(c.h)); });
-    [...DISTRACT, ...DISTRACT3, ...DISTRACT1, ...D4, ...D5, ...D6, ...D7, ...NAMES.map(n => n.c)].forEach(c => add(c.h));
+    [...DISTRACT, ...DISTRACT3, ...DISTRACT1, ...D4, ...D5, ...D6, ...D7, ...(typeof DK === 'undefined' ? [] : DK), ...NAMES.map(n => n.c)].forEach(c => add(c.h));
   }
   return text.split(/([，。？！、])/).map(part => {
     if (/^[，。？！、]?$/.test(part)) return part;
@@ -1782,7 +1792,7 @@ function wordEx(it, mode){
 function sentEx(it, mode){
   if (mode === 'speak') return {t:'speak', item:it.id, kind:'Dilo en voz alta', q:`<div class="qtext">${esc(it.es)}</div><div class="hint">${it.unit[0] === 'u' ? 'Primero cuándo, luego la acción.' : 'Dilo en chino antes de ver la respuesta.'}</div>`, rev:reveal(it)};
   const ans = it.chunks.map(c => c.h).join('');
-  const pool = {c:DISTRACT3, a:DISTRACT1, d:D4, e:D5, f:D6, h:D7}[it.unit[0]] || DISTRACT;
+  const pool = {c:DISTRACT3, a:DISTRACT1, d:D4, e:D5, f:D6, h:D7, k:DK}[it.unit[0]] || DISTRACT;
   const extra = shuffle(uniqBy(pool, d => noPunct(d.h)).filter(d => !it.chunks.some(c => noPunct(c.h) === noPunct(d.h) || homo(c, d)))).slice(0, 3);
   const bank = shuffle([...it.chunks, ...extra]);
   const answers = expandAns([...orders(it.chunks), ...(it.alt || [])]);
@@ -2056,6 +2066,1101 @@ function examPlan(){
   ex.push(numEx('tiles'), numEx('listen'), timeEx('mc'), timeEx('type'));
   ['qc','sj','hj','zf','wanf'].forEach(id => ex.push(exFor(id, 'type')));
   return {title:'Examen: la hora', exam:true, cards:[], ex: shuffle(ex)};
+}
+
+/* ====================================================================
+   HSK 1 · la sección que sigue a Principiante. Seis rutas en el orden del
+   temario de un curso HSK 1 de seis semanas: saludos y números, familia y
+   escuela, hora y clima, trabajo y aficiones, compras y comida, transporte
+   y direcciones. Cinco unidades por ruta (una por lección) y una de frases
+   completas. Los temas siguen el temario; frases y ejercicios son propios.
+   ==================================================================== */
+const KW = (unit, rows) => rows.forEach(([id, h, p, es, tip]) => W(id, unit, h, p, es, tip || ''));
+const KS = (unit, rows) => rows.forEach(([id, chunks, es, q, alt]) => { S_(id, chunks, es, q, unit); if (alt) ITEMS[id].alt = alt; });
+const KU = (id, mod, key, title, zh, ref, intro, models) => UNITS.push({id, mod, key, title, zh, ref, intro, models, items:Object.keys(ITEMS).filter(k => ITEMS[k].unit === id)});
+const cueBox = t => `<div class="ask">${t}</div>`;
+K.xz = C('现在','xiàn·zài');
+const KL3 = [['build',4],['reply',3],['listen',3],['ask',2],['speak',2]];
+// one generator per unit: say(form) makes a sentence, qa(form) a question with the answer that fits its cue
+// qa → {key, q, a, cue, who, askCue, wrongs}; answers with another key are the wrong options
+function kGen(item, unit, es, pool, spec){
+  ITEMS[item] = {id:item, unit, kind:'gen', es};
+  const fn = mode => {
+    if (spec.more && spec.more[mode]) return spec.more[mode]();
+    if ((mode === 'reply' || mode === 'ask') && spec.qa){
+      const x = spec.qa();
+      if (mode === 'ask'){
+        const extra = shuffle(uniqBy(pool, d => noPunct(d.h)).filter(d => !x.q.chunks.some(c => noPunct(c.h) === noPunct(d.h) || homo(c, d)))).slice(0, 3);
+        return {t:'tiles', item, kind:'Haz la pregunta', q:`<div class="bubble"><span class="who">${esc(x.who ? 'Responde: ' + x.who : 'Respuesta')}</span><span class="han">${esc(x.a.h)}</span>${pyHint(x.a.p) ? `<span>${pyHint(x.a.p)}</span>` : ''}</div><div class="es">${esc(x.a.es)}</div>${cueBox(esc(x.askCue || '¿Qué pregunta lleva a esta respuesta?'))}`,
+          bank:shuffle([...x.q.chunks, ...extra]), answer:answersOf(x.q), rev:{h:x.q.h, p:x.q.p, es:x.q.es}};
+      }
+      let wrongs = x.wrongs;
+      if (!wrongs){ wrongs = []; for (let k = 0; wrongs.length < 6 && k < 80; k++){ const y = spec.qa(x.form); if (y.key !== x.key && !wrongs.some(w => noPunct(w.h) === noPunct(y.a.h))) wrongs.push(y.a); } }
+      return replyEx(item, x.kind || 'Responde', bubbleQ(x.who || 'Amigo', x.q, x.cue || ''), x.a, wrongs);
+    }
+    return genEx(mode, item, pool, f => spec.say(f));
+  };
+  GEN[item] = fn;
+  GEN_MODES[item] = spec.modes || ['build','reply','listen','ask'];
+  L2_GEN[item] = spec.modes2 || ['listen','reply','build'];
+  L3[unit] = () => mix(fn, spec.l3 || KL3);
+  return fn;
+}
+// sentence units: their level 3 mixes the generators of the route
+const kMix = (unit, spec) => { L3[unit] = () => spec.flatMap(([g, m, n]) => times(n, () => GEN[g](m))); };
+const ynPic = ok => picBox(ok ? '✅' : '❌');
+const otherNums = (n, lo, hi) => shuffle([...new Set([n + 1, n - 1, n + 10, n - 10, Number(String(n).split('').reverse().join(''))])].filter(x => x >= lo && x <= hi && x !== n));
+
+/* ---------- HSK 1 · Ruta 1: saludos y números ---------- */
+KW('k1a', [
+  ['k_nin','您','nín','usted','El 你 con 心 (corazón) debajo: el «tú» respetuoso, para profesores, mayores y clientes.'],
+  ['k_nimen','你们','nǐ·men','ustedes','们 hace plural a las personas: 我们, 你们, 他们.'],
+  ['k_tamen','他们','tā·men','ellos, ellas','Si son todas mujeres se escribe 她们. Suena igual.'],
+  ['k_hao','好','hǎo','bien; bueno','女 mujer + 子 niño: algo bueno.'],
+  ['k_ne','呢','ne','¿y…? (devuelve la pregunta)','我很好，你呢？ = Estoy bien, ¿y tú?'],
+  ['k_nhm','你好吗？','nǐ hǎo ma','¿cómo estás?','Pregunta de verdad cómo está alguien. Para saludar basta 你好.'],
+  ['k_lsh','老师好','lǎo·shī hǎo','buenos días, profesor(a)','Así saludan los alumnos en China al empezar la clase.']
+]);
+KW('k1b', [
+  ['k_zhu','住','zhù','vivir (en un lugar)','住在 + lugar: 我住在利马.'],
+  ['k_jia','家','jiā','casa; familia','Un techo 宀 sobre un cerdo 豕: en el campo, la familia y sus animales.'],
+  ['k_nar','哪儿','nǎr','¿dónde?','nǎr (3.er tono) pregunta; nàr (那儿, 4.º tono) responde: allí.'],
+  ['k_cs','城市','chéng·shì','ciudad',''],
+  ['k_mdl','马德里','Mǎ·dé·lǐ','Madrid','Las ciudades extranjeras se escriben por cómo suenan: Mǎ-dé-lǐ.']
+]);
+KW('k1c', [
+  ['k_sui','岁','suì','año (de edad)','Número + 岁, sin 是: 我二十岁.'],
+  ['k_dd','多大','duō dà','¿cuántos años? (jóvenes y adultos)','你多大了？ Con alguien mayor se dice 您多大年纪了？'],
+  ['k_js','几岁','jǐ suì','¿cuántos años? (niños)','几 espera un número pequeño: úsalo con niños.'],
+  ['k_le','了','le','(marca un cambio o algo que ya pasó)','我二十岁了 = ya tengo 20: el número cambió.'],
+  ['k_jn','今年','jīn·nián','este año','今 ahora + 年 año, como 今天.'],
+  ['k_nian','年','nián','año','']
+]);
+KW('k1d', [
+  ['k_dh','电话','diàn·huà','teléfono','电 electricidad + 话 palabras.'],
+  ['k_hm','号码','hào·mǎ','número (de teléfono, de habitación)',''],
+  ['k_sj','手机','shǒu·jī','celular','手 mano + 机 máquina.'],
+  ['k_de','的','de','de (posesión)','我的手机 = mi celular. 你的 = tuyo.'],
+  ['k_wei','喂','wéi','¿aló?','Solo al teléfono. Se dice con 2.º tono: wéi.'],
+  ['k_dadh','打电话','dǎ diàn·huà','llamar por teléfono','打 golpear: antes se «golpeaba» el disco del teléfono.'],
+  ['k_yao','幺','yāo','uno (al dictar números)','En teléfonos y habitaciones el 1 se dice yāo, para no confundirlo con el 7 (qī).']
+]);
+KW('k1e', [
+  ['k_qing','请','qǐng','por favor; invitar','Va delante del verbo: 请坐 = siéntese, por favor.'],
+  ['k_qz','请坐','qǐng zuò','siéntese, por favor',''],
+  ['k_qj','请进','qǐng jìn','pase, por favor',''],
+  ['k_qhc','请喝茶','qǐng hē chá','tome un té, por favor','En China se ofrece té a las visitas.'],
+  ['k_byx','不用谢','bú yòng xiè','no hay de qué','Igual que 不客气.'],
+  ['k_thl','太好了','tài hǎo le','¡qué bien!','太…了 = ¡qué…! También «demasiado»: 太贵了.']
+]);
+const DK1 = [K.wo, K.ni, C('您','nín'), C('你们','nǐ·men'), C('我们','wǒ·men'), C('他们','tā·men'), K.hen, C('好','hǎo'), K.ma, C('呢','ne'),
+  C('住','zhù'), K.zai, C('家','jiā'), C('哪儿','nǎr'), C('岁','suì'), C('多大','duō dà'), C('几岁','jǐ suì'), C('了','le'), K.shi,
+  C('电话','diàn·huà'), C('号码','hào·mǎ'), C('手机','shǒu·jī'), C('的','de'), C('多少','duō·shao'), C('请','qǐng'), C('谢谢','xiè·xie')];
+const HOW1 = [
+  {g:'me', q:[K.ni], qes:'¿Cómo estás?', a:[K.wo, K.hen, C('好，','hǎo'), K.ni, C('呢','ne')], aes:'Muy bien, ¿y tú?', end:'？'},
+  {g:'me', q:[C('您','nín')], qes:'¿Cómo está usted?', a:[K.wo, K.hen, C('好，','hǎo'), C('您','nín'), C('呢','ne')], aes:'Muy bien, ¿y usted?', end:'？', who:'Señor Wang', cue:'Respondes con el mismo respeto.'},
+  {g:'we', q:[C('你们','nǐ·men')], qes:'¿Cómo están ustedes?', a:[C('我们','wǒ·men'), K.hen, C('好','hǎo')], aes:'Estamos muy bien.', cue:'Respondes por todo el grupo.'},
+  {g:'they', q:[C('你爸爸妈妈','nǐ bà·ba mā·ma')], qes:'¿Cómo están tus papás?', a:[C('他们','tā·men'), K.hen, C('好','hǎo')], aes:'Ellos están muy bien.', ask:'Pregunta por sus papás.'}
+];
+const GREET1 = [
+  {pic:'🧑‍🏫', cue:'Entra tu profesora.', h:'老师好', p:'lǎo·shī hǎo', es:'Buenos días, profesora.', ok:['您好']},
+  {pic:'👴', cue:'Saludas a un señor mayor.', h:'您好', p:'nín hǎo', es:'Buenos días (con respeto).', ok:[]},
+  {pic:'👨‍👩‍👧‍👦', cue:'Saludas a un grupo.', h:'你们好', p:'nǐ·men hǎo', es:'Hola a todos.', ok:[]},
+  {pic:'🧒', cue:'Saludas a un niño.', h:'你好', p:'nǐ hǎo', es:'Hola.', ok:[]}
+];
+const howS = w => mkS([...w.q, C('好','hǎo'), K.ma], w.qes, '？');
+kGen('g-k1a', 'k1a', 'saludar y preguntar cómo está', DK1, {
+  say: form => { form = form || pick(['q','a']); const w = pick(HOW1); return Object.assign(form === 'q' ? howS(w) : mkS(w.a, w.aes, w.end || '。'), {form}); },
+  qa: () => { const w = pick(HOW1); return {key:w.g, who:w.who || 'Amiga', q:howS(w), a:mkS(w.a, w.aes, w.end || '。'), cue:w.cue ? cueBox(w.cue) : '', askCue:w.ask}; },
+  more:{pic: () => { const g = pick(GREET1), mk = x => mkS([C(x.h, x.p)], x.es, '！');
+    return replyEx('g-k1a', '¿Cómo saludas?', {html:picBox(g.pic) + cueBox(g.cue)}, mk(g), GREET1.filter(x => x !== g && !g.ok.includes(x.h)).map(mk)); }},
+  modes:['pic','build','reply','listen','ask'], modes2:['pic','listen','reply'], l3:[['pic',2],['build',3],['reply',3],['listen',3],['ask',2],['speak',2]]
+});
+const CITY1 = {lm:{c:C('利马','Lì·mǎ'), es:'Lima'}, bj:{c:C('北京','Běi·jīng'), es:'Pekín'}, sh:{c:C('上海','Shàng·hǎi'), es:'Shanghái'},
+  kk:{c:C('库斯科','Kù·sī·kē'), es:'Cusco'}, md:{c:C('马德里','Mǎ·dé·lǐ'), es:'Madrid'}};
+const cityK = () => pick(Object.keys(CITY1));
+kGen('g-k1b', 'k1b', 'dónde vives', DK1, {
+  say: (form, k) => { form = form || pick(['yo','home','q','nat']); k = k || cityK(); const c = CITY1[k];
+    const s = form === 'home' ? mkS([C('我家','wǒ jiā'), K.zai, c.c], `Mi familia vive en ${c.es}.`)
+      : form === 'q' ? mkS([K.ni, C('住','zhù'), K.zai, C('哪儿','nǎr')], '¿Dónde vives?', '？', ['你住哪儿'])
+      : form === 'nat' ? mkS([K.wo, K.shi, C('秘鲁人，','Bì·lǔ rén'), K.wo, C('住','zhù'), K.zai, c.c], `Soy peruano y vivo en ${c.es}.`)
+      : mkS([K.wo, C('住','zhù'), K.zai, c.c], `Vivo en ${c.es}.`);
+    return Object.assign(s, {form}); },
+  qa: form => { form = form || pick(['live','home']); const k = cityK(), c = CITY1[k];
+    return form === 'home'
+      ? {key:k, form, q:mkS([C('你家','nǐ jiā'), K.zai, C('哪儿','nǎr')], '¿Dónde vive tu familia?', '？'), a:mkS([C('我家','wǒ jiā'), K.zai, c.c], `Mi familia vive en ${c.es}.`), cue:cueBox(`Tu familia vive en <b>${c.es}</b>.`)}
+      : {key:k, form, q:mkS([K.ni, C('住','zhù'), K.zai, C('哪儿','nǎr')], '¿Dónde vives?', '？', ['你住哪儿']), a:mkS([K.wo, C('住','zhù'), K.zai, c.c], `Vivo en ${c.es}.`), cue:cueBox(`Vives en <b>${c.es}</b>.`)}; }
+});
+const ageC = n => C(n === 2 ? '两岁' : numZh(n) + '岁', (n === 2 ? 'liǎng' : numPy(n)) + ' suì');
+kGen('g-k1c', 'k1c', 'la edad', DK1, {
+  say: form => { form = form || pick(['me','me','kid','adult','bro']); const n = rint(18, 65), k = rint(2, 9);
+    const s = form === 'kid' ? mkS([K.ni, C('几岁','jǐ suì'), C('了','le')], '¿Cuántos años tienes? (a un niño)', '？')
+      : form === 'adult' ? mkS([K.ni, C('多大','duō dà'), C('了','le')], '¿Cuántos años tienes?', '？')
+      : form === 'bro' ? mkS([C('我妹妹','wǒ mèi·mei'), C('今年','jīn·nián'), ageC(k)], `Mi hermana menor tiene ${k} años este año.`)
+      : mkS([K.wo, ageC(n), C('了','le')], `Tengo ${n} años.`);
+    return Object.assign(s, {form}); },
+  qa: () => { const kid = Math.random() < .35, n = kid ? rint(2, 9) : rint(15, 70);
+    const a = v => mkS([K.wo, ageC(v), C('了','le')], `Tengo ${v} años.`);
+    const wrongs = otherNums(n, kid ? 1 : 11, 99).slice(0, 3).map(a);
+    if (n === 2) wrongs.unshift(mkS([K.wo, C('二岁','èr suì'), C('了','le')], 'Tengo 2 años (mal dicho: con 岁 es 两).'));
+    return {key:n, who:kid ? 'Profesora' : 'Compañero', wrongs, q:kid ? mkS([K.ni, C('几岁','jǐ suì'), C('了','le')], '¿Cuántos años tienes?', '？') : mkS([K.ni, C('多大','duō dà'), C('了','le')], '¿Cuántos años tienes?', '？'),
+      a:a(n), cue:(kid ? picBox('🧒') : '') + cueBox(`Tienes <b>${n}</b> años.`), askCue:kid ? 'Pregúntale la edad a este niño.' : 'Pregúntale la edad.'}; },
+  more:{pic: () => { const kid = Math.random() < .5, mk = (cs, es) => mkS(cs, es, '？');
+    const ji = mk([K.ni, C('几岁','jǐ suì'), C('了','le')], '¿Cuántos años tienes? (a un niño)'), dd = mk([K.ni, C('多大','duō dà'), C('了','le')], '¿Cuántos años tienes?');
+    const others = [mk([K.ni, C('住','zhù'), K.zai, C('哪儿','nǎr')], '¿Dónde vives?'), mk([K.ni, C('叫','jiào'), K.sm, C('名字','míng·zi')], '¿Cómo te llamas?')];
+    return replyEx('g-k1c', '¿Cómo le preguntas la edad?', {html:picBox(kid ? '🧒' : '🧑') + cueBox(kid ? 'Es un niño de unos 6 años.' : 'Es un chico de unos 20 años.')}, kid ? ji : dd, kid ? others : [ji, ...others]); }},
+  modes:['build','reply','pic','listen','ask'], modes2:['listen','reply','pic'], l3:[['build',3],['reply',4],['pic',2],['listen',3],['ask',2],['speak',2]]
+});
+const PHD = ['零','幺','二','三','四','五','六','七','八','九'], PHP = ['líng','yāo','èr','sān','sì','wǔ','liù','qī','bā','jiǔ'];
+const phoneNum = () => { let d = '9' + Array.from({length:8}, () => rint(0, 9)).join(''); if (!d.includes('1')) d = d.slice(0, 5) + '1' + d.slice(6); return d; };
+const phGroups = d => [d.slice(0, 3), d.slice(3, 6), d.slice(6)];
+const phC = (g, last) => C([...g].map(x => PHD[x]).join('') + (last ? '' : '，'), [...g].map(x => PHP[x]).join(' '));
+const phChunks = d => phGroups(d).map((g, i) => phC(g, i === 2));
+const phEs = d => phGroups(d).join(' ');
+const phCard = d => `<div class="tag" style="font-size:34px">☎ ${phEs(d)}</div>`;
+const myPhone = (d, w = '手机') => mkS([C('我的','wǒ de'), C(w + '号码', (w === '手机' ? 'shǒu·jī' : 'diàn·huà') + ' hào·mǎ'), K.shi, ...phChunks(d)], `Mi número de ${w === '手机' ? 'celular' : 'teléfono'} es ${phEs(d)}.`);
+const phTweak = d => { const i = rint(1, 8); let x; do x = String(rint(0, 9)); while (x === d[i]); return d.slice(0, i) + x + d.slice(i + 1); };
+kGen('g-k1d', 'k1d', 'el número de teléfono', DK1, {
+  say: form => { form = form || pick(['mine','mine','q','call']);
+    const s = form === 'q' ? mkS([C('你的','nǐ de'), C('电话号码','diàn·huà hào·mǎ'), K.shi, C('多少','duō·shao')], '¿Cuál es tu número de teléfono?', '？')
+      : form === 'call' ? mkS([K.wo, C('晚上','wǎn·shang'), C('打电话','dǎ diàn·huà')], 'Llamo por la noche.')
+      : myPhone(phoneNum(), pick(['手机','电话']));
+    return Object.assign(s, {form}); },
+  qa: () => { const d = phoneNum(), a = myPhone(d);
+    return {key:d, who:'Compañera', q:mkS([C('你的','nǐ de'), C('手机号码','shǒu·jī hào·mǎ'), K.shi, C('多少','duō·shao')], '¿Cuál es tu número de celular?', '？'), a, cue:phCard(d),
+      wrongs:[phTweak(d), phTweak(d), phTweak(d)].map(x => myPhone(x))}; },
+  more:{
+    phone: () => { const d = phoneNum(), s = myPhone(d);
+      return {t:'digits', item:'g-k1d', kind:'Dictado: el número de teléfono', say:s.h, q:audioBtns(s.h), hint:'Escribe solo las cifras, seguidas. Recuerda: yāo es 1.', answer:d, rev:{h:s.h, p:s.p, es:phEs(d)}}; },
+    read: () => { const d = phoneNum(), zh = x => phChunks(x).map(c => c.h).join(''), py = x => phChunks(x).map(c => c.p).join(' ');
+      const os = [{v:zh(d), say:zh(d), html:`<span class="han" style="font-size:22px">${zh(d)}</span>`}];
+      const yi = zh(d).replace(/幺/g, '一');
+      os.push({v:yi, say:yi, html:`<span class="han" style="font-size:22px">${yi}</span>`});
+      for (let k = 0; os.length < 4 && k < 20; k++){ const x = zh(phTweak(d)); if (!os.some(o => o.v === x)) os.push({v:x, say:x, html:`<span class="han" style="font-size:22px">${x}</span>`}); }
+      return {t:'mc', item:'g-k1d', kind:'¿Cómo lo dictas?', q:phCard(d), wide:true, options:shuffle(os), answer:zh(d), rev:{h:zh(d), p:py(d), es:phEs(d)}}; }
+  },
+  modes:['read','phone','reply','build','listen'], modes2:['phone','phone','read','reply'], l3:[['phone',5],['read',3],['reply',3],['ask',2],['speak',2]]
+});
+const POL1 = [
+  {key:'dn', who:'Amiga', say:mkS([C('谢谢你','xiè·xie nǐ')], '¡Gracias!', '！'), a:mkS([C('不客气','bú kè·qi')], 'De nada.'), ok:['不用谢'], cue:'Te da las gracias.'},
+  {key:'dn', who:'Profesor', say:mkS([C('谢谢','xiè·xie')], '¡Gracias!', '！'), a:mkS([C('不用谢','bú yòng xiè')], 'No hay de qué.'), ok:['不客气'], cue:'Te da las gracias.'},
+  {key:'mg', who:'Señor', say:mkS([C('对不起','duì·bu·qǐ')], '¡Perdón!', '！'), a:mkS([C('没关系','méi guān·xi')], 'No pasa nada.'), ok:[], cue:'Te pisa sin querer.'},
+  {key:'xx', who:'Profesora', say:mkS([C('请坐','qǐng zuò')], 'Siéntate, por favor.'), a:mkS([C('谢谢','xiè·xie')], 'Gracias.'), ok:[], cue:'Te ofrece una silla.'},
+  {key:'xx', who:'Abuela', say:mkS([C('请喝茶','qǐng hē chá')], 'Toma un té, por favor.'), a:mkS([C('谢谢','xiè·xie')], 'Gracias.'), ok:[], cue:'Te sirve té.'},
+  {key:'thl', who:'Amigo', say:mkS([C('我们','wǒ·men'), C('一起','yì·qǐ'), C('吃晚饭，','chī wǎn·fàn'), C('好吗','hǎo ma')], '¿Cenamos juntos?', '？'), a:mkS([C('太好了','tài hǎo le')], '¡Qué bien!', '！'), ok:['谢谢'], cue:'Te encanta la idea.'},
+  {key:'zj', who:'Compañero', say:mkS([C('再见','zài·jiàn')], '¡Adiós!', '！'), a:mkS([C('再见','zài·jiàn')], 'Adiós.', '！'), ok:[], cue:'Se va.'}
+];
+const POLS1 = [
+  () => mkS([C('请','qǐng'), C('坐','zuò')], 'Siéntese, por favor.'), () => mkS([C('请','qǐng'), C('喝','hē'), C('茶','chá')], 'Tome un té, por favor.'),
+  () => mkS([C('老师，','lǎo·shī'), C('请','qǐng'), C('进','jìn')], 'Pase, profesora, por favor.'), () => mkS([C('对不起，','duì·bu·qǐ'), K.wo, K.bu, C('知道','zhī·dào')], 'Lo siento, no lo sé.'),
+  () => mkS([C('谢谢','xiè·xie'), C('您','nín')], 'Muchas gracias (a usted).'), () => mkS([C('太','tài'), C('好','hǎo'), C('了','le')], '¡Qué bien!', '！')
+];
+kGen('g-k1e', 'k1e', 'responder con cortesía', DK1, {
+  say: () => Object.assign(pick(POLS1)(), {form:'x'}),
+  qa: () => { const s = pick(POL1);
+    return {key:s.key, who:s.who, q:s.say, a:s.a, cue:cueBox(s.cue), wrongs:uniqBy(POL1.filter(x => x.key !== s.key && !s.ok.includes(noPunct(x.a.h))), x => x.a.h).map(x => x.a)}; },
+  modes:['reply','build','reply','listen'], modes2:['reply','listen','reply'], l3:[['reply',6],['build',3],['listen',3],['speak',2]]
+});
+KS('k1f', [
+  ['ks11', [C('您','nín'), C('好','hǎo'), K.ma], '¿Cómo está usted?', 1],
+  ['ks12', [K.wo, K.hen, C('好，','hǎo'), K.ni, C('呢','ne')], 'Muy bien, ¿y tú?', 1],
+  ['ks13', [K.ni, C('住','zhù'), K.zai, C('哪儿','nǎr')], '¿Dónde vives?', 1, ['你住哪儿']],
+  ['ks14', [K.wo, C('住','zhù'), K.zai, C('利马','Lì·mǎ')], 'Vivo en Lima.'],
+  ['ks15', [K.ni, C('多大','duō dà'), C('了','le')], '¿Cuántos años tienes?', 1],
+  ['ks16', [K.wo, C('二十五岁','èr·shí·wǔ suì'), C('了','le')], 'Tengo 25 años.'],
+  ['ks17', [C('你的','nǐ de'), C('电话号码','diàn·huà hào·mǎ'), K.shi, C('多少','duō·shao')], '¿Cuál es tu número de teléfono?', 1],
+  ['ks18', [C('我的','wǒ de'), C('手机号码','shǒu·jī hào·mǎ'), K.shi, C('九八七，','jiǔ bā qī'), C('六五四，','liù wǔ sì'), C('三二幺','sān èr yāo')], 'Mi número de celular es 987 654 321.'],
+  ['ks19', [C('老师，','lǎo·shī'), C('请','qǐng'), C('喝','hē'), C('茶','chá')], 'Profesora, tome un té, por favor.'],
+  ['ks110', [C('谢谢！','xiè·xie'), C('不客气','bú kè·qi')], '¡Gracias! —De nada.']
+]);
+kMix('k1f', [['g-k1a','reply',2], ['g-k1b','reply',2], ['g-k1c','reply',2], ['g-k1d','phone',2], ['g-k1e','reply',2], ['g-k1c','speak',2]]);
+KU('k1a', 'k1', '您', 'Hola a todos', '您好！你们好！', '您, 你们 y 你好吗？', [rule('La regla', 'Un saludo para cada persona', [['你好！','a un amigo o a un niño'], ['您好！','a alguien mayor o a un cliente: con respeto'], ['你们好！','a un grupo'], ['老师好！','a tu profesor(a)']], 'Para responder a 你好吗？: 我很好，你呢？ 呢 devuelve la pregunta.')]);
+KU('k1b', 'k1', '住', '¿Dónde vives?', '你住在哪儿？', '住在 + ciudad', [rule('La regla', 'Quién · 住在 · lugar', [['我住在利马。','Vivo en Lima.'], ['你住在哪儿？','¿Dónde vives?'], ['我家在库斯科。','Mi familia vive en Cusco.']], 'Como siempre en chino, la pregunta tiene el mismo orden que la respuesta: 哪儿 va donde iría la ciudad.', [['quién','我'], ['vive en','住在'], ['dónde','利马']])]);
+KU('k1c', 'k1', '岁', '¿Cuántos años tienes?', '你多大了？', '岁, 多大 y 几岁', [rule('La regla', 'Número + 岁, sin 是', [['你多大了？','¿Cuántos años tienes? (jóvenes y adultos)'], ['你几岁了？','¿Cuántos años tienes? (niños)'], ['我二十岁了。','Tengo 20 años.'], ['她两岁。','Tiene 2 años: 两, no 二.']], '了 al final dice que el número cambió: «ya tengo 20». En la edad no se usa 是: 我二十岁, no 我是二十岁.')]);
+KU('k1d', 'k1', '号', 'Mi número de teléfono', '你的电话号码是多少？', '号码 y el 1 que se dice yāo', [rule('La regla', 'Los números de teléfono, cifra por cifra', [['九八七','987: se dicen las cifras sueltas'], ['幺','el 1 se dice yāo'], ['零','el 0 se dice líng'], ['你的手机号码是多少？','¿Cuál es tu número de celular?']], 'Para preguntar un número grande se usa 多少, no 几. Y 的 marca de quién es: 我的手机 = mi celular.')]);
+KU('k1e', 'k1', '谢', 'Gracias y perdón', '谢谢！不客气。', 'Responder con cortesía', [rule('Cortesía', 'Lo que te dicen y lo que respondes', [['谢谢！ · 不客气。','Gracias. → De nada.'], ['对不起！ · 没关系。','Perdón. → No pasa nada.'], ['请坐。 · 谢谢。','Siéntese. → Gracias.'], ['我们一起吃饭，好吗？ · 太好了！','¿Comemos juntos? → ¡Qué bien!']], '请 + verbo es la forma amable de pedir algo: 请进, 请坐, 请喝茶.')]);
+KU('k1f', 'k1', '句', 'Saludar y presentarte', '您好！我住在利马。', 'Frases completas de la ruta', [rule('Repaso', 'Cinco preguntas para conocer a alguien', [['你好吗？','cómo está'], ['你住在哪儿？','dónde vive'], ['你多大了？','su edad'], ['你的电话号码是多少？','su teléfono'], ['谢谢！ · 不客气。','y agradecer']], 'Practicas las dos partes: preguntar y responder.')], ['ks12','ks16']);
+
+/* ---------- HSK 1 · Ruta 2: familia y escuela ---------- */
+KW('k2a', [
+  ['k_py','朋友','péng·you','amigo(a)',''],
+  ['k_ez','儿子','ér·zi','hijo',''],
+  ['k_ne2','女儿','nǚ·ér','hija','女 mujer + 儿 niño.'],
+  ['k_xs','先生','xiān·sheng','señor; esposo','王先生 = el señor Wang: el apellido va primero.'],
+  ['k_xj','小姐','xiǎo·jiě','señorita','李小姐 = la señorita Li.'],
+  ['k_nage','那','nà','ese, aquel','这 = este (cerca) · 那 = ese (lejos).'],
+  ['k_shui','谁的','shéi de','¿de quién?','这是谁的书？ = ¿De quién es este libro?']
+]);
+KW('k2b', [
+  ['k_gou','狗','gǒu','perro',''],
+  ['k_mao','猫','māo','gato','Suena como el maullido: māo.'],
+  ['k_zhi','只','zhī','(medida para animales)','Número + 只 + animal: 一只狗, 三只猫.'],
+  ['k_ge','个','ge','(medida general)','La más común: 一个人, 三个朋友.'],
+  ['k_liang','两','liǎng','dos (al contar cosas)','Antes de una palabra de medida, el 2 es 两: 两只猫. Nunca 二只.'],
+  ['k_cw','宠物','chǒng·wù','mascota','你有宠物吗？ = ¿Tienes mascota?']
+]);
+KW('k2c', [
+  ['k_shu','书','shū','libro',''],
+  ['k_ben','本','běn','(medida para libros)','一本书, 两本书.'],
+  ['k_zi','字','zì','carácter, letra','她的字很漂亮 = Tiene una letra muy bonita.'],
+  ['k_hz','汉字','Hàn·zì','caracteres chinos','汉 chino (como en 汉语) + 字.'],
+  ['k_xie','写','xiě','escribir',''],
+  ['k_du','读','dú','leer (en voz alta), estudiar','读书 también es «estudiar» en la escuela.'],
+  ['k_pl','漂亮','piào·liang','bonito, lindo','Para personas y cosas: 她很漂亮, 这个字很漂亮.']
+]);
+KW('k2d', [
+  ['k_hui','会','huì','saber (hacer algo)','Una habilidad aprendida: 我会说英语, 我会游泳.'],
+  ['k_shuo','说','shuō','hablar, decir','说汉语 = hablar chino.'],
+  ['k_xbyy','西班牙语','Xī·bān·yá·yǔ','español (idioma)','País + 语 = su idioma.'],
+  ['k_fy','法语','Fǎ·yǔ','francés (idioma)',''],
+  ['k_ry','日语','Rì·yǔ','japonés (idioma)',''],
+  ['k_bh','不会','bú huì','no saber','不 + 4.º tono → bú.'],
+  ['k_kz','很酷','hěn kù','genial','Viene del inglés cool. Muy usado por los jóvenes.']
+]);
+KW('k2e', [
+  ['k_tx','同学','tóng·xué','compañero(a) de clase','同 igual + 学 estudiar.'],
+  ['k_ye','也','yě','también','Va antes del verbo: 我也是学生.'],
+  ['k_dou','都','dōu','todos; los dos','Va antes del verbo: 我们都是秘鲁人.'],
+  ['k_he','和','hé','y (entre nombres)','Solo une personas o cosas: 我和你. No une frases.'],
+  ['k_ban','班','bān','clase, grupo (de alumnos)','我们班 = nuestra clase.']
+]);
+const TA = C('他','tā'), TA2 = C('她','tā');
+const DK2 = [K.wo, K.ni, K.shi, K.you, K.ma, K.bu, C('的','de'), C('谁','shéi'), C('朋友','péng·you'), C('儿子','ér·zi'), C('女儿','nǚ·ér'), C('只','zhī'), C('个','ge'),
+  C('两只','liǎng zhī'), C('二只','èr zhī'), C('狗','gǒu'), C('猫','māo'), C('大','dà'), C('小','xiǎo'), C('本','běn'), C('书','shū'), C('写','xiě'), C('汉字','Hàn·zì'), C('会','huì'), C('说','shuō'),
+  C('汉语','Hàn·yǔ'), C('英语','Yīng·yǔ'), C('同学','tóng·xué'), C('也','yě'), C('都','dōu'), C('和','hé'), C('没有','méi·yǒu')];
+const PPL2 = [
+  {c:C('儿子','ér·zi'), es:'hijo', pic:'👦', m:1, fam:1}, {c:C('女儿','nǚ·ér'), es:'hija', pic:'👧', m:0, fam:1},
+  {c:C('朋友','péng·you'), es:'amigo', pic:'🧑', m:1}, {c:C('老师','lǎo·shī'), es:'profesora', pic:'👩‍🏫', m:0},
+  {c:C('妈妈','mā·ma'), es:'mamá', pic:'👩', m:0, fam:1}, {c:C('先生','xiān·sheng'), es:'esposo', pic:'🤵', m:1, fam:1}, {c:C('同学','tóng·xué'), es:'compañera de clase', pic:'👩‍🎓', m:0}
+];
+// 我妈妈 or 我的妈妈: with family both are fine; with friends and teachers 的 is the norm but 我朋友 is heard too
+const whoS = (x, form) => { const t = x.m ? TA : TA2, el = x.m ? 'Él' : 'Ella';
+  const with_ = [t, K.shi, C('我的','wǒ de'), x.c], without = [t, K.shi, C('我','wǒ'), x.c];
+  return mkS(x.fam ? without : with_, `${el} es mi ${x.es}.`, '。', [(x.fam ? with_ : without).map(c => c.h).join('')]); };
+kGen('g-k2a', 'k2a', 'quién es', DK2, {
+  say: form => { form = form || pick(['who','who','q','name']); const x = pick(PPL2);
+    const s = form === 'q' ? mkS([x.m ? TA : TA2, K.shi, C('谁','shéi')], `¿Quién es ${x.m ? 'él' : 'ella'}?`, '？')
+      : form === 'name' ? pick([mkS([C('那','nà'), K.shi, C('王先生','Wáng xiān·sheng')], 'Ese es el señor Wang.'), mkS([C('这','zhè'), K.shi, C('李小姐','Lǐ xiǎo·jiě')], 'Esta es la señorita Li.')])
+      : whoS(x);
+    return Object.assign(s, {form, pic:form === 'who' ? picBox(x.pic) : ''}); },
+  qa: () => { const x = pick(PPL2);
+    return {key:x.es, who:'Amiga', q:mkS([x.m ? TA : TA2, K.shi, C('谁','shéi')], `¿Quién es ${x.m ? 'él' : 'ella'}?`, '？'), a:whoS(x),
+      cue:picBox(x.pic) + cueBox(`Es tu <b>${x.es}</b>.`), wrongs:shuffle(PPL2.filter(y => y.m === x.m && y !== x)).concat(shuffle(PPL2.filter(y => y.m !== x.m))).slice(0, 3).map(whoS)}; },
+  more:{pic: () => { const x = pick(PPL2.filter(y => y.fam)), o = PPL2.filter(y => y !== x);
+    return replyEx('g-k2a', '¿Quién es?', {html:picBox(x.pic) + cueBox(`Presenta a tu ${x.es}.`)}, whoS(x), o.map(whoS)); }}
+});
+const PETS = {gou:{c:C('狗','gǒu'), es:'perro', pl:'perros', pic:'🐶'}, mao:{c:C('猫','māo'), es:'gato', pl:'gatos', pic:'🐱'}};
+const zhiC = n => C(['', '一只', '两只', '三只', '四只'][n], ['', 'yì zhī', 'liǎng zhī', 'sān zhī', 'sì zhī'][n]);
+const NUMES = ['', 'un', 'dos', 'tres', 'cuatro'];
+const petEs = (n, p, size) => `${NUMES[n]} ${n === 1 ? p.es : p.pl}${size ? ' ' + (size === '大' ? (n === 1 ? 'grande' : 'grandes') : (n === 1 ? 'pequeño' : 'pequeños')) : ''}`;
+const haveS = (n, k, size) => { const p = PETS[k]; return mkS([K.wo, K.you, zhiC(n), ...(size ? [C(size, size === '大' ? 'dà' : 'xiǎo')] : []), p.c], `Tengo ${petEs(n, p, size)}.`); };
+kGen('g-k2b', 'k2b', 'mascotas y palabras de medida', DK2, {
+  say: form => { form = form || pick(['have','have','size','ppl','q']); const n = rint(1, 4), k = pick(Object.keys(PETS));
+    const s = form === 'size' ? haveS(n, k, pick(['大','小']))
+      : form === 'ppl' ? mkS([K.wo, K.you, C(['', '一个', '两个', '三个', '四个'][n], ['', 'yí ge', 'liǎng ge', 'sān ge', 'sì ge'][n]), C('哥哥','gē·ge')], `Tengo ${NUMES[n]} hermano${n > 1 ? 's' : ''} mayor${n > 1 ? 'es' : ''}.`)
+      : form === 'q' ? mkS([K.ni, K.you, C('宠物','chǒng·wù'), K.ma], '¿Tienes mascota?', '？')
+      : haveS(n, k);
+    return Object.assign(s, {form, pic:form === 'have' ? picBox(PETS[k].pic.repeat(n)) : ''}); },
+  qa: () => { const none = Math.random() < .2, n = rint(1, 4), k = pick(Object.keys(PETS)), o = k === 'gou' ? 'mao' : 'gou';
+    const no = mkS([C('没有，','méi·yǒu'), K.wo, C('没有','méi·yǒu'), C('宠物','chǒng·wù')], 'No, no tengo mascota.');
+    const yes = (m, kk) => Object.assign(mkS([C('有，','yǒu'), ...haveS(m, kk).chunks], `Sí, tengo ${petEs(m, PETS[kk])}.`), {});
+    const q = mkS([K.ni, K.you, C('宠物','chǒng·wù'), K.ma], '¿Tienes mascota?', '？');
+    if (none) return {key:'no', who:'Compañero', q, a:no, cue:ynPic(false), wrongs:[yes(1, k), yes(2, o), yes(3, k)]};
+    const wrongs = [yes(n, o), yes(n === 1 ? 2 : n - 1, k), no];
+    if (n === 2) wrongs.push(mkS([C('有，','yǒu'), K.wo, K.you, C('二只','èr zhī'), PETS[k].c], 'Sí, tengo dos (mal dicho: es 两只).'));
+    return {key:n + k, who:'Compañero', q, a:yes(n, k), cue:picBox(PETS[k].pic.repeat(n)), wrongs}; },
+  more:{pic: () => { const n = rint(1, 4), k = pick(Object.keys(PETS)), o = k === 'gou' ? 'mao' : 'gou';
+    const wrongs = [haveS(n, o), haveS(n === 4 ? 3 : n + 1, k)];
+    if (n === 2) wrongs.unshift(mkS([K.wo, K.you, C('二只','èr zhī'), PETS[k].c], 'Tengo dos (mal dicho).'));
+    else wrongs.push(haveS(n === 1 ? 3 : 1, k));
+    return replyEx('g-k2b', '¿Qué tienes?', {html:picBox(PETS[k].pic.repeat(n))}, haveS(n, k), wrongs); }},
+  modes:['pic','build','reply','listen','pic'], modes2:['pic','listen','reply'], l3:[['pic',3],['build',4],['reply',3],['listen',3],['speak',2]]
+});
+const OWN2 = [{c:C('老师','lǎo·shī'), es:'de la profesora'}, {c:C('我','wǒ'), es:'mío'}, {c:C('我哥哥','wǒ gē·ge'), es:'de mi hermano mayor'}, {c:C('我朋友','wǒ péng·you'), es:'de mi amigo'}, {c:C('我同学','wǒ tóng·xué'), es:'de mi compañera'}];
+const ownS = o => mkS([C('这','zhè'), K.shi, o.c, C('的','de'), C('书','shū')], o.es === 'mío' ? 'Este libro es mío.' : `Este es el libro ${o.es}.`);
+kGen('g-k2c', 'k2c', 'libros y caracteres', DK2, {
+  say: form => { form = form || pick(['write','read','pretty','books']); const n = rint(1, 4);
+    const s = form === 'write' ? mkS([C('老师','lǎo·shī'), C('写','xiě'), C('汉字','Hàn·zì')], 'La profesora escribe caracteres chinos.')
+      : form === 'read' ? mkS([K.wo, C('每天','měi·tiān'), C('读','dú'), C('汉语书','Hàn·yǔ shū')], 'Todos los días leo libros de chino.')
+      : form === 'pretty' ? mkS([C('她的','tā de'), C('字','zì'), K.hen, C('漂亮','piào·liang')], 'Tiene una letra muy bonita.')
+      : mkS([K.wo, K.you, C(['', '一本', '两本', '三本', '四本'][n], ['', 'yì běn', 'liǎng běn', 'sān běn', 'sì běn'][n]), C('书','shū')], `Tengo ${NUMES[n].replace(/^un$/, 'un')} libro${n > 1 ? 's' : ''}.`);
+    return Object.assign(s, {form, pic:form === 'books' ? picBox('📕'.repeat(n)) : ''}); },
+  qa: () => { const o = pick(OWN2);
+    return {key:o.es, who:'Compañero', q:mkS([C('这','zhè'), K.shi, C('谁的','shéi de'), C('书','shū')], '¿De quién es este libro?', '？'), a:ownS(o),
+      cue:picBox('📘') + cueBox(`Es <b>${o.es}</b>.`), askCue:'Pregunta de quién es el libro.'}; }
+});
+const LANG2 = [{c:C('汉语','Hàn·yǔ'), es:'chino'}, {c:C('英语','Yīng·yǔ'), es:'inglés'}, {c:C('西班牙语','Xī·bān·yá·yǔ'), es:'español'}, {c:C('法语','Fǎ·yǔ'), es:'francés'}, {c:C('日语','Rì·yǔ'), es:'japonés'}];
+kGen('g-k2d', 'k2d', 'qué idiomas sabes', DK2, {
+  say: form => { form = form || pick(['can','not','bit','q','cool']); const l = pick(LANG2);
+    const s = form === 'not' ? mkS([K.wo, C('不会','bú huì'), C('说','shuō'), l.c], `No sé hablar ${l.es}.`)
+      : form === 'bit' ? mkS([K.wo, C('会','huì'), C('说','shuō'), C('一点儿','yì·diǎnr'), l.c], `Hablo un poco de ${l.es}.`)
+      : form === 'q' ? mkS([K.ni, C('会','huì'), C('说','shuō'), l.c, K.ma], `¿Sabes hablar ${l.es}?`, '？')
+      : form === 'cool' ? mkS([C('会说汉语','huì shuō Hàn·yǔ'), C('很酷','hěn kù')], '¡Hablar chino es genial!', '！')
+      : mkS([K.wo, C('会','huì'), C('说','shuō'), l.c], `Sé hablar ${l.es}.`);
+    return Object.assign(s, {form}); },
+  qa: () => { const l = pick(LANG2), st = pick(['yes','bit','no']);
+    const A = {yes:mkS([C('会，','huì'), K.wo, C('会','huì'), C('说','shuō'), l.c], `Sí, sé hablar ${l.es}.`),
+      bit:mkS([C('会','huì'), C('一点儿','yì·diǎnr')], 'Sí, un poco.'),
+      no:mkS([C('不会，','bú huì'), K.wo, C('不会','bú huì'), C('说','shuō'), l.c], `No, no sé hablar ${l.es}.`)};
+    const o = pick(LANG2.filter(x => x !== l));
+    return {key:st, who:'Compañera', q:mkS([K.ni, C('会','huì'), C('说','shuō'), l.c, K.ma], `¿Sabes hablar ${l.es}?`, '？'), a:A[st],
+      cue:cueBox(st === 'yes' ? `Hablas ${l.es} muy bien.` : st === 'bit' ? `Hablas solo un poco de ${l.es}.` : `No hablas nada de ${l.es}.`),
+      wrongs:[...Object.keys(A).filter(k => k !== st).map(k => A[k]), st === 'yes' ? mkS([C('会，','huì'), K.wo, C('会','huì'), C('说','shuō'), o.c], `Sí, sé hablar ${o.es}.`) : mkS([K.wo, K.shi, C('学生','xué·sheng')], 'Soy estudiante.')]}; }
+});
+const MATES = [{c:C('李明','Lǐ Míng'), es:'Li Ming', o:'o'}, {c:C('王丽','Wáng Lì'), es:'Wang Li', o:'a'}, {c:C('安娜','Ān·nà'), es:'Ana', o:'a'}, {c:C('马克','Mǎ·kè'), es:'Marco', o:'o'}];
+kGen('g-k2e', 'k2e', 'también, todos y 和', DK2, {
+  say: form => { form = form || pick(['both','also','all','and']); const [a, b] = shuffle(MATES);
+    const s = form === 'both' ? mkS([a.c, C('和','hé'), b.c, C('都','dōu'), K.shi, C('学生','xué·sheng')], `${a.es} y ${b.es} son estudiantes los dos.`)
+      : form === 'also' ? mkS([a.c, C('也','yě'), K.shi, C('我的','wǒ de'), C('同学','tóng·xué')], `${a.es} también es mi compañer${a.o} de clase.`)
+      : form === 'all' ? mkS([C('我们班','wǒ·men bān'), C('都','dōu'), C('会','huì'), C('说','shuō'), C('英语','Yīng·yǔ')], 'Toda nuestra clase sabe hablar inglés.')
+      : mkS([K.wo, C('和','hé'), C('我朋友','wǒ péng·you'), C('都','dōu'), C('喜欢','xǐ·huan'), C('汉语','Hàn·yǔ')], 'A mi amigo y a mí nos gusta el chino.');
+    return Object.assign(s, {form}); },
+  qa: form => { form = form || pick(['mate','ne']); const a = pick(MATES);
+    if (form === 'ne'){
+      const st = pick(['yes','no']);
+      const yes = mkS([a.c, C('也','yě'), K.shi, C('学生','xué·sheng')], `${a.es} también es estudiante.`), no = mkS([a.c, C('不是','bú shì'), C('学生，','xué·sheng'), C('是','shì'), C('老师','lǎo·shī')], `${a.es} no es estudiante; es profesor${a.o === 'a' ? 'a' : ''}.`);
+      return {key:st, form, who:'Compañero', q:mkS([K.wo, K.shi, C('学生，','xué·sheng'), a.c, C('呢','ne')], `Yo soy estudiante. ¿Y ${a.es}?`, '？'), a:st === 'yes' ? yes : no,
+        cue:cueBox(st === 'yes' ? `${a.es} también estudia.` : `${a.es} enseña inglés.`), wrongs:[st === 'yes' ? no : yes, mkS([a.c, C('都','dōu'), K.shi, C('学生','xué·sheng')], `${a.es} todos son estudiantes (mal dicho).`), mkS([K.wo, C('也','yě'), K.shi, C('老师','lǎo·shī')], 'Yo también soy profesor.')]};
+    }
+    const st = pick(['yes','no']);
+    const yes = mkS([C('是，','shì'), C('他是','tā shì'), C('我的','wǒ de'), C('同学','tóng·xué')], 'Sí, es mi compañero de clase.'), no = mkS([C('不是，','bú shì'), C('他是','tā shì'), C('我的','wǒ de'), C('朋友','péng·you')], 'No, es mi amigo.');
+    return {key:st, form, who:'Profesora', q:mkS([C('他','tā'), K.shi, C('你的','nǐ de'), C('同学','tóng·xué'), K.ma], '¿Es tu compañero de clase?', '？'), a:st === 'yes' ? yes : no,
+      cue:picBox('🧑') + cueBox(st === 'yes' ? 'Estudia contigo.' : 'Es tu amigo, no estudia contigo.'), wrongs:[st === 'yes' ? no : yes, mkS([C('他','tā'), C('也','yě'), C('是','shì'), C('老师','lǎo·shī')], 'Él también es profesor.'), mkS([K.wo, K.shi, C('学生','xué·sheng')], 'Soy estudiante.')]}; }
+});
+KS('k2f', [
+  ['ks21', [TA2, K.shi, C('谁','shéi')], '¿Quién es ella?', 1],
+  ['ks22', [TA2, K.shi, C('我','wǒ'), C('女儿','nǚ·ér')], 'Es mi hija.', 0, ['她是我的女儿']],
+  ['ks23', [K.ni, K.you, C('宠物','chǒng·wù'), K.ma], '¿Tienes mascota?', 1],
+  ['ks24', [K.wo, K.you, C('一只','yì zhī'), C('大','dà'), C('狗','gǒu')], 'Tengo un perro grande.'],
+  ['ks25', [K.wo, K.you, C('两只','liǎng zhī'), C('猫','māo')], 'Tengo dos gatos.'],
+  ['ks26', [C('这','zhè'), K.shi, C('谁的','shéi de'), C('书','shū')], '¿De quién es este libro?', 1],
+  ['ks27', [C('我们的','wǒ·men de'), C('汉语老师','Hàn·yǔ lǎo·shī'), K.shi, C('北京人','Běi·jīng rén')], 'Nuestra profesora de chino es de Pekín.'],
+  ['ks28', [K.ni, C('会','huì'), C('说','shuō'), C('汉语','Hàn·yǔ'), K.ma], '¿Sabes hablar chino?', 1],
+  ['ks29', [K.wo, C('会','huì'), C('说','shuō'), C('一点儿','yì·diǎnr'), C('汉语','Hàn·yǔ')], 'Hablo un poco de chino.'],
+  ['ks210', [C('我们','wǒ·men'), C('都','dōu'), K.shi, C('同学','tóng·xué')], 'Todos somos compañeros de clase.']
+]);
+kMix('k2f', [['g-k2a','reply',2], ['g-k2b','pic',2], ['g-k2c','reply',2], ['g-k2d','reply',2], ['g-k2e','reply',2], ['g-k2b','speak',2]]);
+KU('k2a', 'k2', '谁', 'Mi hija, mi amigo', '她是我女儿。', '谁, 的 y la familia', [rule('La regla', '的 = «de»', [['他是谁？','¿Quién es él?'], ['他是我的朋友。','Es mi amigo.'], ['她是我女儿。','Es mi hija: con la familia, 的 se puede quitar.'], ['这是谁的书？','¿De quién es este libro?']], '谁 va donde iría la persona en la respuesta. 他 y 她 suenan igual: tā.')]);
+KU('k2b', 'k2', '只', 'Mascotas', '我有两只猫。', '只, 个 y 两 (no 二)', [rule('La regla', 'Número + medida + cosa', [['一只狗','un perro: 只 para animales'], ['两只猫','dos gatos: 两, nunca 二只'], ['三个朋友','tres amigos: 个 para casi todo'], ['一只大狗','un perro grande: el tamaño va antes del animal']], 'En chino no se puede decir «dos gatos» sin la palabra de medida en medio.', [['número','两'], ['medida','只'], ['cosa','猫']])]);
+KU('k2c', 'k2', '字', 'Leer y escribir', '老师写汉字。', '书, 本, 写 y 读', [rule('La regla', 'Libros con 本, y 谁的', [['一本书','un libro'], ['两本汉语书','dos libros de chino'], ['这是谁的书？','¿De quién es este libro?'], ['这是老师的书。','Es el libro de la profesora.']], '的 une al dueño con la cosa: 老师的书 = el libro de la profesora.')]);
+KU('k2d', 'k2', '会', 'Idiomas', '你会说汉语吗？', '会 + verbo: saber hacer', [rule('La regla', '会 + verbo = saber hacer', [['我会说英语。','Sé hablar inglés.'], ['我不会说法语。','No sé hablar francés.'], ['我会说一点儿汉语。','Hablo un poco de chino.'], ['你会说汉语吗？ · 会。','¿Sabes hablar chino? → Sí.']], 'Para responder que sí, repite el verbo: 会. Para decir que no: 不会.')]);
+KU('k2e', 'k2', '同', 'Compañeros', '我们都是学生。', '也, 都 y 和', [rule('La regla', '也 y 都 van antes del verbo', [['我也是学生。','Yo también soy estudiante.'], ['我们都是秘鲁人。','Todos somos peruanos.'], ['我和你','tú y yo: 和 solo une nombres'], ['我是学生，你呢？','Yo soy estudiante, ¿y tú?']], 'Si van juntos, primero 也 y luego 都: 他们也都是学生.')]);
+KU('k2f', 'k2', '班', 'Familia y clase', '她是我女儿。', 'Frases completas de la ruta', [rule('Repaso', 'Para hablar de la gente que conoces', [['她是谁？','quién es'], ['你有宠物吗？','mascotas'], ['这是谁的书？','de quién es'], ['你会说汉语吗？','idiomas'], ['他是你的同学吗？','compañeros']], 'Practicas las dos partes: preguntar y responder.')], ['ks22','ks25']);
+
+/* ---------- HSK 1 · Ruta 3: hora y clima ---------- */
+KW('k3a', [
+  ['k_fen','分','fēn','minuto (en la hora)','八点十分 = 8:10.'],
+  ['k_ban2','半','bàn','media','八点半 = 8:30.'],
+  ['k_ling','零','líng','cero','八点零五分 = 8:05: el cero no se omite.'],
+  ['k_sk','上课','shàng kè','empezar la clase','上 subir + 课 clase.'],
+  ['k_xk','下课','xià kè','terminar la clase','下 bajar: lo contrario de 上课.'],
+  ['k_shz','什么时候','shén·me shí·hou','¿cuándo?','Para un día o un momento: 你什么时候去北京？']
+]);
+KW('k3b', [
+  ['k_hao2','号','hào','día (del mes)','十月十九号 = 19 de octubre: de lo grande a lo pequeño.'],
+  ['k_sr','生日','shēng·rì','cumpleaños','生 nacer + 日 día.'],
+  ['k_mn','明年','míng·nián','el próximo año',''],
+  ['k_qn','去年','qù·nián','el año pasado','去 = ir, aquí «que ya se fue».'],
+  ['k_jyjh','几月几号','jǐ yuè jǐ hào','¿qué fecha?','几 va donde irían los números: 今天几月几号？'],
+  ['k_ri','日','rì','día (escrito)','En papeles y calendarios dice 日; al hablar, 号.']
+]);
+KW('k3c', [
+  ['k_xyl','下雨了','xià yǔ le','¡está lloviendo! (empezó a llover)','了 al final: antes no llovía, ahora sí.'],
+  ['k_bxyl','不下雨了','bú xià yǔ le','ya no llueve','不…了 = ya no.'],
+  ['k_qt','晴天','qíng·tiān','día soleado','晴 lleva 日 (sol).'],
+  ['k_yt','阴天','yīn·tiān','día nublado',''],
+  ['k_tll','天冷了','tiān lěng le','ya hace frío','Llegó el frío: 了 marca el cambio.'],
+  ['k_san','伞','sǎn','paraguas','El carácter parece un paraguas abierto.']
+]);
+KW('k3d', [
+  ['k_sh','上海','Shàng·hǎi','Shanghái','上 sobre + 海 mar: una ciudad junto al mar.'],
+  ['k_xa','西安','Xī·ān','Xi’an','La ciudad de los guerreros de terracota.'],
+  ['k_fd','饭店','fàn·diàn','hotel; restaurante','En el norte de China 饭店 suele ser un hotel grande.'],
+  ['k_zher','这儿','zhèr','aquí',''],
+  ['k_zj','在家','zài jiā','en casa','在 + lugar = estar en: 我在家.'],
+  ['k_bz','不在','bú zài','no estar','她不在家 = No está en casa.']
+]);
+KW('k3e', [
+  ['k_lai','来','lái','venir','Hacia donde está quien habla: 你来我家吧.'],
+  ['k_hui2','回','huí','volver','回家 = volver a casa. 回国 = volver a tu país.'],
+  ['k_kj','看见','kàn·jiàn','ver (con los ojos)','看 es mirar; 看见, lograr ver.'],
+  ['k_yj','已经','yǐ·jīng','ya','我已经吃饭了 = Ya comí.'],
+  ['k_mq','没去','méi qù','no fui','Para negar algo que ya pasó se usa 没, no 不. Y sin 了.'],
+  ['k_zp','照片','zhào·piàn','foto','']
+]);
+const DK3 = [K.wo, K.ni, K.xz, C('早上','zǎo·shang'), C('晚上','wǎn·shang'), C('几点','jǐ diǎn'), C('上课','shàng kè'), C('下课','xià kè'), C('起床','qǐ·chuáng'), C('半','bàn'), C('分','fēn'),
+  C('今天','jīn·tiān'), C('明天','míng·tiān'), C('生日','shēng·rì'), C('号','hào'), C('月','yuè'), C('了','le'), C('下雨','xià yǔ'), C('天气','tiān·qì'), C('伞','sǎn'), K.zai, C('家','jiā'),
+  C('哪儿','nǎr'), C('上海','Shàng·hǎi'), C('西安','Xī·ān'), C('去','qù'), C('没','méi'), C('昨天','zuó·tiān'), C('去年','qù·nián'), K.shi];
+// 8:30 → 八点半 · 8:05 → 八点零五分 · 8:00 → 八点
+const minZh = m => m === 0 ? '' : m === 30 ? '半' : (m < 10 ? '零' + NZH[m] : numZh(m)) + '分';
+const minPy = m => m === 0 ? '' : m === 30 ? ' bàn' : ' ' + (m < 10 ? 'líng ' + NPY[m] : numPy(m)) + ' fēn';
+const tC = (h, m) => C(hourZh(h) + minZh(m), hourPy(h) + minPy(m));
+const tAlt = (h, m) => m === 30 ? hourZh(h) + '三十分' : null;
+const MINS = [0, 5, 10, 15, 20, 30, 30, 40, 45, 50];
+const randT = (hs = [6,7,8,9,10,11,12,1,2,3,4,5]) => ({h:pick(hs), m:pick(MINS)});
+const digi = (h, m) => `<div class="digital">${h}:${String(m).padStart(2, '0')}</div>`;
+const tEs = (h, m) => `${h12(h)}:${String(m).padStart(2, '0')}`;
+const atT = (s, h, m) => { const a = tAlt(h, m); return a ? Object.assign(s, {alt:[s.h.replace(/。|？/g, '').replace(hourZh(h) + '半', a)]}) : s; };
+kGen('g-k3a', 'k3a', 'la hora con minutos', DK3, {
+  say: form => { form = form || pick(['now','up','class','q']); const {h, m} = randT();
+    const s = form === 'up' ? (() => { const t = randT([5,6,7,8]); return atT(mkS([K.wo, C('早上','zǎo·shang'), tC(t.h, t.m), C('起床','qǐ·chuáng')], `Me levanto a las ${tEs(t.h, t.m)} de la mañana.`), t.h, t.m); })()
+      : form === 'class' ? atT(mkS([C('我们','wǒ·men'), tC(h, m), C('上课','shàng kè')], `Entramos a clase a las ${tEs(h, m)}.`), h, m)
+      : form === 'q' ? mkS([K.ni, C('几点','jǐ diǎn'), C('下课','xià kè')], '¿A qué hora sales de clase?', '？')
+      : atT(mkS([K.xz, tC(h, m)], `Son las ${tEs(h, m)}.`), h, m);
+    return Object.assign(s, {form}); },
+  qa: () => { const {h, m} = randT([7,8,9,10,11,1,2,3]);
+    const a = (hh, mm) => atT(mkS([K.wo, tC(hh, mm), C('上课','shàng kè')], `Entro a clase a las ${tEs(hh, mm)}.`), hh, mm);
+    const near = uniqBy([[h, (m + 30) % 60], [h12(h + 1), m], [h, m === 15 ? 50 : 15], [h, m === 5 ? 50 : 5]].filter(([x, y]) => !(x === h && y === m)), ([x, y]) => x + ':' + y);
+    return {key:h + ':' + m, who:'Compañera', q:mkS([K.ni, C('几点','jǐ diǎn'), C('上课','shàng kè')], '¿A qué hora entras a clase?', '？'), a:a(h, m), cue:digi(h, m), wrongs:near.map(([x, y]) => a(x, y))}; },
+  more:{
+    read: () => { const {h, m} = randT(), right = hourZh(h) + minZh(m);
+      const os = uniqBy([[h, m], [h, (m + 30) % 60], [h12(h + 1), m], [h, m === 10 ? 50 : 10], [h, m === 5 ? 15 : 5]].filter((x, i) => i === 0 || hourZh(x[0]) + minZh(x[1]) !== right), x => hourZh(x[0]) + minZh(x[1])).slice(0, 4);
+      return {t:'mc', item:'g-k3a', kind:'¿Qué hora es?', q:digi(h, m), options:shuffle(os).map(([x, y]) => ({v:hourZh(x) + minZh(y), say:hourZh(x) + minZh(y), html:`<span class="han" style="font-size:22px">${hourZh(x) + minZh(y)}</span>${LV >= 2 ? '' : `<small>${pyHTML(hourPy(x) + minPy(y))}</small>`}`})), answer:right, rev:{h:right, p:hourPy(h) + minPy(m), es:tEs(h, m)}}; },
+    clock: () => { const {h, m} = randT(), zh = '现在' + hourZh(h) + minZh(m);
+      const os = uniqBy([[h, m], [h, (m + 30) % 60], [h12(h + 1), m], [h, m === 15 ? 50 : 15]], x => x.join(':'));
+      return {t:'mc', item:'g-k3a', kind:'Escucha y elige la hora', say:zh, q:audioBtns(zh, true), options:shuffle(os).map(([x, y]) => ({v:x + ':' + y, html:digi(x, y)})), answer:h + ':' + m, rev:{h:zh, p:'xiàn·zài ' + hourPy(h) + minPy(m), es:tEs(h, m)}}; }
+  },
+  modes:['read','clock','build','reply','listen'], modes2:['clock','read','reply'], l3:[['read',3],['clock',3],['build',3],['reply',3],['speak',2]]
+});
+const MESES = ['', 'enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const dateC = (mo, d) => C(numZh(mo) + '月' + numZh(d) + '号', numPy(mo) + ' yuè ' + numPy(d) + ' hào');
+const dateCard = (mo, d, lab) => `<div class="cal"><small>${lab || MESES[mo]}</small><b>${d}${lab ? ' de ' + MESES[mo] : ''}</b></div>`;
+const randD = () => ({mo:rint(1, 12), d:rint(1, 28)});
+const yearC = y => C([...String(y)].map(x => '零一二三四五六七八九'[x]).join('') + '年', [...String(y)].map(x => ['líng','yī','èr','sān','sì','wǔ','liù','qī','bā','jiǔ'][x]).join(' ') + ' nián');
+kGen('g-k3b', 'k3b', 'fechas', DK3, {
+  say: form => { form = form || pick(['today','bday','q','year']); const {mo, d} = randD();
+    const s = form === 'bday' ? mkS([C('我的','wǒ de'), C('生日','shēng·rì'), K.shi, dateC(mo, d)], `Mi cumpleaños es el ${d} de ${MESES[mo]}.`)
+      : form === 'q' ? mkS([C('你的','nǐ de'), C('生日','shēng·rì'), K.shi, C('几月几号','jǐ yuè jǐ hào')], '¿Cuándo es tu cumpleaños?', '？')
+      : form === 'year' ? pick([mkS([C('去年','qù·nián'), K.wo, C('去','qù'), C('中国','Zhōng·guó'), C('了','le')], 'El año pasado fui a China.'), mkS([C('明年','míng·nián'), K.wo, C('去','qù'), C('中国','Zhōng·guó')], 'El año que viene voy a China.')])
+      : mkS([C('今天','jīn·tiān'), dateC(mo, d)], `Hoy es ${d} de ${MESES[mo]}.`);
+    return Object.assign(s, {form}); },
+  qa: form => { form = form || pick(['bday','today']); const {mo, d} = randD();
+    const a = form === 'bday' ? (x, y) => mkS([C('我的','wǒ de'), C('生日','shēng·rì'), K.shi, dateC(x, y)], `Mi cumpleaños es el ${y} de ${MESES[x]}.`) : (x, y) => mkS([C('今天','jīn·tiān'), dateC(x, y)], `Hoy es ${y} de ${MESES[x]}.`);
+    const wrongs = [[d <= 12 && d !== mo ? d : (mo % 12) + 1, d <= 12 && d !== mo ? mo : d], [mo, d + 1 > 28 ? d - 2 : d + 1], [mo === 12 ? 11 : mo + 1, d]].map(([x, y]) => a(x, y));
+    return {key:mo + '/' + d, form, who:'Amiga', wrongs, cue:dateCard(mo, d, form === 'bday' ? 'tu cumpleaños' : 'hoy'), a:a(mo, d),
+      q:form === 'bday' ? mkS([C('你的','nǐ de'), C('生日','shēng·rì'), K.shi, C('几月几号','jǐ yuè jǐ hào')], '¿Cuándo es tu cumpleaños?', '？') : mkS([C('今天','jīn·tiān'), C('几月几号','jǐ yuè jǐ hào')], '¿Qué fecha es hoy?', '？')}; },
+  more:{
+    date: () => { const {mo, d} = randD(), z = dateC(mo, d);
+      const parts = [C(numZh(mo) + '月', numPy(mo) + ' yuè'), C(numZh(d) + '号', numPy(d) + ' hào')];
+      const traps = [C(numZh(d) + '月', numPy(d) + ' yuè'), C(numZh(mo) + '号', numPy(mo) + ' hào'), C(numZh(d) + '日', numPy(d) + ' rì')].filter(t => !parts.some(p => p.h === t.h));
+      return {t:'tiles', item:'g-k3b', kind:'Escribe la fecha en chino', q:dateCard(mo, d), bank:shuffle([...parts, ...traps.slice(0, 2)]), answer:z.h, rev:{h:z.h, p:z.p, es:`${d} de ${MESES[mo]}`}}; },
+    year: () => { const y = pick([1998, 2003, 2010, 2019, 2024, 2025, 2026, 2027]), z = yearC(y), sw = String(y).slice(0, 2) + String(y)[3] + String(y)[2];
+      const os = uniqBy([y, Number(sw), y + 10, y - 1].map(v => yearC(v)), c => c.h);
+      return {t:'mc', item:'g-k3b', kind:'Escucha: ¿qué año es?', say:z.h, q:audioBtns(z.h, true), options:shuffle(os).map(c => ({v:c.h, html:`<span class="digital" style="font-size:24px">${[...c.h].slice(0, 4).map(x => '零一二三四五六七八九'.indexOf(x)).join('')}</span>`})), answer:z.h, rev:{h:z.h, p:z.p, es:String(y)}}; }
+  },
+  modes:['date','reply','build','year','listen'], modes2:['date','year','reply'], l3:[['date',3],['year',2],['reply',4],['build',3],['listen',2],['speak',2]]
+});
+const WXC = [
+  {k:'rain', from:'☀️', to:'🌧️', s:() => mkS([C('下雨','xià yǔ'), C('了','le')], '¡Empezó a llover!', '！')},
+  {k:'stop', from:'🌧️', to:'☀️', s:() => mkS([C('不下雨','bú xià yǔ'), C('了','le')], 'Ya no llueve.')},
+  {k:'snow', from:'☁️', to:'❄️', s:() => mkS([C('下雪','xià xuě'), C('了','le')], '¡Empezó a nevar!', '！')},
+  {k:'cold', from:'🥵', to:'🥶', s:() => mkS([C('天','tiān'), C('冷','lěng'), C('了','le')], 'Ya hace frío.')},
+  {k:'hot', from:'🥶', to:'🥵', s:() => mkS([C('天','tiān'), C('热','rè'), C('了','le')], 'Ya hace calor.')}
+];
+const SKY = [{k:'qt', pic:'☀️', c:C('晴天','qíng·tiān'), es:'soleado'}, {k:'yt', pic:'☁️', c:C('阴天','yīn·tiān'), es:'nublado'}];
+kGen('g-k3c', 'k3c', 'cambios de tiempo con 了', DK3, {
+  say: form => { form = form || pick(['chg','chg','sky','san']);
+    if (form === 'chg'){ const w = pick(WXC); return Object.assign(w.s(), {form, pic:picBox(w.from + ' → ' + w.to)}); }
+    if (form === 'sky'){ const x = pick(SKY), d = pick([['今天','jīn·tiān','Hoy está'], ['明天','míng·tiān','Mañana estará']]); return Object.assign(mkS([C(d[0], d[1]), K.shi, x.c], `${d[2]} ${x.es}.`), {form, pic:picBox(x.pic)}); }
+    return Object.assign(mkS([C('下雨了，','xià yǔ le'), K.wo, C('没有','méi·yǒu'), C('伞','sǎn')], 'Está lloviendo y no tengo paraguas.'), {form}); },
+  qa: () => { const w = pick(WXC);
+    return {key:w.k, who:'Amigo', q:mkS([C('外边','wài·bian'), C('天气','tiān·qì'), C('怎么样','zěn·me·yàng')], '¿Qué tiempo hace afuera?', '？'), a:w.s(), cue:picBox(w.from + ' → ' + w.to) + cueBox('Así cambió el tiempo hace un rato.')}; },
+  more:{pic: () => { const w = pick(WXC);
+    return replyEx('g-k3c', '¿Qué pasó con el tiempo?', {html:picBox(w.from + ' → ' + w.to)}, w.s(), WXC.filter(x => x !== w).map(x => x.s())); }},
+  modes:['pic','build','reply','listen'], modes2:['pic','listen','reply'], l3:[['pic',3],['build',3],['reply',3],['listen',3],['speak',2]]
+});
+const PL3 = [{k:'jia', c:C('家','jiā'), es:'en casa', pic:'🏠'}, {k:'xx', c:C('学校','xué·xiào'), es:'en la escuela', pic:'🏫'}, {k:'fd', c:C('饭店','fàn·diàn'), es:'en el hotel', pic:'🏨'},
+  {k:'yh', c:C('银行','yín·háng'), es:'en el banco', pic:'🏦'}, {k:'cs', c:C('超市','chāo·shì'), es:'en el supermercado', pic:'🛒'}];
+const CITY3 = [{c:C('上海','Shàng·hǎi'), es:'Shanghái'}, {c:C('西安','Xī·ān'), es:'Xi’an'}, {c:C('北京','Běi·jīng'), es:'Pekín'}, {c:C('利马','Lì·mǎ'), es:'Lima'}];
+kGen('g-k3d', 'k3d', 'dónde estás', DK3, {
+  say: form => { form = form || pick(['me','city','not','q']); const p = pick(PL3), c = pick(CITY3);
+    const s = form === 'city' ? mkS([K.wo, K.xz, K.zai, c.c], `Ahora estoy en ${c.es}.`)
+      : form === 'not' ? mkS([C('她','tā'), C('不在','bú zài'), C('家','jiā')], 'Ella no está en casa.')
+      : form === 'q' ? mkS([K.ni, K.xz, K.zai, C('哪儿','nǎr')], '¿Dónde estás ahora?', '？')
+      : mkS([K.wo, K.zai, p.c], `Estoy ${p.es}.`);
+    return Object.assign(s, {form, pic:form === 'me' ? picBox(p.pic) : ''}); },
+  qa: form => { form = form || pick(['where','where','home']);
+    if (form === 'home'){ const st = Math.random() < .5;
+      const yes = mkS([C('在，','zài'), C('请','qǐng'), C('等一下','děng yí xià')], 'Sí, está. Espere un momento.'), no = mkS([C('她','tā'), C('不在','bú zài'), C('家','jiā')], 'No, no está en casa.');
+      return {key:st, form, who:'Al teléfono', q:mkS([C('喂，','wéi'), C('你妈妈','nǐ mā·ma'), K.zai, C('家','jiā'), K.ma], '¿Aló? ¿Está tu mamá en casa?', '？'), a:st ? yes : no, cue:ynPic(st) + cueBox(st ? 'Tu mamá está en casa.' : 'Tu mamá salió.'),
+        wrongs:[st ? no : yes, mkS([K.wo, K.zai, C('家','jiā')], 'Estoy en casa.'), mkS([C('她','tā'), K.shi, C('我妈妈','wǒ mā·ma')], 'Ella es mi mamá.')]}; }
+    const p = pick(PL3);
+    return {key:p.k, form, who:'Amiga', q:mkS([K.ni, K.xz, K.zai, C('哪儿','nǎr')], '¿Dónde estás ahora?', '？'), a:mkS([K.wo, K.xz, K.zai, p.c], `Ahora estoy ${p.es}.`), cue:picBox(p.pic)}; },
+  more:{pic: () => { const p = pick(PL3), mk = x => mkS([K.wo, K.zai, x.c], `Estoy ${x.es}.`);
+    return replyEx('g-k3d', '¿Dónde estás?', {html:picBox(p.pic)}, mk(p), PL3.filter(x => x !== p).map(mk)); }},
+  modes:['pic','build','reply','listen','ask'], modes2:['pic','listen','reply']
+});
+const TRIP3 = [{c:C('西安','Xī·ān'), es:'Xi’an'}, {c:C('上海','Shàng·hǎi'), es:'Shanghái'}, {c:C('北京','Běi·jīng'), es:'Pekín'}, {c:C('超市','chāo·shì'), es:'al supermercado', sup:1}, {c:C('银行','yín·háng'), es:'al banco', sup:1}];
+const toEs = t => t.sup ? t.es : 'a ' + t.es;
+const WHEN3 = [{c:C('昨天','zuó·tiān'), es:'Ayer'}, {c:C('去年','qù·nián'), es:'El año pasado'}];
+kGen('g-k3e', 'k3e', 'lo que ya pasó', DK3, {
+  say: form => { form = form || pick(['went','went','not','back','saw']); const t = pick(TRIP3.filter(x => !x.sup)), w = pick(WHEN3);
+    const s = form === 'not' ? mkS([K.wo, C('没','méi'), C('去','qù'), t.c], `No fui a ${t.es}.`)
+      : form === 'back' ? mkS([C('我朋友','wǒ péng·you'), C('昨天','zuó·tiān'), C('回','huí'), C('北京','Běi·jīng'), C('了','le')], 'Mi amigo volvió ayer a Pekín.')
+      : form === 'saw' ? mkS([K.wo, C('看见','kàn·jiàn'), C('你的','nǐ de'), C('照片','zhào·piàn'), C('了','le')], 'Vi tus fotos.')
+      : mkS([w.c, K.wo, C('去','qù'), t.c, C('了','le')], `${w.es} fui a ${t.es}.`);
+    return Object.assign(s, {form}); },
+  qa: form => { form = form || pick(['where','yn']);
+    if (form === 'yn'){ const t = pick(TRIP3.filter(x => !x.sup)), st = Math.random() < .5;
+      const yes = mkS([C('去了，','qù le'), K.wo, C('昨天','zuó·tiān'), C('去','qù'), C('了','le')], 'Sí, fui ayer.'), no = mkS([C('没去','méi qù')], 'No, no fui.'), trap = mkS([C('不去了','bú qù le')], 'Ya no voy a ir.');
+      return {key:st, form, who:'Amigo', q:mkS([K.ni, C('去','qù'), t.c, C('了','le'), K.ma], `¿Fuiste a ${t.es}?`, '？'), a:st ? yes : no,
+        cue:ynPic(st) + cueBox(st ? `Fuiste ayer a ${t.es}.` : `No fuiste a ${t.es}.`), wrongs:[st ? no : yes, trap, mkS([K.wo, C('去','qù'), t.c], `Voy a ${t.es}.`)]}; }
+    const t = pick(TRIP3);
+    return {key:t.es, form, who:'Amiga', q:mkS([K.ni, C('昨天','zuó·tiān'), C('去','qù'), C('哪儿','nǎr'), C('了','le')], '¿A dónde fuiste ayer?', '？'), a:mkS([K.wo, C('去','qù'), t.c, C('了','le')], `Fui ${toEs(t)}.`), cue:cueBox(`Ayer fuiste <b>${toEs(t)}</b>.`)}; }
+});
+KS('k3f', [
+  ['ks31', [K.xz, C('几点','jǐ diǎn')], '¿Qué hora es?', 1],
+  ['ks32', [K.xz, C('八点半','bā diǎn bàn')], 'Son las 8:30.', 0, ['现在八点三十分']],
+  ['ks33', [C('我们','wǒ·men'), C('九点十分','jiǔ diǎn shí fēn'), C('上课','shàng kè')], 'Entramos a clase a las 9:10.'],
+  ['ks34', [C('今天','jīn·tiān'), C('几月几号','jǐ yuè jǐ hào')], '¿Qué fecha es hoy?', 1],
+  ['ks35', [C('我的','wǒ de'), C('生日','shēng·rì'), K.shi, C('五月八号','wǔ yuè bā hào')], 'Mi cumpleaños es el 8 de mayo.'],
+  ['ks36', [C('下雨','xià yǔ'), C('了','le')], '¡Empezó a llover!'],
+  ['ks37', [C('今天','jīn·tiān'), K.shi, C('阴天','yīn·tiān')], 'Hoy está nublado.'],
+  ['ks38', [K.wo, K.xz, K.zai, C('上海','Shàng·hǎi')], 'Ahora estoy en Shanghái.'],
+  ['ks39', [C('去年','qù·nián'), K.wo, C('去','qù'), C('西安','Xī·ān'), C('了','le')], 'El año pasado fui a Xi’an.'],
+  ['ks310', [K.wo, C('没','méi'), C('去','qù'), C('北京','Běi·jīng')], 'No fui a Pekín.']
+]);
+kMix('k3f', [['g-k3a','read',2], ['g-k3b','reply',2], ['g-k3c','pic',2], ['g-k3d','reply',2], ['g-k3e','reply',2], ['g-k3a','speak',2]]);
+KU('k3a', 'k3', '半', 'Horas y minutos', '现在八点半。', '分, 半 y 零', [rule('La regla', 'Hora + 点 + minutos + 分', [['八点十分','8:10'], ['八点半','8:30: 半 = media'], ['八点零五分','8:05: con 零'], ['两点四十五分','2:45: las 2 siguen siendo 两']], 'Para el momento de una acción, la hora va antes del verbo: 我七点半起床.')]);
+KU('k3b', 'k3', '号', 'Fechas y cumpleaños', '今天几月几号？', '月 + 号, el año y 生日', [rule('La regla', 'De lo grande a lo pequeño', [['十月十九号','19 de octubre: mes antes que día'], ['二零二六年','2026: el año, cifra por cifra'], ['你的生日是几月几号？','¿Cuándo es tu cumpleaños?'], ['去年 · 今年 · 明年','el año pasado · este año · el próximo']], 'Una fecha completa: 二零二六年十月十九号. Primero el año, luego el mes y al final el día.', [['año','二零二六年'], ['mes','十月'], ['día','十九号']])]);
+KU('k3c', 'k3', '雨', 'Ya llueve', '下雨了！', '了 para un cambio', [rule('La regla', '了 al final = algo cambió', [['下雨了！','Empezó a llover (antes no).'], ['不下雨了。','Ya no llueve.'], ['天冷了。','Ya hace frío.'], ['今天是晴天。','Hoy está soleado (sin cambio, sin 了).']], 'Si describes cómo es, no hay 了. Si cuentas que cambió, sí.')]);
+KU('k3d', 'k3', '海', 'Dónde estás', '我在上海。', '在 + lugar', [rule('La regla', '在 + lugar = estar en', [['我在上海。','Estoy en Shanghái.'], ['你现在在哪儿？','¿Dónde estás ahora?'], ['她不在家。','No está en casa.'], ['喂，你妈妈在家吗？','¿Aló? ¿Está tu mamá en casa?']], 'Para negar 在 se usa 不在. Para negar 有 se usa 没有.')]);
+KU('k3e', 'k3', '去', 'Ya fui', '我去西安了。', '了 y 没 para lo que ya pasó', [rule('La regla', 'Pasado: 了 para sí, 没 para no', [['我去西安了。','Fui a Xi’an.'], ['你去上海了吗？','¿Fuiste a Shanghái?'], ['我没去。','No fui: 没, y sin 了.'], ['我不去了。','Ya no voy a ir: otra cosa.']], 'El verbo no cambia en chino. Lo que dice que ya pasó es 了, o palabras como 昨天 y 去年.')]);
+KU('k3f', 'k3', '时', 'Hora, fecha y lugar', '现在八点半。', 'Frases completas de la ruta', [rule('Repaso', 'Cinco preguntas de tiempo y lugar', [['现在几点？','la hora'], ['今天几月几号？','la fecha'], ['外边天气怎么样？','el tiempo'], ['你现在在哪儿？','dónde estás'], ['你昨天去哪儿了？','a dónde fuiste']], 'Practicas las dos partes: preguntar y responder.')], ['ks32','ks39']);
+
+/* ---------- HSK 1 · Ruta 4: trabajo y aficiones ---------- */
+KW('k4a', [
+  ['k_zuo','做','zuò','hacer','你做什么工作？ = ¿A qué te dedicas?'],
+  ['k_ys','医生','yī·shēng','médico(a)',''],
+  ['k_zx','中学','zhōng·xué','secundaria (colegio)','中学老师 = profesor de secundaria.'],
+  ['k_xx2','小学','xiǎo·xué','primaria','小 pequeño + 学 escuela.'],
+  ['k_fwy','服务员','fú·wù·yuán','mesero(a), dependiente','También sirve para llamarlo: 服务员！'],
+  ['k_sij','司机','sī·jī','chofer','']
+]);
+KW('k4b', [
+  ['k_yy','医院','yī·yuàn','hospital','医 medicina + 院 patio, edificio.'],
+  ['k_gs','公司','gōng·sī','empresa','我在一家公司工作.'],
+  ['k_xiang','想','xiǎng','querer (hacer); pensar','想 + verbo = querer hacer algo: 我想去中国.'],
+  ['k_neng','能','néng','poder','你明天能来吗？ = ¿Puedes venir mañana?']
+]);
+KW('k4c', [
+  ['k_ai','爱','ài','amar; encantar','爱 + verbo = te encanta: 我爱看书.'],
+  ['k_cg','唱歌','chàng gē','cantar',''],
+  ['k_tw','跳舞','tiào wǔ','bailar',''],
+  ['k_hh','画画儿','huà huàr','dibujar, pintar',''],
+  ['k_zf','做饭','zuò fàn','cocinar','做 hacer + 饭 comida.'],
+  ['k_xsh','小说','xiǎo·shuō','novela','']
+]);
+KW('k4d', [
+  ['k_dyy','电影院','diàn·yǐng·yuàn','cine (el lugar)','电影 película + 院 edificio.'],
+  ['k_bu','部','bù','(medida para películas)','一部电影 = una película.'],
+  ['k_hk','好看','hǎo·kàn','bonito; bueno (de ver)','好 + 看: bueno para ver.'],
+  ['k_yys','有意思','yǒu yì·si','interesante, entretenido',''],
+  ['k_myys','没意思','méi yì·si','aburrido',''],
+  ['k_piao','票','piào','entrada, boleto','两张票 = dos entradas: 张 para cosas planas.']
+]);
+KW('k4e', [
+  ['k_rs','认识','rèn·shi','conocer (a alguien)','认识 es para personas; para datos, 知道.'],
+  ['k_gx','高兴','gāo·xìng','contento',''],
+  ['k_hgx','很高兴认识你','hěn gāo·xìng rèn·shi nǐ','mucho gusto','Literalmente: muy contento de conocerte.'],
+  ['k_js2','介绍','jiè·shào','presentar','我来介绍一下 = Les presento…'],
+  ['k_zd','知道','zhī·dào','saber (un dato)','我知道他的名字 = Sé cómo se llama.'],
+  ['k_wys','我也是','wǒ yě shì','yo también','我也很高兴认识你 = El gusto es mío.']
+]);
+const DK4 = [K.wo, K.ni, K.shi, K.ma, K.bu, K.zai, K.xh, C('做','zuò'), C('什么','shén·me'), C('工作','gōng·zuò'), C('医生','yī·shēng'), C('老师','lǎo·shī'), C('医院','yī·yuàn'), C('公司','gōng·sī'),
+  C('想','xiǎng'), C('能','néng'), C('爱','ài'), C('唱歌','chàng gē'), C('跳舞','tiào wǔ'), C('看','kàn'), C('电影','diàn·yǐng'), C('很','hěn'), C('好看','hǎo·kàn'), C('有意思','yǒu yì·si'),
+  C('认识','rèn·shi'), C('知道','zhī·dào'), C('高兴','gāo·xìng'), C('也','yě')];
+const JOBS4 = [{k:'ls', c:C('老师','lǎo·shī'), es:'profesor(a)', m:'profesor', f:'profesora', pic:'🧑‍🏫'}, {k:'ys', c:C('医生','yī·shēng'), es:'médico(a)', m:'médico', f:'médica', pic:'🧑‍⚕️'},
+  {k:'fwy', c:C('服务员','fú·wù·yuán'), es:'mesero(a)', m:'mesero', f:'mesera', pic:'🍽️'}, {k:'sj', c:C('司机','sī·jī'), es:'chofer', m:'chofer', f:'chofer', pic:'🚕'}, {k:'xs', c:C('学生','xué·sheng'), es:'estudiante', m:'estudiante', f:'estudiante', pic:'🧑‍🎓'}];
+const jobOf = (j, f) => f.pr.h === '她' ? j.f : j.m;
+const FAM4 = [{c:C('我妈妈','wǒ mā·ma'), es:'Mi mamá', pr:C('她','tā'), q:C('你妈妈','nǐ mā·ma'), qes:'tu mamá'}, {c:C('我爸爸','wǒ bà·ba'), es:'Mi papá', pr:C('他','tā'), q:C('你爸爸','nǐ bà·ba'), qes:'tu papá'},
+  {c:C('我姐姐','wǒ jiě·jie'), es:'Mi hermana mayor', pr:C('她','tā'), q:C('你姐姐','nǐ jiě·jie'), qes:'tu hermana mayor'}];
+kGen('g-k4a', 'k4a', 'profesiones', DK4, {
+  say: form => { form = form || pick(['fam','fam','me','q','school']); const j = pick(JOBS4), f = pick(FAM4);
+    const s = form === 'me' ? mkS([K.wo, K.shi, j.c], `Soy ${j.es}.`)
+      : form === 'q' ? mkS([f.q, C('做','zuò'), C('什么','shén·me'), C('工作','gōng·zuò')], `¿A qué se dedica ${f.qes}?`, '？')
+      : form === 'school' ? (zx => mkS([f.c, K.shi, zx ? C('中学老师','zhōng·xué lǎo·shī') : C('小学老师','xiǎo·xué lǎo·shī')], `${f.es} es profesor${f.pr.h === '她' ? 'a' : ''} de ${zx ? 'secundaria' : 'primaria'}.`))(Math.random() < .5)
+      : mkS([f.c, K.shi, j.c], `${f.es} es ${jobOf(j, f)}.`);
+    return Object.assign(s, {form, pic:form === 'me' || form === 'fam' ? picBox(j.pic) : ''}); },
+  qa: form => { form = form || pick(['me','fam']); const j = pick(JOBS4.filter(x => x.k !== 'xs' || form === 'me')), f = pick(FAM4);
+    const famA = x => mkS([f.pr, K.shi, x.c], `${f.pr.h === '她' ? 'Ella' : 'Él'} es ${jobOf(x, f)}.`);
+    return form === 'fam'
+      ? {key:j.k, form, who:'Compañero', q:mkS([f.q, C('做','zuò'), C('什么','shén·me'), C('工作','gōng·zuò')], `¿A qué se dedica ${f.qes}?`, '？'), a:famA(j), cue:picBox(j.pic), wrongs:JOBS4.filter(x => x !== j && x.k !== 'xs').map(famA)}
+      : {key:j.k, form, who:'Compañero', q:mkS([K.ni, C('做','zuò'), C('什么','shén·me'), C('工作','gōng·zuò')], '¿A qué te dedicas?', '？'), a:mkS([K.wo, K.shi, j.c], `Soy ${j.es}.`), cue:picBox(j.pic)}; },
+  more:{pic: () => { const j = pick(JOBS4), mk = x => mkS([K.wo, K.shi, x.c], `Soy ${x.es}.`);
+    return replyEx('g-k4a', '¿Qué haces?', {html:picBox(j.pic)}, mk(j), JOBS4.filter(x => x !== j).map(mk)); }},
+  modes:['pic','build','reply','listen','ask'], modes2:['pic','listen','reply']
+});
+const WORK4 = [{k:'yy', c:C('医院','yī·yuàn'), es:'en un hospital', pic:'🏥'}, {k:'xx', c:C('学校','xué·xiào'), es:'en una escuela', pic:'🏫'}, {k:'gs', c:C('公司','gōng·sī'), es:'en una empresa', pic:'🏢'},
+  {k:'yh', c:C('银行','yín·háng'), es:'en un banco', pic:'🏦'}, {k:'fd', c:C('饭店','fàn·diàn'), es:'en un hotel', pic:'🏨'}];
+const workS = (w, want, who = K.wo, es = want ? 'Quiero trabajar' : 'Trabajo') => mkS([who, ...(want ? [C('想','xiǎng')] : []), K.zai, w.c, C('工作','gōng·zuò')], `${es} ${w.es}.`);
+kGen('g-k4b', 'k4b', 'dónde trabajas y qué quieres', DK4, {
+  say: form => { form = form || pick(['work','sis','want','can','cant']); const w = pick(WORK4);
+    const s = form === 'sis' ? workS(w, 0, C('我姐姐','wǒ jiě·jie'), 'Mi hermana mayor trabaja')
+      : form === 'want' ? workS(w, 1)
+      : form === 'can' ? mkS([K.ni, C('明天','míng·tiān'), C('能','néng'), C('来','lái'), K.ma], '¿Puedes venir mañana?', '？')
+      : form === 'cant' ? mkS([C('对不起，','duì·bu·qǐ'), K.wo, C('明天','míng·tiān'), C('不能','bù néng'), C('去','qù')], 'Lo siento, mañana no puedo ir.')
+      : workS(w, 0);
+    return Object.assign(s, {form, pic:form === 'work' || form === 'sis' ? picBox(w.pic) : ''}); },
+  qa: form => { form = form || pick(['work','want']); const w = pick(WORK4), want = form === 'want';
+    const bad = mkS([K.wo, ...(want ? [C('想','xiǎng')] : []), C('工作','gōng·zuò'), K.zai, w.c], 'Orden equivocado: el lugar va antes de 工作.');
+    const others = shuffle(WORK4.filter(x => x !== w)).slice(0, 2).map(x => workS(x, want));
+    return {key:w.k, form, who:'Amigo', q:want ? mkS([K.ni, C('想','xiǎng'), K.zai, C('哪儿','nǎr'), C('工作','gōng·zuò')], '¿Dónde quieres trabajar?', '？') : mkS([K.ni, K.zai, C('哪儿','nǎr'), C('工作','gōng·zuò')], '¿Dónde trabajas?', '？'),
+      a:workS(w, want), cue:picBox(w.pic), wrongs:[bad, ...others]}; }
+});
+const ACT4 = [{k:'cg', c:C('唱歌','chàng gē'), es:'cantar', pic:'🎤'}, {k:'tw', c:C('跳舞','tiào wǔ'), es:'bailar', pic:'💃'}, {k:'hh', c:C('画画儿','huà huàr'), es:'dibujar', pic:'🎨'},
+  {k:'zf', c:C('做饭','zuò fàn'), es:'cocinar', pic:'🍳'}, {k:'ks', c:C('看小说','kàn xiǎo·shuō'), es:'leer novelas', pic:'📖'}];
+kGen('g-k4c', 'k4c', 'lo que te gusta hacer', DK4, {
+  say: form => { form = form || pick(['like','love','not','q']); const a = pick(ACT4);
+    const s = form === 'love' ? mkS([K.wo, C('爱','ài'), a.c], `Me encanta ${a.es}.`)
+      : form === 'not' ? mkS([K.wo, K.bu, K.xh, a.c], `No me gusta ${a.es}.`)
+      : form === 'q' ? mkS([K.ni, K.xh, C('做','zuò'), C('什么','shén·me')], '¿Qué te gusta hacer?', '？')
+      : mkS([K.wo, K.xh, a.c], `Me gusta ${a.es}.`);
+    return Object.assign(s, {form, pic:form === 'q' ? '' : picBox(a.pic)}); },
+  qa: () => { const a = pick(ACT4);
+    return {key:a.k, who:'Amiga', q:mkS([K.ni, K.xh, C('做','zuò'), C('什么','shén·me')], '¿Qué te gusta hacer?', '？'), a:mkS([K.wo, K.xh, a.c], `Me gusta ${a.es}.`), cue:picBox(a.pic)}; },
+  more:{pic: () => { const a = pick(ACT4), mk = x => mkS([x.c], x.es, '');
+    return replyEx('g-k4c', '¿Qué es?', {html:picBox(a.pic)}, mk(a), ACT4.filter(x => x !== a).map(mk)); }},
+  modes:['pic','build','reply','listen','ask'], modes2:['pic','listen','reply']
+});
+const FILM4 = [{k:'good', stars:5, c:C('很好看','hěn hǎo·kàn'), es:'Es muy buena.'}, {k:'good', stars:5, c:C('很有意思','hěn yǒu yì·si'), es:'Es muy entretenida.'}, {k:'bad', stars:1, c:C('没意思','méi yì·si'), es:'Es aburrida.'}];
+kGen('g-k4d', 'k4d', 'películas y cine', DK4, {
+  say: form => { form = form || pick(['film','go','tix','like']); const f = pick(FILM4);
+    const s = form === 'go' ? mkS([C('我们','wǒ·men'), C('去','qù'), C('电影院','diàn·yǐng·yuàn'), C('看','kàn'), C('电影','diàn·yǐng'), C('吧','ba')], 'Vamos al cine a ver una película.')
+      : form === 'tix' ? mkS([K.wo, C('想','xiǎng'), C('买','mǎi'), C('两张','liǎng zhāng'), C('票','piào')], 'Quiero comprar dos entradas.')
+      : form === 'like' ? mkS([K.wo, C('爱','ài'), C('看','kàn'), C('中国电影','Zhōng·guó diàn·yǐng')], 'Me encantan las películas chinas.')
+      : mkS([C('这部','zhè bù'), C('电影','diàn·yǐng'), f.c], f.es.replace('Es', 'Esta película es'));
+    return Object.assign(s, {form, pic:form === 'film' ? picBox('⭐'.repeat(f.stars)) : ''}); },
+  qa: () => { const f = pick(FILM4), a = mkS([C('这部','zhè bù'), C('电影','diàn·yǐng'), f.c], f.es.replace('Es', 'Esta película es'));
+    const others = FILM4.filter(x => x.k !== f.k).map(x => mkS([C('这部','zhè bù'), C('电影','diàn·yǐng'), x.c], x.es.replace('Es', 'Esta película es')));
+    return {key:f.k, who:'Amigo', q:mkS([C('这部','zhè bù'), C('电影','diàn·yǐng'), C('怎么样','zěn·me·yàng')], '¿Qué tal esta película?', '？'), a, cue:picBox('⭐'.repeat(f.stars)),
+      wrongs:[...others, mkS([K.wo, K.zai, C('电影院','diàn·yǐng·yuàn')], 'Estoy en el cine.'), mkS([K.wo, C('想','xiǎng'), C('买','mǎi'), C('票','piào')], 'Quiero comprar entradas.')]}; }
+});
+const MEET4 = () => pick(MATES);
+kGen('g-k4e', 'k4e', 'conocer a alguien', DK4, {
+  say: form => { form = form || pick(['nice','know','dk','intro']); const m = MEET4();
+    const s = form === 'know' ? mkS([K.wo, C('认识','rèn·shi'), m.c], `Conozco a ${m.es}.`)
+      : form === 'dk' ? mkS([K.wo, C('不','bù'), C('知道','zhī·dào'), C('他的','tā de'), C('名字','míng·zi')], 'No sé cómo se llama.')
+      : form === 'intro' ? mkS([K.wo, C('来','lái'), C('介绍','jiè·shào'), C('一下','yí xià')], 'Les presento…')
+      : mkS([C('很','hěn'), C('高兴','gāo·xìng'), C('认识','rèn·shi'), K.ni], 'Mucho gusto.', '！');
+    return Object.assign(s, {form}); },
+  qa: form => { form = form || pick(['know','know','nice']); const m = MEET4();
+    if (form === 'nice') return {key:'nice', form, who:m.es, q:mkS([C('很高兴','hěn gāo·xìng'), C('认识','rèn·shi'), K.ni], '¡Mucho gusto!', '！'), a:mkS([K.wo, C('也','yě'), C('很高兴','hěn gāo·xìng'), C('认识','rèn·shi'), K.ni], 'El gusto es mío.'),
+      cue:cueBox('Te acaban de presentar a alguien.'), wrongs:[mkS([C('没关系','méi guān·xi')], 'No pasa nada.'), mkS([C('不客气','bú kè·qi')], 'De nada.'), mkS([K.wo, C('认识','rèn·shi'), C('他','tā')], 'Lo conozco.')]};
+    const st = pick(['yes','no']);
+    const yes = mkS([C('认识，','rèn·shi'), C('他是','tā shì'), C('我的','wǒ de'), C('同学','tóng·xué')], 'Sí, es mi compañero de clase.'), no = mkS([C('不认识','bú rèn·shi')], 'No, no lo conozco.');
+    return {key:st, form, who:'Amiga', q:mkS([K.ni, C('认识','rèn·shi'), C('他','tā'), K.ma], '¿Lo conoces?', '？'), a:st === 'yes' ? yes : no, cue:picBox('🧑') + cueBox(st === 'yes' ? 'Estudia contigo.' : 'Nunca lo viste.'),
+      wrongs:[st === 'yes' ? no : yes, mkS([C('不知道','bù zhī·dào')], 'No sé (un dato).'), mkS([K.wo, C('也','yě'), C('很高兴','hěn gāo·xìng')], 'Yo también estoy contento.')]}; }
+});
+KS('k4f', [
+  ['ks41', [K.ni, C('做','zuò'), C('什么','shén·me'), C('工作','gōng·zuò')], '¿A qué te dedicas?', 1],
+  ['ks42', [C('我妈妈','wǒ mā·ma'), K.shi, C('中学老师','zhōng·xué lǎo·shī')], 'Mi mamá es profesora de secundaria.'],
+  ['ks43', [C('我姐姐','wǒ jiě·jie'), K.zai, C('医院','yī·yuàn'), C('工作','gōng·zuò')], 'Mi hermana mayor trabaja en un hospital.'],
+  ['ks44', [K.wo, C('想','xiǎng'), K.zai, C('中国','Zhōng·guó'), C('工作','gōng·zuò')], 'Quiero trabajar en China.'],
+  ['ks45', [K.wo, C('爱','ài'), C('看书','kàn shū')], 'Me encanta leer.'],
+  ['ks46', [K.ni, K.xh, C('做','zuò'), C('什么','shén·me')], '¿Qué te gusta hacer?', 1],
+  ['ks47', [C('这部','zhè bù'), C('电影','diàn·yǐng'), C('很有意思','hěn yǒu yì·si')], 'Esta película es muy entretenida.'],
+  ['ks48', [K.ni, C('认识','rèn·shi'), C('他','tā'), K.ma], '¿Lo conoces?', 1],
+  ['ks49', [C('很','hěn'), C('高兴','gāo·xìng'), C('认识','rèn·shi'), K.ni], 'Mucho gusto.'],
+  ['ks410', [K.ni, C('明天','míng·tiān'), C('能','néng'), C('来','lái'), K.ma], '¿Puedes venir mañana?', 1]
+]);
+kMix('k4f', [['g-k4a','reply',2], ['g-k4b','reply',2], ['g-k4c','pic',2], ['g-k4d','reply',2], ['g-k4e','reply',2], ['g-k4b','speak',2]]);
+KU('k4a', 'k4', '医', 'Profesiones', '你做什么工作？', '做什么工作 y las profesiones', [rule('La regla', '¿A qué te dedicas?', [['你做什么工作？','¿A qué te dedicas?'], ['我是医生。','Soy médico.'], ['我妈妈是中学老师。','Mi mamá es profesora de secundaria.'], ['服务员！','¡Mesero! (para llamarlo)']], 'Con las profesiones sí se usa 是: 我是医生. Sin artículo: ni «un» ni «una».')]);
+KU('k4b', 'k4', '院', '¿Dónde trabajas?', '我在医院工作。', '在 + lugar + 工作 · 想 · 能', [rule('La regla', 'Primero dónde, luego qué haces', [['我在医院工作。','Trabajo en un hospital.'], ['你在哪儿工作？','¿Dónde trabajas?'], ['我想在银行工作。','Quiero trabajar en un banco.'], ['你明天能来吗？','¿Puedes venir mañana?']], 'En español el lugar va al final; en chino, antes del verbo. 我工作在医院 suena a error.', [['quién','我'], ['en dónde','在医院'], ['qué hace','工作']])]);
+KU('k4c', 'k4', '歌', 'Lo que te gusta hacer', '你喜欢做什么？', '喜欢 / 爱 + actividad', [rule('La regla', '喜欢 o 爱 + lo que haces', [['我喜欢唱歌。','Me gusta cantar.'], ['我爱跳舞。','Me encanta bailar.'], ['你喜欢做什么？','¿Qué te gusta hacer?'], ['我不喜欢做饭。','No me gusta cocinar.']], '爱 es más fuerte que 喜欢. Con personas, 爱 es «amar».')]);
+KU('k4d', 'k4', '影', 'Vamos al cine', '这部电影很好看。', '部, 好看 y 有意思', [rule('La regla', 'Opinar de una película', [['这部电影很好看。','Esta película es muy buena.'], ['这部电影很有意思。','Esta película es muy entretenida.'], ['这部电影没意思。','Esta película es aburrida.'], ['我们去电影院吧。','Vamos al cine.']], '吧 al final propone algo: «vamos, ¿sí?». Para las entradas: 两张票.')]);
+KU('k4e', 'k4', '认', 'Conocer a alguien', '很高兴认识你！', '认识, 知道 y 介绍', [rule('La regla', '认识 personas, 知道 datos', [['你认识他吗？','¿Lo conoces?'], ['我不知道他的名字。','No sé cómo se llama.'], ['很高兴认识你！','¡Mucho gusto!'], ['我也很高兴认识你。','El gusto es mío.']], '我来介绍一下 = Les presento a… Así empieza una presentación.')]);
+KU('k4f', 'k4', '业', 'Trabajo y tiempo libre', '我在医院工作。', 'Frases completas de la ruta', [rule('Repaso', 'Cinco preguntas sobre la vida de alguien', [['你做什么工作？','su trabajo'], ['你在哪儿工作？','dónde trabaja'], ['你喜欢做什么？','qué le gusta'], ['这部电影怎么样？','qué opina'], ['你认识他吗？','a quién conoce']], 'Practicas las dos partes: preguntar y responder.')], ['ks43','ks47']);
+
+/* ---------- HSK 1 · Ruta 5: compras y comida ---------- */
+KW('k5a', [
+  ['k_mai','买','mǎi','comprar','mǎi con 3.er tono compra; mài con 4.º vende. Solo cambia el tono.'],
+  ['k_mai4','卖','mài','vender',''],
+  ['k_dx','东西','dōng·xi','cosa(s)','东 este + 西 oeste. 买东西 = ir de compras.'],
+  ['k_yf','衣服','yī·fu','ropa',''],
+  ['k_bz','杯子','bēi·zi','taza, vaso',''],
+  ['k_yx','一些','yì xiē','algunos, unos cuantos','我买一些水果 = Compro algo de fruta.']
+]);
+KW('k5b', [
+  ['k_yuan','元','yuán','yuan (escrito)','En los carteles dice 元; al hablar se dice 块.'],
+  ['k_mao2','毛','máo','10 céntimos (0,10)','五块五毛 = ¥5,50. El 毛 final se puede omitir: 五块五.'],
+  ['k_yg','一共','yí·gòng','en total','一共多少钱？ = ¿Cuánto es en total?'],
+  ['k_jin','斤','jīn','medio kilo','En los mercados chinos todo se pesa en 斤.'],
+  ['k_gei','给','gěi','dar; para','给你 = aquí tiene.']
+]);
+KW('k5c', [
+  ['k_ws','网上','wǎng·shàng','en internet','在网上买 = comprar por internet.'],
+  ['k_dn','电脑','diàn·nǎo','computadora','电 electricidad + 脑 cerebro.'],
+  ['k_fb','方便','fāng·biàn','práctico, cómodo',''],
+  ['k_kd','快递','kuài·dì','envío, paquete (courier)','快 rápido + 递 entregar.'],
+  ['k_kuai2','快','kuài','rápido',''],
+  ['k_man','慢','màn','lento','']
+]);
+KW('k5d', [
+  ['k_cai','菜','cài','plato; comida','中国菜 = comida china. También significa «verdura».'],
+  ['k_zgc','中国菜','Zhōng·guó cài','comida china',''],
+  ['k_blc','秘鲁菜','Bì·lǔ cài','comida peruana',''],
+  ['k_mf','米饭','mǐ·fàn','arroz (cocido)',''],
+  ['k_jd','鸡蛋','jī·dàn','huevo','鸡 pollo + 蛋 huevo.'],
+  ['k_hc','好吃','hǎo·chī','rico, sabroso','好 + 吃: bueno para comer. Como 好看.']
+]);
+KW('k5e', [
+  ['k_bei','杯','bēi','vaso, taza (medida)','一杯茶 = una taza de té.'],
+  ['k_ping','瓶','píng','botella (medida)','两瓶水 = dos botellas de agua.'],
+  ['k_gz','果汁','guǒ·zhī','jugo',''],
+  ['k_nn','牛奶','niú·nǎi','leche','牛 vaca + 奶 leche.'],
+  ['k_hdr','喝点儿什么？','hē diǎnr shén·me','¿qué vas a tomar?','点儿 = un poco: suena más amable.']
+]);
+const DK5 = [K.wo, K.ni, K.yao, K.ma, K.zai, C('买','mǎi'), C('卖','mài'), C('东西','dōng·xi'), C('衣服','yī·fu'), C('一些','yì xiē'), C('水果','shuǐ·guǒ'), C('多少钱','duō·shao qián'), C('一共','yí·gòng'),
+  C('块','kuài'), C('毛','máo'), C('斤','jīn'), C('网上','wǎng·shàng'), C('很','hěn'), C('方便','fāng·biàn'), C('会','huì'), C('做','zuò'), C('菜','cài'), C('好吃','hǎo·chī'), C('一杯','yì bēi'), C('两杯','liǎng bēi'),
+  C('一瓶','yì píng'), C('两瓶','liǎng píng'), C('茶','chá'), C('咖啡','kā·fēi'), C('水','shuǐ'), C('喝','hē')];
+const BUY5 = [{k:'yf', c:C('衣服','yī·fu'), es:'ropa', pic:'👕'}, {k:'sg', c:C('水果','shuǐ·guǒ'), es:'fruta', pic:'🍎'}, {k:'bz', c:C('杯子','bēi·zi'), es:'una taza', pic:'☕'}, {k:'shu', c:C('书','shū'), es:'libros', pic:'📚'}, {k:'cai', c:C('蔬菜','shū·cài'), es:'verduras', pic:'🥦'}];
+kGen('g-k5a', 'k5a', 'ir de compras', DK5, {
+  say: form => { form = form || pick(['go','some','want','sell','q']); const b = pick(BUY5);
+    const s = form === 'go' ? mkS([K.wo, C('去','qù'), C('商店','shāng·diàn'), C('买','mǎi'), C('东西','dōng·xi')], 'Voy a la tienda a comprar cosas.')
+      : form === 'some' ? mkS([K.wo, C('买','mǎi'), C('一些','yì xiē'), C('水果','shuǐ·guǒ')], 'Compro algo de fruta.')
+      : form === 'sell' ? mkS([C('这个','zhè·ge'), C('商店','shāng·diàn'), C('卖','mài'), C('衣服','yī·fu')], 'Esta tienda vende ropa.')
+      : form === 'q' ? mkS([K.ni, C('买','mǎi'), C('什么','shén·me')], '¿Qué compras?', '？')
+      : mkS([K.wo, C('想','xiǎng'), C('买','mǎi'), b.c], `Quiero comprar ${b.es}.`);
+    return Object.assign(s, {form, pic:form === 'want' ? picBox(b.pic) : ''}); },
+  qa: () => { const b = pick(BUY5);
+    return {key:b.k, who:'Mamá', q:mkS([K.ni, C('去','qù'), C('商店','shāng·diàn'), C('买','mǎi'), C('什么','shén·me')], '¿Qué vas a comprar a la tienda?', '？'), a:mkS([K.wo, C('买','mǎi'), b.c], `Compro ${b.es}.`), cue:picBox(b.pic)}; },
+  more:{pic: () => { const b = pick(BUY5), mk = x => mkS([K.wo, C('买','mǎi'), x.c], `Compro ${x.es}.`);
+    const sell = Object.assign(mkS([K.wo, C('卖','mài'), b.c], `Vendo ${b.es}.`), {});
+    return replyEx('g-k5a', '¿Qué compras?', {html:picBox(b.pic) + cueBox('Lo compras en la tienda.')}, mk(b), [sell, ...BUY5.filter(x => x !== b).map(mk)]); }},
+  modes:['pic','build','reply','listen','ask'], modes2:['pic','listen','reply']
+});
+// ¥5.5 → 五块五毛 (or 五块五) · ¥2 → 两块 · ¥0.5 → 五毛
+const prC = (y, j) => { const yz = y === 2 ? '两' : numZh(y), yp = y === 2 ? 'liǎng' : numPy(y);
+  return C((y ? yz + '块' : '') + (j ? NZH[j] + '毛' : ''), [y ? yp + ' kuài' : '', j ? NPY[j] + ' máo' : ''].filter(Boolean).join(' ')); };
+const prAlt = (y, j) => y && j ? (y === 2 ? '两' : numZh(y)) + '块' + NZH[j] : null;
+const randPr = () => ({y:pick([1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20]), j:pick([0, 0, 5, 5, 3, 8])});
+const prEs = (y, j) => '¥' + (y + j / 10).toFixed(j ? 2 : 0);
+const FRUIT5 = [{c:C('苹果','píng·guǒ'), es:'manzanas'}, {c:C('香蕉','xiāng·jiāo'), es:'plátanos'}, {c:C('橙子','chéng·zi'), es:'naranjas'}];
+kGen('g-k5b', 'k5b', 'precios con céntimos', DK5, {
+  say: form => { form = form || pick(['jin','total','give']); const {y, j} = randPr(), f = pick(FRUIT5);
+    const s = form === 'total' ? mkS([C('一共','yí·gòng'), C('多少钱','duō·shao qián')], '¿Cuánto es en total?', '？')
+      : form === 'give' ? mkS([C('给你','gěi nǐ'), prC(y, j)], `Aquí tiene: ${prEs(y, j)}.`)
+      : mkS([f.c, C('一斤','yì jīn'), prC(y, j)], `Las ${f.es} cuestan ${prEs(y, j)} el medio kilo.`, '。', prAlt(y, j) ? [f.c.h + '一斤' + prAlt(y, j)] : undefined);
+    return Object.assign(s, {form}); },
+  qa: () => { const {y, j} = randPr(), f = pick(FRUIT5), a = (yy, jj) => mkS([C('一斤','yì jīn'), prC(yy, jj)], `${prEs(yy, jj)} el medio kilo.`);
+    const near = uniqBy([[y, j ? 0 : 5], [y + 10 > 25 ? y - 1 : y + 10, j], [y === 1 ? 3 : y - 1, j], [j || 5, y < 10 ? y : 0]].filter(([a2, b2]) => (a2 || b2) && !(a2 === y && b2 === j)), x => x.join('.'));
+    return {key:y + '.' + j, who:'Cliente', kind:'Eres el vendedor: di el precio', q:mkS([f.c, C('多少钱','duō·shao qián'), C('一斤','yì jīn')], `¿Cuánto cuestan las ${f.es} el medio kilo?`, '？'), a:a(y, j),
+      cue:`<div class="tag">¥ ${(y + j / 10).toFixed(j ? 2 : 0)}</div>`, wrongs:near.map(([a2, b2]) => a(a2, b2))}; },
+  more:{
+    tag: () => { const {y, j} = randPr(), z = prC(y, j), parts = [C((y === 2 ? '两' : numZh(y)) + '块', (y === 2 ? 'liǎng' : numPy(y)) + ' kuài'), ...(j ? [C(NZH[j] + '毛', NPY[j] + ' máo')] : [])];
+      const traps = [C('二块', 'èr kuài'), C(NZH[j || 5] + '分', NPY[j || 5] + ' fēn'), C(NZH[(j || 5) % 9 + 1] + '毛', NPY[(j || 5) % 9 + 1] + ' máo')].filter(t => !parts.some(p => p.h === t.h) && !(y !== 2 && t.h === '二块'));
+      return {t:'tiles', item:'g-k5b', kind:'Di el precio en chino', q:`<div class="tag">¥ ${(y + j / 10).toFixed(j ? 2 : 0)}</div>`, bank:shuffle([...parts, ...traps.slice(0, 2)]), answer:[z.h, prAlt(y, j)].filter(Boolean), rev:{h:z.h, p:z.p, es:prEs(y, j)}}; },
+    // two price tags: pick how the total is said
+    sum: () => { const a = {y:rint(1, 9), j:pick([0, 5])}, b = {y:rint(1, 9), j:pick([0, 5])}, t10 = (a.y + b.y) * 10 + a.j + b.j;
+      const say = v => prC(Math.floor(v / 10), v % 10), right = say(t10);
+      const os = uniqBy([t10, t10 + 5, t10 - 5, t10 + 10, t10 - 10].filter(v => v >= 10).map(say), c => c.h).slice(0, 4);
+      if (!os.some(c => c.h === right.h)) os[0] = right;
+      const tag = (e, v) => `<div class="tag" style="font-size:28px;padding:8px 16px">${e} ¥ ${(v.y + v.j / 10).toFixed(2)}</div>`;
+      return {t:'mc', item:'g-k5b', kind:'一共多少钱？ Suma y elige el total', q:`<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">${tag('🍎', a)}${tag('🥛', b)}</div>`,
+        options:shuffle(os).map(c => ({v:c.h, say:c.h, html:`<span class="han" style="font-size:22px">一共${c.h}</span>${LV >= 2 ? '' : `<small>${pyHTML(c.p)}</small>`}`})), answer:right.h, rev:{h:'一共' + right.h, p:'yí·gòng ' + right.p, es:'Total: ' + prEs(Math.floor(t10 / 10), t10 % 10)}}; },
+    listen: () => { const {y, j} = randPr(), z = prC(y, j);
+      const os = uniqBy([[y, j], [y, j ? 0 : 5], [y + 10, j], [y === 1 ? 2 : y - 1, j]], x => x.join('.'));
+      return {t:'mc', item:'g-k5b', kind:'Escucha: ¿cuánto cuesta?', say:z.h, q:audioBtns(z.h, true), options:shuffle(os).map(([a2, b2]) => ({v:a2 + '.' + b2, html:`<span class="digital" style="font-size:24px">¥${(a2 + b2 / 10).toFixed(2)}</span>`})), answer:y + '.' + j, rev:{h:z.h, p:z.p, es:prEs(y, j)}}; }
+  },
+  modes:['tag','listen','reply','sum','build'], modes2:['listen','tag','reply','sum'], l3:[['tag',3],['listen',3],['reply',3],['sum',3],['speak',2]]
+});
+const WHERE5 = [{k:'net', c:C('在网上','zài wǎng·shàng'), es:'por internet', pic:'💻'}, {k:'shop', c:C('在商店','zài shāng·diàn'), es:'en una tienda', pic:'🏬'}, {k:'cs', c:C('在超市','zài chāo·shì'), es:'en el supermercado', pic:'🛒'}];
+kGen('g-k5c', 'k5c', 'comprar por internet', DK5, {
+  say: form => { form = form || pick(['buy','easy','fast','phone']); const b = pick(BUY5), w = pick(WHERE5);
+    const s = form === 'easy' ? mkS([C('在网上','zài wǎng·shàng'), C('买东西','mǎi dōng·xi'), K.hen, C('方便','fāng·biàn')], 'Comprar por internet es muy práctico.')
+      : form === 'fast' ? (f => mkS([C('快递','kuài·dì'), K.hen, C(f ? '快' : '慢', f ? 'kuài' : 'màn')], f ? 'El envío es muy rápido.' : 'El envío es muy lento.'))(Math.random() < .5)
+      : form === 'phone' ? mkS([K.wo, C('用','yòng'), C('手机','shǒu·jī'), C('买','mǎi'), b.c], `Compro ${b.es} con el celular.`)
+      : mkS([K.wo, w.c, C('买','mǎi'), b.c], `Compro ${b.es} ${w.es}.`);
+    return Object.assign(s, {form}); },
+  qa: form => { form = form || pick(['where','fast']);
+    if (form === 'fast'){ const f = Math.random() < .5, mk = x => mkS([C('快递','kuài·dì'), K.hen, C(x ? '快' : '慢', x ? 'kuài' : 'màn')], x ? 'El envío es muy rápido.' : 'El envío es muy lento.');
+      return {key:f, form, who:'Amiga', q:mkS([C('快递','kuài·dì'), C('快','kuài'), K.ma], '¿El envío es rápido?', '？'), a:mk(f), cue:picBox(f ? '⚡ 1 día' : '🐢 3 semanas'),
+        wrongs:[mk(!f), mkS([C('在网上','zài wǎng·shàng'), C('买','mǎi')], 'Por internet.'), mkS([K.wo, C('不','bù'), C('买','mǎi')], 'No compro.')]}; }
+    const w = pick(WHERE5);
+    return {key:w.k, form, who:'Amiga', q:mkS([K.ni, K.zai, C('哪儿','nǎr'), C('买','mǎi'), C('衣服','yī·fu')], '¿Dónde compras ropa?', '？'), a:mkS([K.wo, w.c, C('买','mǎi'), C('衣服','yī·fu')], `Compro ropa ${w.es}.`), cue:picBox(w.pic)}; }
+});
+kGen('g-k5d', 'k5d', 'cocinar y opinar de la comida', DK5, {
+  say: form => { form = form || pick(['can','cant','tasty','mom','q']);
+    const s = form === 'can' ? mkS([K.wo, C('会','huì'), C('做','zuò'), C('中国菜','Zhōng·guó cài')], 'Sé cocinar comida china.')
+      : form === 'cant' ? mkS([K.wo, C('不会','bú huì'), C('做','zuò'), C('秘鲁菜','Bì·lǔ cài')], 'No sé cocinar comida peruana.')
+      : form === 'tasty' ? mkS([C('秘鲁菜','Bì·lǔ cài'), K.hen, C('好吃','hǎo·chī')], 'La comida peruana es muy rica.')
+      : form === 'mom' ? mkS([C('我妈妈','wǒ mā·ma'), C('做的','zuò de'), C('菜','cài'), K.hen, C('好吃','hǎo·chī')], 'La comida de mi mamá es muy rica.')
+      : mkS([K.ni, C('会','huì'), C('做','zuò'), C('什么','shén·me'), C('菜','cài')], '¿Qué platos sabes cocinar?', '？');
+    return Object.assign(s, {form}); },
+  qa: form => { form = form || pick(['can','taste']);
+    if (form === 'taste'){ const ok = Math.random() < .6, mk = x => mkS([C('这个','zhè·ge'), C('菜','cài'), C(x ? '很好吃' : '不好吃', x ? 'hěn hǎo·chī' : 'bù hǎo·chī')], x ? 'Este plato está muy rico.' : 'Este plato no está rico.');
+      return {key:ok, form, who:'Cocinero', q:mkS([C('这个','zhè·ge'), C('菜','cài'), C('怎么样','zěn·me·yàng')], '¿Qué tal este plato?', '？'), a:mk(ok), cue:picBox(ok ? '😋' : '😖'),
+        wrongs:[mk(!ok), mkS([C('这部','zhè bù'), C('电影','diàn·yǐng'), C('很好看','hěn hǎo·kàn')], 'Esta película es muy buena.'), mkS([K.wo, C('不会','bú huì'), C('做','zuò'), C('菜','cài')], 'No sé cocinar.')]}; }
+    const st = pick(['yes','bit','no']);
+    const A = {yes:mkS([C('会，','huì'), K.wo, C('会','huì'), C('做','zuò'), C('中国菜','Zhōng·guó cài')], 'Sí, sé cocinar comida china.'), bit:mkS([C('会','huì'), C('一点儿','yì·diǎnr')], 'Sí, un poco.'), no:mkS([C('不会','bú huì')], 'No, no sé.')};
+    return {key:st, form, who:'Amigo', q:mkS([K.ni, C('会','huì'), C('做','zuò'), C('中国菜','Zhōng·guó cài'), K.ma], '¿Sabes cocinar comida china?', '？'), a:A[st],
+      cue:cueBox(st === 'yes' ? 'Cocinas comida china muy bien.' : st === 'bit' ? 'Solo sabes hacer arroz frito.' : 'Nunca cocinaste comida china.'), wrongs:[...Object.keys(A).filter(k => k !== st).map(k => A[k]), mkS([C('很好吃','hěn hǎo·chī')], 'Está muy rico.')]}; }
+});
+const DRINK5 = [{k:'kf', c:C('咖啡','kā·fēi'), es:'café', pic:'☕', m:'杯', u:['taza','tazas']}, {k:'cha', c:C('茶','chá'), es:'té', pic:'🍵', m:'杯', u:['taza','tazas']}, {k:'nn', c:C('牛奶','niú·nǎi'), es:'leche', pic:'🥛', m:'杯', u:['vaso','vasos']},
+  {k:'gz', c:C('果汁','guǒ·zhī'), es:'jugo', pic:'🧃', m:'杯', u:['vaso','vasos']}, {k:'sh', c:C('水','shuǐ'), es:'agua', pic:'💧', m:'瓶', u:['botella','botellas']}, {k:'pj', c:C('啤酒','pí·jiǔ'), es:'cerveza', pic:'🍺', m:'瓶', u:['botella','botellas']}];
+const MEAS = {'杯':['taza','tazas','bēi'], '瓶':['botella','botellas','píng']};
+const cupC = (n, m) => C((n === 1 ? '一' : n === 2 ? '两' : NZH[n]) + m, (n === 1 ? 'yì' : n === 2 ? 'liǎng' : NPY[n]) + ' ' + MEAS[m][2]);
+const unEs = (n, w) => (n === 1 ? (/a$/.test(w) ? 'una' : 'un') : NUMES[n]) + ' ' + w;
+const orderS = (n, d) => mkS([K.wo, K.yao, cupC(n, d.m), d.c], `Quiero ${unEs(n, d.u[n === 1 ? 0 : 1])} de ${d.es}.`);
+kGen('g-k5e', 'k5e', 'pedir algo para tomar', DK5, {
+  say: form => { form = form || pick(['order','order','q','we']); const d = pick(DRINK5), n = rint(1, 3);
+    const s = form === 'q' ? mkS([C('你们','nǐ·men'), C('喝点儿','hē diǎnr'), C('什么','shén·me')], '¿Qué van a tomar?', '？')
+      : form === 'we' ? mkS([C('服务员，','fú·wù·yuán'), C('我们','wǒ·men'), K.yao, cupC(2, d.m), d.c], `¡Mesero! Queremos dos ${d.u[1]} de ${d.es}.`)
+      : orderS(n, d);
+    return Object.assign(s, {form, pic:form === 'order' ? picBox(d.pic.repeat(n)) : ''}); },
+  qa: () => { const d = pick(DRINK5), n = rint(1, 3), o = pick(DRINK5.filter(x => x !== d));
+    const wrongs = [orderS(n, o), orderS(n === 3 ? 2 : n + 1, d), mkS([K.wo, K.yao, cupC(n, d.m === '杯' ? '瓶' : '杯'), d.c], 'Medida equivocada.')];
+    if (n === 2) wrongs.push(mkS([K.wo, K.yao, C('二' + d.m, 'èr ' + MEAS[d.m][2]), d.c], 'Mal dicho: es 两.'));
+    return {key:n + d.k, who:'Mesera', q:mkS([K.ni, C('喝点儿','hē diǎnr'), C('什么','shén·me')], '¿Qué vas a tomar?', '？'), a:orderS(n, d), cue:picBox(d.pic.repeat(n)) + cueBox(d.m === '瓶' ? 'En botella.' : `En ${d.u[0]}.`), wrongs}; },
+  modes:['build','reply','listen','reply'], modes2:['listen','reply','build'], l3:[['build',4],['reply',4],['listen',3],['speak',2]]
+});
+KS('k5f', [
+  ['ks51', [K.wo, C('去','qù'), C('商店','shāng·diàn'), C('买','mǎi'), C('东西','dōng·xi')], 'Voy a la tienda a comprar cosas.'],
+  ['ks52', [K.wo, C('想','xiǎng'), C('买','mǎi'), C('一些','yì xiē'), C('水果','shuǐ·guǒ')], 'Quiero comprar algo de fruta.'],
+  ['ks53', [C('苹果','píng·guǒ'), C('多少钱','duō·shao qián'), C('一斤','yì jīn')], '¿Cuánto cuestan las manzanas el medio kilo?', 1, ['苹果一斤多少钱']],
+  ['ks54', [C('一斤','yì jīn'), C('五块五','wǔ kuài wǔ')], '¥5,50 el medio kilo.', 0, ['一斤五块五毛']],
+  ['ks55', [C('一共','yí·gòng'), C('多少钱','duō·shao qián')], '¿Cuánto es en total?', 1],
+  ['ks56', [C('在网上','zài wǎng·shàng'), C('买东西','mǎi dōng·xi'), K.hen, C('方便','fāng·biàn')], 'Comprar por internet es muy práctico.'],
+  ['ks57', [K.wo, C('会','huì'), C('做','zuò'), C('中国菜','Zhōng·guó cài')], 'Sé cocinar comida china.'],
+  ['ks58', [C('秘鲁菜','Bì·lǔ cài'), K.hen, C('好吃','hǎo·chī')], 'La comida peruana es muy rica.'],
+  ['ks59', [C('你们','nǐ·men'), C('喝点儿','hē diǎnr'), C('什么','shén·me')], '¿Qué van a tomar?', 1],
+  ['ks510', [K.wo, K.yao, C('两杯','liǎng bēi'), C('咖啡','kā·fēi')], 'Quiero dos tazas de café.']
+]);
+kMix('k5f', [['g-k5a','reply',2], ['g-k5b','tag',2], ['g-k5b','sum',1], ['g-k5c','reply',2], ['g-k5d','reply',2], ['g-k5e','reply',3], ['g-k5e','speak',2]]);
+KU('k5a', 'k5', '买', 'Ir de compras', '我去商店买东西。', '买, 卖, 东西 y 一些', [rule('La regla', 'Ir a un lugar a hacer algo', [['我去商店买东西。','Voy a la tienda a comprar cosas.'], ['我买一些水果。','Compro algo de fruta.'], ['这个商店卖衣服。','Esta tienda vende ropa.']], 'mǎi (3.er tono) es comprar y mài (4.º) es vender: escucha bien el tono. Primero a dónde vas y después a qué: 去商店 + 买东西.')]);
+KU('k5b', 'k5', '元', 'Precios con céntimos', '一共多少钱？', '块 y 毛, 一共, 斤', [rule('La regla', '块 + 毛', [['五块五毛','¥5,50'], ['五块五','¥5,50: el 毛 final se puede omitir'], ['两块','¥2: 两, no 二'], ['苹果一斤六块。','Las manzanas, ¥6 el medio kilo.'], ['一共多少钱？','¿Cuánto es en total?']], 'Los carteles dicen 元 y 角; al hablar se dice 块 y 毛. Un 斤 es medio kilo.')]);
+KU('k5c', 'k5', '网', 'Compras por internet', '我在网上买衣服。', '网上, 电脑, 快递 y 方便', [rule('La regla', '在 + dónde + verbo', [['我在网上买衣服。','Compro ropa por internet.'], ['在网上买东西很方便。','Comprar por internet es muy práctico.'], ['快递很快。','El envío es muy rápido.']], 'Como con el trabajo: el lugar va antes del verbo. 我在网上买, no 我买在网上.')]);
+KU('k5d', 'k5', '菜', 'Cocinar', '我会做中国菜。', '做菜, 好吃 y 会', [rule('La regla', '会 + 做 + comida', [['我会做中国菜。','Sé cocinar comida china.'], ['你会做什么菜？','¿Qué platos sabes cocinar?'], ['秘鲁菜很好吃。','La comida peruana es muy rica.'], ['我妈妈做的菜很好吃。','La comida de mi mamá es muy rica.']], '好吃 (rico de comer) se forma como 好看 (bonito de ver): 好 + verbo.')]);
+KU('k5e', 'k5', '杯', 'Para tomar', '你喝点儿什么？', '杯, 瓶 y pedir', [rule('La regla', 'Número + 杯 o 瓶 + bebida', [['一杯咖啡','una taza de café'], ['两瓶水','dos botellas de agua'], ['你喝点儿什么？','¿Qué vas a tomar?'], ['服务员，我要一杯茶。','¡Mesero! Quiero un té.']], '杯 y 瓶 son palabras de medida, como 只 y 本: con el 2 va 两.')]);
+KU('k5f', 'k5', '店', 'En la tienda y en la mesa', '一共多少钱？', 'Frases completas de la ruta', [rule('Repaso', 'Cinco frases para comprar y comer', [['你去商店买什么？','qué compras'], ['苹果多少钱一斤？','el precio'], ['一共多少钱？','el total'], ['你会做中国菜吗？','cocinar'], ['你喝点儿什么？','pedir']], 'Practicas las dos partes: preguntar y responder.')], ['ks53','ks510']);
+
+/* ---------- HSK 1 · Ruta 6: transporte y direcciones ---------- */
+KW('k6a', [
+  ['k_czc','出租车','chū·zū·chē','taxi','出租 alquilar + 车 vehículo.'],
+  ['k_fj','飞机','fēi·jī','avión','飞 volar + 机 máquina.'],
+  ['k_hc2','火车','huǒ·chē','tren','火 fuego + 车: los trenes de vapor.'],
+  ['k_jc','机场','jī·chǎng','aeropuerto',''],
+  ['k_hcz','火车站','huǒ·chē zhàn','estación de tren','站 = estación, como en 地铁站.'],
+  ['k_dc','打车','dǎ chē','tomar un taxi','Más coloquial que 坐出租车.']
+]);
+KW('k6b', [
+  ['k_li','离','lí','de (distancia)','A 离 B 远/近: 我家离学校很近.'],
+  ['k_yuan2','远','yuǎn','lejos',''],
+  ['k_jin2','近','jìn','cerca',''],
+  ['k_fz','分钟','fēn·zhōng','minuto(s) (duración)','十分钟 = diez minutos de duración. 八点十分 es la hora.'],
+  ['k_xsh','小时','xiǎo·shí','hora (duración)','一个小时 = una hora. 半个小时 = media hora.']
+]);
+KW('k6c', [
+  ['k_dao','到','dào','llegar','我是昨天到的 = Llegué ayer.'],
+  ['k_cong','从','cóng','desde','从利马来 = venir de Lima.'],
+  ['k_gen','跟','gēn','con','我跟朋友一起来 = Vengo con un amigo.'],
+  ['k_sh2','时候','shí·hou','momento','什么时候 = ¿cuándo?']
+]);
+KW('k6d', [
+  ['k_zhuo','桌子','zhuō·zi','mesa',''],
+  ['k_yz','椅子','yǐ·zi','silla',''],
+  ['k_chuang','床','chuáng','cama',''],
+  ['k_shang','上','shàng','sobre, encima de','Va después de la cosa: 桌子上 = sobre la mesa.'],
+  ['k_xm','下面','xià·miàn','debajo de','椅子下面 = debajo de la silla.'],
+  ['k_li2','里','lǐ','dentro de','车里 = dentro del carro.']
+]);
+KW('k6e', [
+  ['k_mei','美','měi','bello, hermoso','太美了！ = ¡Qué bonito!'],
+  ['k_df','地方','dì·fang','lugar','这个地方 = este lugar.'],
+  ['k_gy','公园','gōng·yuán','parque',''],
+  ['k_cc','长城','Cháng·chéng','la Gran Muralla','长 largo + 城 muralla.'],
+  ['k_gg','故宫','Gù·gōng','la Ciudad Prohibida','El antiguo palacio de los emperadores, en Pekín.'],
+  ['k_hw','好玩儿','hǎo·wánr','divertido','好 + 玩儿: bueno para pasarla bien.']
+]);
+const DK6 = [K.wo, K.ni, K.ma, K.qu, K.shi, K.zai, C('坐','zuò'), C('怎么','zěn·me'), C('飞机','fēi·jī'), C('火车','huǒ·chē'), C('出租车','chū·zū·chē'), C('机场','jī·chǎng'), C('离','lí'), C('远','yuǎn'),
+  C('近','jìn'), C('走路','zǒu·lù'), C('分钟','fēn·zhōng'), C('来','lái'), C('的','de'), C('从','cóng'), C('昨天','zuó·tiān'), C('在','zài'), C('上','shàng'), C('下面','xià·miàn'), C('椅子','yǐ·zi'),
+  C('太','tài'), C('美','měi'), C('了','le'), C('想','xiǎng'), C('长城','Cháng·chéng')];
+const TR6 = [{k:'czc', c:[C('坐','zuò'), C('出租车','chū·zū·chē')], es:'en taxi', pic:'🚕'}, {k:'fj', c:[C('坐','zuò'), C('飞机','fēi·jī')], es:'en avión', pic:'✈️'}, {k:'hc', c:[C('坐','zuò'), C('火车','huǒ·chē')], es:'en tren', pic:'🚆'},
+  {k:'dt', c:[C('坐','zuò'), C('地铁','dì·tiě')], es:'en metro', pic:'🚇'}, {k:'zl', c:[C('走路','zǒu·lù')], es:'a pie', pic:'🚶'}];
+const DEST6 = [{c:C('机场','jī·chǎng'), es:'al aeropuerto', ok:['czc','dt']}, {c:C('火车站','huǒ·chē zhàn'), es:'a la estación de tren', ok:['czc','dt','zl']},
+  {c:C('上海','Shàng·hǎi'), es:'a Shanghái', ok:['fj','hc']}, {c:C('学校','xué·xiào'), es:'a la escuela', ok:['czc','dt','zl']}];
+const tripT6 = () => { const d = pick(DEST6), k = pick(d.ok); return {d, t:TR6.find(x => x.k === k)}; };
+const goS6 = (t, d, who = K.wo, es = 'Voy') => mkS([who, ...t.c, C('去','qù'), d.c], `${es} ${d.es} ${t.es}.`);
+kGen('g-k6a', 'k6a', 'taxi, avión y tren', DK6, {
+  say: form => { form = form || pick(['go','go','taxi','q']); const {t, d} = tripT6();
+    const s = form === 'taxi' ? mkS([C('我们','wǒ·men'), C('打车','dǎ chē'), C('去','qù'), C('火车站','huǒ·chē zhàn')], 'Tomamos un taxi a la estación de tren.')
+      : form === 'q' ? mkS([K.ni, C('怎么','zěn·me'), C('去','qù'), d.c], `¿Cómo vas ${d.es}?`, '？')
+      : goS6(t, d);
+    return Object.assign(s, {form, pic:form === 'go' ? picBox(t.pic) : ''}); },
+  qa: () => { const {t, d} = tripT6();
+    return {key:t.k, who:'Amigo', q:mkS([K.ni, C('怎么','zěn·me'), C('去','qù'), d.c], `¿Cómo vas ${d.es}?`, '？'), a:goS6(t, d), cue:picBox(t.pic),
+      wrongs:shuffle(TR6.filter(x => x !== t)).slice(0, 3).map(x => goS6(x, d))}; },
+  more:{pic: () => { const t = pick(TR6), mk = x => mkS(x.c, x.es, '');
+    return replyEx('g-k6a', '¿Cómo vas?', {html:picBox(t.pic)}, mk(t), TR6.filter(x => x !== t).map(mk)); }},
+  modes:['pic','build','reply','listen','ask'], modes2:['pic','listen','reply']
+});
+const DIST6 = [
+  {k:'near', pic:'🚶 5 min', a:() => mkS([C('不远，','bù yuǎn'), C('走路','zǒu·lù'), C('五分钟','wǔ fēn·zhōng')], 'No, a cinco minutos a pie.')},
+  {k:'mid', pic:'🚇 20 min', a:() => mkS([C('不太远，','bú tài yuǎn'), C('坐地铁','zuò dì·tiě'), C('二十分钟','èr·shí fēn·zhōng')], 'No mucho, veinte minutos en metro.')},
+  {k:'far', pic:'🚆 1 h', a:() => mkS([C('很远，','hěn yuǎn'), C('坐火车','zuò huǒ·chē'), C('要','yào'), C('一个小时','yí ge xiǎo·shí')], 'Sí, muy lejos: una hora en tren.')}
+];
+kGen('g-k6b', 'k6b', 'lejos, cerca y cuánto tarda', DK6, {
+  say: form => { form = form || pick(['near','far','walk','q']); const n = pick([5, 10, 15, 20]);
+    const s = form === 'near' ? mkS([C('我家','wǒ jiā'), C('离','lí'), C('学校','xué·xiào'), K.hen, C('近','jìn')], 'Mi casa está muy cerca de la escuela.')
+      : form === 'far' ? mkS([C('机场','jī·chǎng'), C('离','lí'), C('这儿','zhèr'), K.hen, C('远','yuǎn')], 'El aeropuerto está muy lejos de aquí.')
+      : form === 'walk' ? mkS([K.wo, C('走路','zǒu·lù'), C('回家','huí jiā'), C('要','yào'), C(numZh(n) + '分钟', numPy(n) + ' fēn·zhōng')], `Vuelvo a casa a pie en ${n} minutos.`)
+      : mkS([C('你家','nǐ jiā'), C('离','lí'), C('公司','gōng·sī'), C('远','yuǎn'), K.ma], '¿Tu casa está lejos de la empresa?', '？');
+    return Object.assign(s, {form}); },
+  qa: () => { const d = pick(DIST6);
+    return {key:d.k, who:'Compañera', q:mkS([C('你家','nǐ jiā'), C('离','lí'), C('学校','xué·xiào'), C('远','yuǎn'), K.ma], '¿Tu casa está lejos de la escuela?', '？'), a:d.a(), cue:picBox(d.pic),
+      wrongs:[...DIST6.filter(x => x.k !== d.k).map(x => x.a()), mkS([K.wo, C('家','jiā'), C('在','zài'), C('利马','Lì·mǎ')], 'Mi casa está en Lima.')]}; },
+  more:{read: () => { const n = pick([5, 10, 15, 20, 30, 40]), dur = Math.random() < .5;
+    const dz = C(numZh(n) + '分钟', numPy(n) + ' fēn·zhōng'), tz = tC(8, n), right = dur ? dz : tz;
+    const os = uniqBy([right, dur ? tz : dz, dur ? C('两个小时','liǎng ge xiǎo·shí') : tC(8, n === 30 ? 40 : 30), dur ? C('一个小时','yí ge xiǎo·shí') : tC(10, 0)], c => c.h);
+    return {t:'mc', item:'g-k6b', kind:dur ? '¿Cuánto tarda?' : '¿A qué hora sale el tren?', q:dur ? `<div class="tag" style="font-size:34px">⏱ ${n} min</div>` : digi(8, n),
+      options:shuffle(os).map(c => ({v:c.h, say:c.h, html:`<span class="han" style="font-size:22px">${c.h}</span>${LV >= 2 ? '' : `<small>${pyHTML(c.p)}</small>`}`})), answer:right.h, rev:{h:right.h, p:right.p, es:dur ? `${n} minutos (duración)` : `a las 8:${String(n).padStart(2, '0')}`}}; }},
+  modes:['read','build','reply','listen','ask'], modes2:['read','listen','reply']
+});
+const SHIDE = {
+  how:{q:() => mkS([K.ni, K.shi, C('怎么','zěn·me'), C('来','lái'), C('的','de')], '¿Cómo viniste?', '？'), opts:TR6.filter(t => t.k !== 'dt').map(t => ({k:t.k, cue:picBox(t.pic), a:mkS([K.wo, K.shi, ...t.c, C('来','lái'), C('的','de')], `Vine ${t.es}.`)}))},
+  when:{q:() => mkS([K.ni, K.shi, C('什么时候','shén·me shí·hou'), C('来','lái'), C('的','de')], '¿Cuándo viniste?', '？'), opts:[[C('昨天','zuó·tiān'), 'ayer'], [C('去年','qù·nián'), 'el año pasado'], [C('星期一','xīng·qī·yī'), 'el lunes']].map(([c, es]) => ({k:es, cue:cueBox(`Llegaste <b>${es}</b>.`), a:mkS([K.wo, K.shi, c, C('来','lái'), C('的','de')], `Vine ${es}.`)}))},
+  from:{q:() => mkS([K.ni, K.shi, C('从','cóng'), C('哪儿','nǎr'), C('来','lái'), C('的','de')], '¿De dónde viniste?', '？'), opts:[[C('利马','Lì·mǎ'), 'Lima'], [C('上海','Shàng·hǎi'), 'Shanghái'], [C('马德里','Mǎ·dé·lǐ'), 'Madrid']].map(([c, es]) => ({k:es, cue:cueBox(`Llegaste desde <b>${es}</b>.`), a:mkS([K.wo, K.shi, C('从','cóng'), c, C('来','lái'), C('的','de')], `Vine desde ${es}.`)}))}
+};
+kGen('g-k6c', 'k6c', 'cómo, cuándo y de dónde viniste', DK6, {
+  say: form => { form = form || pick(['how','when','from','with']);
+    if (form === 'with') return Object.assign(mkS([K.wo, C('是','shì'), C('跟','gēn'), C('朋友','péng·you'), C('一起','yì·qǐ'), C('来','lái'), C('的','de')], 'Vine con un amigo.'), {form});
+    const o = pick(SHIDE[form].opts); return Object.assign(mkS(o.a.chunks, o.a.es), {form}); },
+  qa: form => { form = form || pick(Object.keys(SHIDE)); const o = pick(SHIDE[form].opts);
+    const other = pick(Object.keys(SHIDE).filter(k => k !== form));
+    return {key:o.k, form, who:'Amiga china', q:SHIDE[form].q(), a:o.a, cue:o.cue,
+      wrongs:[...SHIDE[form].opts.filter(x => x !== o).map(x => x.a), pick(SHIDE[other].opts).a]}; }
+});
+const OBJ6 = [{k:'yz', c:C('椅子','yǐ·zi'), es:'la silla', pic:'🪑'}, {k:'ch', c:C('床','chuáng'), es:'la cama', pic:'🛏️'}, {k:'che', c:C('车','chē'), es:'el carro', pic:'🚗'}];
+const POS6 = [{k:'up', c:C('上','shàng'), es:'sobre', cell:1}, {k:'dn', c:C('下面','xià·miàn'), es:'debajo de', cell:7}, {k:'l', c:C('左边','zuǒ·bian'), es:'a la izquierda de', cell:3}, {k:'r', c:C('右边','yòu·bian'), es:'a la derecha de', cell:5}];
+const scene6 = (o, p) => `<div class="scene">${Array.from({length:9}, (_, i) => `<span>${i === 4 ? o.pic : i === p.cell ? '🐱' : ''}</span>`).join('')}</div>`;
+const atEs6 = (p, o) => `${p.es} ${o.es}`.replace(/\bde el /, 'del ');
+const catS = (o, p) => mkS([C('小猫','xiǎo māo'), K.zai, o.c, p.c], `El gatito está ${atEs6(p, o)}.`);
+kGen('g-k6d', 'k6d', 'dónde está algo', DK6, {
+  say: form => { form = form || pick(['cat','cat','book','q']); const o = pick(OBJ6), p = pick(POS6);
+    const s = form === 'book' ? mkS([C('我的书','wǒ de shū'), K.zai, C('桌子','zhuō·zi'), C('上','shàng')], 'Mi libro está sobre la mesa.')
+      : form === 'q' ? mkS([C('我的','wǒ de'), C('小猫','xiǎo māo'), C('呢','ne')], '¿Y mi gatito? ¿Dónde está?', '？')
+      : catS(o, p);
+    return Object.assign(s, {form, pic:form === 'cat' ? scene6(o, p) : ''}); },
+  qa: () => { const o = pick(OBJ6), p = pick(POS6);
+    const wrongs = [...POS6.filter(x => x !== p).map(x => mkS([K.zai, o.c, x.c], `Está ${atEs6(x, o)}.`)), mkS([K.zai, pick(OBJ6.filter(x => x !== o)).c, p.c], 'Otro lugar.')];
+    return {key:o.k + p.k, who:'Hermanito', q:mkS([C('我的','wǒ de'), C('小猫','xiǎo māo'), C('呢','ne')], '¿Y mi gatito? ¿Dónde está?', '？'), a:mkS([K.zai, o.c, p.c], `Está ${atEs6(p, o)}.`), cue:scene6(o, p), wrongs}; },
+  more:{pic: () => { const o = pick(OBJ6), p = pick(POS6);
+    return replyEx('g-k6d', '¿Dónde está el gato?', {html:scene6(o, p)}, catS(o, p), [...POS6.filter(x => x !== p).map(x => catS(o, x)), catS(pick(OBJ6.filter(x => x !== o)), p)]); }},
+  modes:['pic','build','reply','listen','pic'], modes2:['pic','listen','reply'], l3:[['pic',3],['build',3],['reply',3],['listen',3],['speak',2]]
+});
+const SPOT6 = [{k:'cc', c:C('长城','Cháng·chéng'), es:'la Gran Muralla', f:1}, {k:'gg', c:C('故宫','Gù·gōng'), es:'la Ciudad Prohibida', f:1}, {k:'sh', c:C('上海','Shàng·hǎi'), es:'Shanghái'}, {k:'gy', c:C('公园','gōng·yuán'), es:'el parque'}];
+kGen('g-k6e', 'k6e', 'lugares bonitos', DK6, {
+  say: form => { form = form || pick(['wow','want','photo','fun']); const x = pick(SPOT6);
+    const s = form === 'wow' ? mkS([x.c, C('太','tài'), C('美','měi'), C('了','le')], `¡Qué bonit${x.f ? 'a' : 'o'} es ${x.es}!`, '！')
+      : form === 'want' ? mkS([K.wo, C('想','xiǎng'), C('去','qù'), x.c], `Quiero ir a ${x.es.replace(/^el /, 'el ')}.`.replace('a el', 'al'))
+      : form === 'photo' ? mkS([C('这','zhè'), K.shi, K.wo, K.zai, x.c, C('的','de'), C('照片','zhào·piàn')], `Esta es mi foto en ${x.es}.`)
+      : mkS([C('北京','Běi·jīng'), K.you, C('很多','hěn duō'), C('好玩儿的','hǎo·wánr de'), C('地方','dì·fang')], 'Pekín tiene muchos lugares divertidos.');
+    return Object.assign(s, {form}); },
+  qa: form => { form = form || pick(['go','how']);
+    if (form === 'how'){ const ok = Math.random() < .6, x = pick(SPOT6);
+      const yes = mkS([C('太','tài'), C('美','měi'), C('了','le')], '¡Precioso!', '！'), no = mkS([C('没意思','méi yì·si')], 'Aburrido.');
+      return {key:ok, form, who:'Amiga', q:mkS([x.c, C('怎么样','zěn·me·yàng')], `¿Qué tal ${x.es}?`, '？'), a:ok ? yes : no, cue:picBox(ok ? '😍' : '🥱'), askCue:`Pregúntale qué tal ${x.es}.`,
+        wrongs:[ok ? no : yes, mkS([C('太贵了','tài guì le')], '¡Demasiado caro!', '！'), mkS([C('太冷了','tài lěng le')], 'Hace demasiado frío.')]}; }
+    const x = pick(SPOT6);
+    return {key:x.k, form, who:'Amigo', q:mkS([K.ni, C('想','xiǎng'), C('去','qù'), C('哪儿','nǎr')], '¿A dónde quieres ir?', '？'), a:mkS([K.wo, C('想','xiǎng'), C('去','qù'), x.c], `Quiero ir a ${x.es}.`.replace('a el', 'al')), cue:cueBox(`Quieres ir a <b>${x.es}</b>.`.replace('a <b>el', 'al <b>'))}; }
+});
+KS('k6f', [
+  ['ks61', [K.ni, C('怎么','zěn·me'), C('去','qù'), C('机场','jī·chǎng')], '¿Cómo vas al aeropuerto?', 1],
+  ['ks62', [K.wo, C('坐','zuò'), C('出租车','chū·zū·chē'), C('去','qù')], 'Voy en taxi.'],
+  ['ks63', [C('你家','nǐ jiā'), C('离','lí'), C('学校','xué·xiào'), C('远','yuǎn'), K.ma], '¿Tu casa está lejos de la escuela?', 1],
+  ['ks64', [C('不远，','bù yuǎn'), C('走路','zǒu·lù'), C('十分钟','shí fēn·zhōng')], 'No, a diez minutos a pie.'],
+  ['ks65', [K.wo, K.shi, C('坐','zuò'), C('飞机','fēi·jī'), C('来','lái'), C('的','de')], 'Vine en avión.'],
+  ['ks66', [C('他们','tā·men'), K.shi, C('从','cóng'), C('上海','Shàng·hǎi'), C('来','lái'), C('的','de')], 'Vinieron desde Shanghái.'],
+  ['ks67', [C('我的','wǒ de'), C('小猫','xiǎo māo'), C('呢','ne')], '¿Y mi gatito? ¿Dónde está?', 1],
+  ['ks68', [C('小猫','xiǎo māo'), K.zai, C('椅子','yǐ·zi'), C('下面','xià·miàn')], 'El gatito está debajo de la silla.'],
+  ['ks69', [C('长城','Cháng·chéng'), C('太','tài'), C('美','měi'), C('了','le')], '¡Qué bonita es la Gran Muralla!'],
+  ['ks610', [K.wo, C('想','xiǎng'), C('去','qù'), C('故宫','Gù·gōng')], 'Quiero ir a la Ciudad Prohibida.']
+]);
+kMix('k6f', [['g-k6a','reply',2], ['g-k6b','reply',2], ['g-k6c','reply',3], ['g-k6d','pic',2], ['g-k6e','reply',2], ['g-k6c','speak',2]]);
+KU('k6a', 'k6', '飞', 'Taxi, avión y tren', '你怎么去机场？', 'Más medios de transporte', [rule('La regla', 'Quién · cómo · 去 · a dónde', [['我坐飞机去上海。','Voy a Shanghái en avión.'], ['我们打车去火车站。','Tomamos un taxi a la estación.'], ['你怎么去机场？','¿Cómo vas al aeropuerto?']], 'Igual que en Principiante: el medio de transporte va antes de 去.', [['quién','我'], ['cómo','坐飞机'], ['va a','去上海']])]);
+KU('k6b', 'k6', '远', 'Lejos o cerca', '你家离学校远吗？', '离, 远, 近 y cuánto tarda', [rule('La regla', 'A 离 B + 远 / 近', [['我家离学校很近。','Mi casa está muy cerca de la escuela.'], ['机场离这儿很远。','El aeropuerto está muy lejos de aquí.'], ['走路十分钟。','Diez minutos a pie.'], ['坐火车要一个小时。','En tren se tarda una hora.']], '十分钟 es cuánto dura; 八点十分 es la hora. 一个小时 = una hora de duración.')]);
+KU('k6c', 'k6', '从', 'Cómo llegaste', '你是怎么来的？', '是…的 para algo que ya pasó', [rule('La regla', '是 + lo que destacas + verbo + 的', [['我是坐飞机来的。','Vine en avión.'], ['我是昨天来的。','Vine ayer.'], ['我是从利马来的。','Vine desde Lima.'], ['你是怎么来的？','¿Cómo viniste?']], 'Se usa cuando ya se sabe que llegaste y se pregunta cómo, cuándo o desde dónde.', [['', '我是'], ['cómo', '坐飞机'], ['', '来的']])]);
+KU('k6d', 'k6', '桌', '¿Dónde está mi gato?', '我的小猫呢？', '呢, 上, 下面 y 里', [rule('La regla', 'Cosa + 在 + lugar + 上 / 下面 / 里', [['我的小猫呢？','¿Y mi gatito? (¿dónde está?)'], ['小猫在椅子下面。','El gatito está debajo de la silla.'], ['我的书在桌子上。','Mi libro está sobre la mesa.'], ['小猫在车里。','El gatito está dentro del carro.']], 'Al revés que en español: primero la cosa de referencia y después la posición. 桌子上 = «mesa-sobre».')]);
+KU('k6e', 'k6', '美', '¡Qué bonito!', '长城太美了！', '太…了 y lugares para visitar', [rule('La regla', '太 + adjetivo + 了 = ¡qué…!', [['长城太美了！','¡Qué bonita es la Gran Muralla!'], ['太好玩儿了！','¡Qué divertido!'], ['你想去哪儿？','¿A dónde quieres ir?'], ['北京有很多好玩儿的地方。','Pekín tiene muchos lugares divertidos.']], 'Con algo malo, 太…了 es «demasiado»: 太贵了, 太远了.')]);
+KU('k6f', 'k6', '路', 'De viaje', '你是怎么来的？', 'Frases completas de la ruta', [rule('Repaso', 'Cinco preguntas para un viaje', [['你怎么去机场？','cómo vas'], ['你家离学校远吗？','lejos o cerca'], ['你是怎么来的？','cómo llegaste'], ['我的小猫呢？','dónde está algo'], ['你想去哪儿？','a dónde quieres ir']], 'Practicas las dos partes: preguntar y responder.')], ['ks65','ks68']);
+
+/* ---------- HSK 1: diálogos, pools y rutas ---------- */
+const DK = uniqBy([...DK1, ...DK2, ...DK3, ...DK4, ...DK5, ...DK6], c => c.h);
+const DLGK1 = [
+  {where:'Primer día de clase', who:'Profesora', turns:[
+    {say:'你们好！', p:'nǐ·men hǎo', you:'¡Buenos días, profesora!', ans:[C('老师好','lǎo·shī hǎo')]},
+    {say:'你多大了？', p:'nǐ duō dà le', you:'Tengo 20 años.', ans:[K.wo, C('二十岁','èr·shí suì'), C('了','le')]},
+    {say:'你住在哪儿？', p:'nǐ zhù zài nǎr', you:'Vivo en Lima.', ans:[K.wo, C('住','zhù'), K.zai, C('利马','Lì·mǎ')]}]},
+  {where:'Al teléfono', who:'Amigo', turns:[
+    {say:'喂，你好！', p:'wéi, nǐ hǎo', you:'¡Aló! ¿Cómo estás?', ans:[C('喂，','wéi'), K.ni, C('好','hǎo'), K.ma]},
+    {say:'我很好。你的手机号码是多少？', p:'wǒ hěn hǎo. nǐ de shǒu·jī hào·mǎ shì duō·shao', you:'Mi número de celular es 987 654 321.', ans:[C('我的','wǒ de'), C('手机号码','shǒu·jī hào·mǎ'), K.shi, C('九八七，','jiǔ bā qī'), C('六五四，','liù wǔ sì'), C('三二幺','sān èr yāo')]},
+    {say:'我的电话号码是九八七，六二幺，三五四。', p:'wǒ de diàn·huà hào·mǎ shì jiǔ bā qī, liù èr yāo, sān wǔ sì', listen:['987 621 354', '987 627 354', '981 621 354', '987 621 534'], es:'Mi número es 987 621 354.', ask:'¿Cuál es su número?'}]}
+];
+const DLGK2 = [
+  {where:'Una foto en el celular', who:'Compañera', turns:[
+    {say:'她是谁？', p:'tā shì shéi', you:'Es mi hija.', ans:[C('她','tā'), K.shi, C('我','wǒ'), C('女儿','nǚ·ér')]},
+    {say:'你有宠物吗？', p:'nǐ yǒu chǒng·wù ma', you:'Sí, tengo dos gatos.', ans:[C('有，','yǒu'), K.wo, K.you, C('两只','liǎng zhī'), C('猫','māo')]},
+    {say:'我有一只大狗和一只小狗。', p:'wǒ yǒu yì zhī dà gǒu hé yì zhī xiǎo gǒu', listen:['Dos perros: uno grande y uno pequeño', 'Un perro grande', 'Dos gatos', 'Un perro y un gato'], es:'Tengo un perro grande y uno pequeño.', ask:'¿Qué mascotas tiene?'}]},
+  {where:'En la clase de chino', who:'Compañero', turns:[
+    {say:'你会说英语吗？', p:'nǐ huì shuō Yīng·yǔ ma', you:'Sí, un poco.', ans:[C('会','huì'), C('一点儿','yì·diǎnr')]},
+    {say:'我是学生，你呢？', p:'wǒ shì xué·sheng, nǐ ne', you:'Yo también soy estudiante.', ans:[K.wo, C('也','yě'), K.shi, C('学生','xué·sheng')]},
+    {say:'我们的汉语老师是北京人。', p:'wǒ·men de Hàn·yǔ lǎo·shī shì Běi·jīng rén', listen:['De Pekín', 'De Shanghái', 'De Lima', 'De Xi’an'], es:'Nuestra profesora de chino es de Pekín.', ask:'¿De dónde es la profesora?'}]}
+];
+const DLGK3 = [
+  {where:'Planes de cumpleaños', who:'Amiga', turns:[
+    {say:'你的生日是几月几号？', p:'nǐ de shēng·rì shì jǐ yuè jǐ hào', you:'Mi cumpleaños es el 8 de mayo.', ans:[C('我的','wǒ de'), C('生日','shēng·rì'), K.shi, C('五月八号','wǔ yuè bā hào')]},
+    {say:'现在几点？', p:'xiàn·zài jǐ diǎn', you:'Son las 8:30.', ans:[K.xz, C('八点半','bā diǎn bàn')]},
+    {say:'下雨了！我们九点去吧。', p:'xià yǔ le! wǒ·men jiǔ diǎn qù ba', listen:['Llueve: mejor a las 9', 'Hace sol: vamos ya', 'Nieva: no vamos', 'Llueve: vamos a las 8'], es:'¡Está lloviendo! Vamos a las 9.', ask:'¿Qué propone tu amiga?'}]},
+  {where:'Llamada desde China', who:'Hermano', turns:[
+    {say:'喂，你现在在哪儿？', p:'wéi, nǐ xiàn·zài zài nǎr', you:'Ahora estoy en Shanghái.', ans:[K.wo, K.xz, K.zai, C('上海','Shàng·hǎi')]},
+    {say:'你去西安了吗？', p:'nǐ qù Xī·ān le ma', you:'No, no fui.', ans:[C('没去','méi qù')]},
+    {say:'我去年去西安了，太好了！', p:'wǒ qù·nián qù Xī·ān le, tài hǎo le', listen:['El año pasado', 'Ayer', 'Este año', 'Nunca fue'], es:'Yo fui a Xi’an el año pasado. ¡Fue genial!', ask:'¿Cuándo fue tu hermano a Xi’an?'}]}
+];
+const DLGK4 = [
+  {where:'Una fiesta', who:'Nuevo amigo', turns:[
+    {say:'很高兴认识你！', p:'hěn gāo·xìng rèn·shi nǐ', you:'El gusto es mío.', ans:[K.wo, C('也','yě'), C('很高兴','hěn gāo·xìng'), C('认识','rèn·shi'), K.ni]},
+    {say:'你做什么工作？', p:'nǐ zuò shén·me gōng·zuò', you:'Soy médico. Trabajo en un hospital.', ans:[K.wo, K.shi, C('医生。','yī·shēng'), K.wo, K.zai, C('医院','yī·yuàn'), C('工作','gōng·zuò')]},
+    {say:'我是中学老师。我爱唱歌。', p:'wǒ shì zhōng·xué lǎo·shī. wǒ ài chàng gē', listen:['Profesor de secundaria; le encanta cantar', 'Médico; le gusta bailar', 'Mesero; le encanta cantar', 'Profesor de primaria; le gusta cocinar'], es:'Soy profesor de secundaria. Me encanta cantar.', ask:'¿Qué hace y qué le gusta?'}]},
+  {where:'Saliendo del cine', who:'Amiga', turns:[
+    {say:'这部电影怎么样？', p:'zhè bù diàn·yǐng zěn·me·yàng', you:'Es muy entretenida.', ans:[C('很有意思','hěn yǒu yì·si')]},
+    {say:'你明天能来我家吗？', p:'nǐ míng·tiān néng lái wǒ jiā ma', you:'Lo siento, mañana no puedo ir.', ans:[C('对不起，','duì·bu·qǐ'), K.wo, C('明天','míng·tiān'), C('不能','bù néng'), C('去','qù')]}]}
+];
+const DLGK5 = [
+  {where:'Mercado', who:'Vendedora', turns:[
+    {say:'你买什么？', p:'nǐ mǎi shén·me', you:'Disculpe, ¿cuánto cuestan las manzanas el medio kilo?', ans:[C('请问，','qǐng·wèn'), C('苹果','píng·guǒ'), C('多少钱','duō·shao qián'), C('一斤','yì jīn')]},
+    {say:'一斤六块五。', p:'yì jīn liù kuài wǔ', listen:['¥6,50 el medio kilo', '¥5,60 el medio kilo', '¥6 el kilo', '¥65 el medio kilo'], es:'¥6,50 el medio kilo.', ask:'¿Cuánto cuestan?'},
+    {say:'一共十三块。', p:'yí·gòng shí·sān kuài', listen:['¥13', '¥30', '¥3', '¥31'], es:'En total, 13 yuanes.', ask:'¿Cuánto pagas en total?'}]},
+  {where:'Cafetería', who:'Mesero', turns:[
+    {say:'你们喝点儿什么？', p:'nǐ·men hē diǎnr shén·me', you:'Queremos dos tazas de café.', ans:[C('我们','wǒ·men'), K.yao, C('两杯','liǎng bēi'), C('咖啡','kā·fēi')]},
+    {say:'你会做中国菜吗？', p:'nǐ huì zuò Zhōng·guó cài ma', you:'Sí, un poco.', ans:[C('会','huì'), C('一点儿','yì·diǎnr')]}]}
+];
+const DLGK6 = [
+  {where:'En el aeropuerto de Pekín', who:'Amiga china', turns:[
+    {say:'你是怎么来的？', p:'nǐ shì zěn·me lái de', you:'Vine en avión.', ans:[K.wo, K.shi, C('坐','zuò'), C('飞机','fēi·jī'), C('来','lái'), C('的','de')]},
+    {say:'你想去哪儿？', p:'nǐ xiǎng qù nǎr', you:'Quiero ir a la Gran Muralla.', ans:[K.wo, C('想','xiǎng'), C('去','qù'), C('长城','Cháng·chéng')]},
+    {say:'长城离这儿很远，坐车要两个小时。', p:'Cháng·chéng lí zhèr hěn yuǎn, zuò chē yào liǎng ge xiǎo·shí', listen:['Dos horas en carro', 'Diez minutos a pie', 'Dos horas a pie', 'Media hora en carro'], es:'La Gran Muralla está muy lejos: dos horas en carro.', ask:'¿Cuánto se tarda?'}]},
+  {where:'En casa', who:'Hermanito', turns:[
+    {say:'我的小猫呢？', p:'wǒ de xiǎo māo ne', you:'Está debajo de la silla.', ans:[K.zai, C('椅子','yǐ·zi'), C('下面','xià·miàn')]},
+    {say:'你家离学校远吗？', p:'nǐ jiā lí xué·xiào yuǎn ma', you:'No, a diez minutos a pie.', ans:[C('不远，','bù yuǎn'), C('走路','zǒu·lù'), C('十分钟','shí fēn·zhōng')]}]}
+];
+Object.assign(MODULES, {
+  k1:{sec:'hsk', n:1, tab:'Saludos', zh:'您好！你好吗？', p:'nín hǎo! nǐ hǎo ma?', es:'Semana 1 · Saludar con respeto, dónde vives, la edad, el teléfono y la cortesía.', examKey:'examK1', dialogs:DLGK1, dlgItem:'g-k1d', pool:DK1, dlgSub:'Primer día de clase y una llamada'},
+  k2:{sec:'hsk', n:2, tab:'Familia', zh:'她是谁？', p:'tā shì shéi?', es:'Semana 2 · La familia, las mascotas, leer y escribir, idiomas y compañeros.', examKey:'examK2', dialogs:DLGK2, dlgItem:'g-k2a', pool:DK2, dlgSub:'Fotos familiares y la clase de chino'},
+  k3:{sec:'hsk', n:3, tab:'Hora y clima', zh:'现在几点？', p:'xiàn·zài jǐ diǎn?', es:'Semana 3 · Horas con minutos, fechas, cambios del tiempo, dónde estás y lo que ya pasó.', examKey:'examK3', dialogs:DLGK3, dlgItem:'g-k3b', pool:DK3, dlgSub:'Planes, lluvia y una llamada desde China'},
+  k4:{sec:'hsk', n:4, tab:'Trabajo', zh:'你做什么工作？', p:'nǐ zuò shén·me gōng·zuò?', es:'Semana 4 · Profesiones, dónde trabajas, aficiones, el cine y conocer gente.', examKey:'examK4', dialogs:DLGK4, dlgItem:'g-k4e', pool:DK4, dlgSub:'Una fiesta y la salida del cine'},
+  k5:{sec:'hsk', n:5, tab:'Compras', zh:'一共多少钱？', p:'yí·gòng duō·shao qián?', es:'Semana 5 · Ir de compras, precios con céntimos, internet, cocinar y pedir bebidas.', examKey:'examK5', dialogs:DLGK5, dlgItem:'g-k5b', pool:DK5, dlgSub:'Mercado y cafetería'},
+  k6:{sec:'hsk', n:6, tab:'Transporte', zh:'你是怎么来的？', p:'nǐ shì zěn·me lái de?', es:'Semana 6 · Taxi, avión y tren, distancias, 是…的, dónde está algo y lugares bonitos.', examKey:'examK6', dialogs:DLGK6, dlgItem:'g-k6c', pool:DK6, dlgSub:'Llegar a Pekín y buscar al gato'}
+});
+// final exam of the section: like the HSK 1 test, listening and reading from all six routes
+function examPlanHSK(){
+  LV = 1;
+  const mods = Object.keys(MODULES).filter(k => MODULES[k].sec === 'hsk');
+  const all = UNITS.filter(u => mods.includes(u.mod)).flatMap(u => u.items), ex = [];
+  shuffle(all.filter(id => ITEMS[id].kind === 'sent')).slice(0, 8).forEach(id => ex.push(exFor(id, pick(['build','listen']))));
+  shuffle(all.filter(id => ITEMS[id].kind === 'gen')).slice(0, 14).forEach(id => ex.push(exFor(id, pick(GEN_MODES[id].filter(m => m !== 'speak' && m !== 'ask')))));
+  shuffle(all.filter(id => ITEMS[id].kind === 'word')).slice(0, 8).forEach(id => ex.push(exFor(id, pick(['listen','meaning','hanzi']))));
+  return {title:'Examen final HSK 1', exam:true, examKey:'examHSK1', cards:[], ex:shuffle(ex)};
 }
 
 /* ---------- intro cards ---------- */
@@ -2368,20 +3473,26 @@ function g7Over(n, why){
 }
 
 /* ---------- home ---------- */
+const SECS = {base:{tab:'Principiante', sub:'7 rutas'}, hsk:{tab:'HSK 1', sub:'6 semanas'}};
+function secOf(k){ return (MODULES[k] && MODULES[k].sec) || 'base'; }
 function renderStats(){
   document.getElementById('stats').innerHTML = `<span class="chip" title="Días seguidos">${ICON.fire}${S.streak}</span><span class="chip" title="Puntos">${ICON.star}${S.xp}</span>`;
 }
 function renderHome(){
   screen = 'home'; renderStats();
   const due = dueIds().length;
-  const modId = MODULES[S.mod] ? S.mod : Object.keys(MODULES)[0], M = MODULES[modId];
+  const modId = MODULES[S.mod] ? S.mod : Object.keys(MODULES)[0], M = MODULES[modId], sec = secOf(modId);
   const units = UNITS.filter(u => u.mod === modId);
+  const secs = [...new Set(Object.keys(MODULES).map(secOf))];
+  const secUnits = x => UNITS.filter(u => secOf(u.mod) === x);
+  if (document.documentElement.dataset) document.documentElement.dataset.sec = sec;
   const nextU = units.find(u => !S.done[u.id]);
   const noVoice = voicesChecked && !(LANG === 'fr' ? frVoice : zhVoice);
   app.innerHTML = `
   <div class="langs" role="group" aria-label="Idioma que aprendes">${[['zh', '中文 Chino'], ['fr', 'Français · Francés']].map(([l, t]) => `<button class="lang${l === LANG ? ' on' : ''}" data-lang="${l}" aria-pressed="${l === LANG}">${t}</button>`).join('')}</div>
-  <div class="mods" role="tablist" aria-label="Ruta">${Object.keys(MODULES).map(k => `<button class="mod${k === modId ? ' on' : ''}" role="tab" aria-selected="${k === modId}" data-mod="${k}">${MODULES[k].tab}</button>`).join('')}</div>
-  <section class="hero"><div class="eyebrow">Ruta ${M.n} · ${M.tab}</div>
+  ${secs.length > 1 ? `<div class="secs" role="group" aria-label="Nivel del curso">${secs.map(x => `<button class="sec${x === sec ? ' on' : ''}" data-sec="${x}" aria-pressed="${x === sec}"><b>${SECS[x].tab}</b><small>${SECS[x].sub} · ${secUnits(x).filter(u => S.done[u.id]).length}/${secUnits(x).length}</small></button>`).join('')}</div>` : ''}
+  <div class="mods" role="tablist" aria-label="Ruta">${Object.keys(MODULES).filter(k => secOf(k) === sec).map(k => `<button class="mod${k === modId ? ' on' : ''}" role="tab" aria-selected="${k === modId}" data-mod="${k}">${MODULES[k].tab}</button>`).join('')}</div>
+  <section class="hero"><div class="eyebrow">${sec === 'hsk' ? `HSK 1 · Semana ${M.n}` : `Ruta ${M.n}`} · ${M.tab}</div>
     <div class="han">${M.zh}</div>
     <div class="py">${pyHTML(M.p)} <button class="audio" data-say="${M.zh}" aria-label="Escuchar">${ICON.play}</button></div>
     <div class="muted">${esc(M.es)}</div>
@@ -2412,6 +3523,7 @@ function renderHome(){
       : modId === 'm2'
       ? `<button class="act" id="aG7"><b><span class="han">逢七过</span> No digas 7</b><span>${S.best7 ? `Récord: ${S.best7}` : 'Un juego clásico para contar'}</span></button>`
       : `<button class="act" id="aDlg"><b>Diálogos</b><span>${esc(M.dlgSub || 'Restaurante, mercado y más')}</span></button>`}
+    ${sec === 'hsk' ? `<button class="act primary" id="aFinal" style="grid-column:1/-1"><b>Examen final HSK 1</b><span>${S.examHSK1 != null ? `Mejor: ${S.examHSK1}% · ` : ''}Escuchar y leer, con lo de las seis semanas</span></button>` : ''}
   </div>
   <section class="method"><h2>Cómo está pensado</h2><ol>
     <li><b>Lecciones cortas</b> de 3 a 5 minutos: primero ves y escuchas la palabra, luego la practicas.</li>
@@ -2435,6 +3547,16 @@ function renderHome(){
   else document.getElementById('aDlg').onclick = () => startSession(M.dlgPlan ? M.dlgPlan() : M.dialogs ? dialogPlan(M.dialogs, M.dlgItem, M.pool) : dialogPlan());
   app.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => { if (b.dataset.lang !== LANG) setLang(b.dataset.lang); });
   app.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => { if (S.mod !== b.dataset.mod){ S.mod = b.dataset.mod; save(); renderHome(); } });
+  // each section remembers its last route
+  app.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => {
+    const to = b.dataset.sec; if (to === sec) return;
+    S.secMod = S.secMod || {}; S.secMod[sec] = modId;
+    const back = S.secMod[to];
+    S.mod = MODULES[back] && secOf(back) === to ? back : Object.keys(MODULES).find(k => secOf(k) === to);
+    save(); renderHome();
+  });
+  const fin = document.getElementById('aFinal');
+  if (fin) fin.onclick = () => startSession(examPlanHSK());
   const rs = document.getElementById('reset');
   rs.onclick = () => {
     if (rs.dataset.arm){ S = fresh(); save(); renderHome(); return; }
@@ -2476,9 +3598,10 @@ function cleanState(o){
   const int = (x, lo, hi) => num(x) ? Math.min(hi, Math.max(lo, Math.round(x))) : lo;
   const N = fresh();
   if (MODULES[o.mod]) N.mod = o.mod;
+  if (o.secMod && typeof o.secMod === 'object') Object.keys(o.secMod).forEach(k => { if (MODULES[o.secMod[k]] && secOf(o.secMod[k]) === k) (N.secMod = N.secMod || {})[k] = o.secMod[k]; });
   N.xp = int(o.xp, 0, 1e7); N.streak = int(o.streak, 0, 1e5); N.best7 = int(o.best7, 0, 1e4);
   if (num(o.lastDay)) N.lastDay = Math.round(o.lastDay);
-  [...new Set(['examBest', 'examBest1', 'examBest3', 'examBest4', 'examBest5', 'examBest6', 'examBest7', ...Object.values(MODULES).map(m => m.examKey)])].forEach(k => { if (num(o[k])) N[k] = int(o[k], 0, 100); });
+  [...new Set(['examBest', 'examBest1', 'examBest3', 'examBest4', 'examBest5', 'examBest6', 'examBest7', 'examHSK1', ...Object.values(MODULES).map(m => m.examKey)])].forEach(k => { if (num(o[k])) N[k] = int(o[k], 0, 100); });
   for (const u of UNITS){
     if (o.done && o.done[u.id]) N.done[u.id] = int(o.done[u.id], 1, 1e5);
     const L = o.lvl && o.lvl[u.id];

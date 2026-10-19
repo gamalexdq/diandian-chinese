@@ -30,6 +30,10 @@ Dos rutas que siguen el orden de las unidades 0 y 1 de un manual A1. El contenid
 
 ## Chino
 
+Dos secciones, que se eligen arriba en el inicio: **Principiante** y **HSK 1**. Cada una guarda la última ruta que abriste.
+
+### Principiante
+
 - **Siete rutas**
   - **Preséntate:** saludos, los cuatro tonos, sonidos difíciles, nacionalidades, estudios y familia.
   - **La hora:** números del 1 al 99, la hora, las partes del día y la rutina diaria.
@@ -38,6 +42,22 @@ Dos rutas que siguen el orden de las unidades 0 y 1 de un manual A1. El contenid
   - **Ciudad:** transporte, qué hay cerca (有/没有), dónde está (在) y cómo llegar.
   - **Clima:** el tiempo, los grados, los meses, las estaciones (en Pekín y en Lima) y cómo te sientes.
   - **Aficiones:** los días de la semana, invitar a alguien, deportes, la tele e internet.
+
+### HSK 1
+
+Sigue el temario de un curso HSK 1 de seis semanas. Cada semana es una ruta con cinco unidades (una por lección) y una de frases completas. Los temas vienen del temario; las frases y los ejercicios son propios. Usa otro color de acento para que se note en qué sección estás.
+
+- **Saludos:** 您 y 你们, 你好吗？ y 呢, dónde vives (住在), la edad (岁, 多大, 几岁), el número de teléfono con el 1 que se dice yāo, y la cortesía (请, 不客气, 没关系).
+- **Familia:** 谁 y 的, mascotas con 只, 个 y 两 (nunca 二只), libros con 本, 会 + idiomas, 也, 都 y 和.
+- **Hora y clima:** horas con 分, 半 y 零; fechas (月, 号, el año cifra por cifra, 生日); 下雨了 y el 了 de cambio; 在 + lugar; 了 y 没 para lo que ya pasó.
+- **Trabajo:** profesiones, 在医院工作 (y la trampa 工作在医院), 想 y 能, aficiones con 爱, el cine (部, 好看, 有意思) y 认识 frente a 知道.
+- **Compras:** 买 y 卖, precios con 块 y 毛, 一共 y 斤, comprar por internet, 会做中国菜 y pedir bebidas con 杯 y 瓶.
+- **Transporte:** taxi, avión y tren, 离 + 远/近 y cuánto se tarda (分钟 frente a 分), 是…的, dónde está algo (上, 下面, 呢) y 太…了.
+- **Ejercicios nuevos:** dictar teléfonos, leer horas con minutos, armar fechas, sumar precios, una escena para ubicar al gato y respuestas que cambian según la pista.
+- **Examen final HSK 1** con lo de las seis semanas, además del examen y los diálogos de cada ruta.
+
+### En las dos secciones
+
 - **Tres niveles por unidad.** Si sacas 90% o más al primer intento se abre el siguiente nivel. El umbral es la constante `PASS_PCT` en `index.html`.
   - **N1:** tarjetas de introducción, y luego pasas de reconocer a producir.
   - **N2:** sin pinyin, más dictados y caracteres que armas uno por uno.
