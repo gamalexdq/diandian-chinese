@@ -1,8 +1,8 @@
 # Diǎn Diǎn 点点
 
-Aprende chino mandarín o francés en sesiones cortas: repaso espaciado, pronunciación escrita y ejercicios generados. Un solo archivo HTML, sin instalar nada.
+Aprende chino mandarín o francés en sesiones cortas: repaso espaciado, pronunciación escrita y ejercicios generados. HTML, CSS y JavaScript sin compilar, sin instalar nada.
 
-*Learn Mandarin or French in short bursts: spaced repetition, written pronunciation, and generated exercises. Single HTML file, no install. (UI in Spanish.)*
+*Learn Mandarin or French in short bursts: spaced repetition, written pronunciation, and generated exercises. Plain HTML, CSS and JS, no build, no install. (UI in Spanish.)*
 
 **Pruébalo:** https://gamalexdq.github.io/diandian-chinese/ (chino) · https://gamalexdq.github.io/diandian-chinese/?lang=fr (francés)
 
@@ -19,7 +19,7 @@ Dos rutas que siguen el orden de las unidades 0 y 1 de un manual A1. El contenid
   - être, avoir y s'appeler;
   - gustos con le, la, l' y les;
   - números del 32 al 100;
-  - à, au, en y aux con países y ciudades;
+  - à, au, en y aux con países y ciudades. Los países no se traducen eligiendo entre cuatro opciones, porque se parecen demasiado al español. En cambio se relacionan con su artículo (le, la, l', les) o con su preposición, se completa el hueco y se escriben;
   - teléfono y correo;
   - ne… pas;
   - profesiones;
@@ -58,13 +58,13 @@ Sigue el temario de un curso HSK 1 de seis semanas. Cada semana es una ruta con 
 
 ### En las dos secciones
 
-- **Tres niveles por unidad.** Si sacas 90% o más al primer intento se abre el siguiente nivel. El umbral es la constante `PASS_PCT` en `index.html`.
+- **Tres niveles por unidad.** Si sacas 90% o más al primer intento se abre el siguiente nivel. El umbral es la constante `PASS_PCT` en `js/core/state.js`.
   - **N1:** tarjetas de introducción, y luego pasas de reconocer a producir.
   - **N2:** sin pinyin, más dictados y caracteres que armas uno por uno.
   - **N3:** frases nuevas generadas en cada sesión.
 - **Repaso espaciado (cajas de Leitner).** Si aciertas una palabra vuelve en 1, 2, 4, 8, 16 y 32 días. Si la fallas, vuelve mañana.
 - **Lo que fallas vuelve** al final de la misma lección.
-- **Ejercicios:** reconocer tonos de oído, opción múltiple, armar frases con fichas, escribir pinyin, dictado, hablar en voz alta con autoevaluación, responder preguntas y formular preguntas.
+- **Ejercicios:** reconocer tonos de oído, opción múltiple, relacionar en dos columnas, armar frases con fichas, escribir pinyin, dictado, hablar en voz alta con autoevaluación, responder preguntas y formular preguntas.
 - **Extras:** entrenamiento de oído (tonos y pares de sonidos), diálogos de situaciones cotidianas, un examen por ruta y el juego 逢七过 («no digas 7»).
 - **Ejercicios con dibujos:** muestras de color, etiquetas de precio, un plano de la calle, flechas de ruta, el pronóstico del tiempo y un calendario.
 - **Varias respuestas válidas:** si el chino admite otro orden (每天我… o 我每天…) o dos formas (红色 o 红的), las dos cuentan.
@@ -86,13 +86,29 @@ El progreso se guarda en `localStorage`, así que queda solo en ese navegador y 
 
 ## Estructura
 
-Todo está en `index.html`:
+`index.html` solo tiene el marco de la página y carga, en orden, `css/app.css` y los scripts. Son scripts clásicos (no módulos), así que comparten las variables globales y la app sigue funcionando al abrir `index.html` directo desde el disco. El orden de carga importa: cada archivo puede usar lo que definen los anteriores.
 
-- **`ITEMS`:** palabras y frases. Cada sílaba de pinyin se separa con `·`.
-- **`UNITS` y `MODULES`:** las unidades y las rutas.
-- **`lessonPlan`, `lessonPlan2` y `lessonPlan3`:** generan cada nivel.
-- **`startSession` → `renderEx` → `grade` → `advance`:** el motor de la sesión.
-- **`srsMark` y `dueIds`:** el repaso espaciado.
-- **`LANG`:** el idioma (`?lang=fr` o `?lang=zh`). El bloque «Francés» al final del script reemplaza `ITEMS`, `UNITS`, `MODULES` y los generadores, y adapta `wordEx`, `sentEx` y `cardHTML`. En las frases, `_` une dos palabras en una ficha y `|` separa una palabra en dos (`n'|aime`).
+- **`js/core/`:** lo que no depende del idioma.
+  - `util.js`: utilidades, `LANG`, el pinyin y los números.
+  - `state.js`: el progreso y `PASS_PCT`.
+  - `audio.js`: la voz del sistema.
+  - `exercises.js`: los constructores de ejercicios (`wordEx`, `sentEx`, `exFor`).
+  - `plans.js`: `lessonPlan`, `lessonPlan2` y `lessonPlan3` generan cada nivel.
+  - `cards.js`: las tarjetas de introducción.
+  - `session.js`: el motor de la sesión, `startSession` → `renderEx` → `grade` → `advance`. Tipos de ejercicio: `mc`, `tiles`, `type`, `digits`, `speak` y `match` (relacionar).
+  - `game7.js`: el juego 逢七过.
+  - `home.js`: el inicio.
+  - `share.js`: llevar el progreso a otro dispositivo y el teclado.
+- **`js/zh/principiante/`:** las siete rutas de Principiante, un archivo por ruta. `rutas.js` arma las unidades, los diálogos y `MODULES`.
+- **`js/zh/hsk1/`:** la sección HSK 1. `base.js` tiene los ayudantes, hay un archivo por semana, y `rutas.js` tiene los diálogos y el examen final.
+- **`js/fr/`:** el francés. Solo se carga con `?lang=fr`, después del chino, y reemplaza `ITEMS`, `UNITS`, `MODULES` y los generadores. También adapta `wordEx`, `sentEx` y `cardHTML`.
+  - `base.js`: los ayudantes.
+  - `bienvenue.js` y `et-vous.js`: las dos rutas.
+  - `rutas.js`: los modos, los niveles, las unidades y los diálogos.
+  - `engine.js`: las piezas del motor que dependen del idioma.
+  - En las frases, `_` une dos palabras en una ficha y `|` separa una palabra en dos (`n'|aime`).
+- **`js/main.js`:** dibuja el inicio cuando ya cargó todo.
 
-Para agregar vocabulario, crea un ítem con `W(id, unidad, hanzi, pinyin, español, pista)` y agrega su `id` a la unidad que corresponda en `UNITS`.
+Datos principales: `ITEMS` (palabras y frases; cada sílaba de pinyin se separa con `·`), `UNITS` y `MODULES` (unidades y rutas), y `srsMark` y `dueIds` (el repaso espaciado).
+
+Para agregar vocabulario, crea un ítem con `W(id, unidad, hanzi, pinyin, español, pista)` en el archivo de su ruta y agrega su `id` a la unidad que corresponda en `UNITS`.
