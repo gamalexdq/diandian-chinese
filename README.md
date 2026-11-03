@@ -10,7 +10,7 @@ El idioma se cambia arriba, en el inicio. Cada idioma guarda su propio progreso.
 
 ## Francés (nivel A1)
 
-Tres rutas que siguen el orden de las unidades 0, 1 y 2 de un manual A1. El contenido es propio: los temas y el vocabulario vienen del temario, pero los textos y los ejercicios están escritos para la app.
+Cuatro rutas que siguen el orden de las unidades 0 a 3 de un manual A1. El contenido es propio: los temas y el vocabulario vienen del temario, pero los textos y los ejercicios están escritos para la app.
 
 - **Bienvenue (unidad 0), con 8 unidades:** saludos y tu/vous, el alfabeto (deletrear y siglas), presentarse, números del 0 al 31 con cuentas, días, meses, estaciones y fechas, y frases para la clase.
 - **Et vous ? (unidad 1), con 10 unidades:**
@@ -34,10 +34,20 @@ Tres rutas que siguen el orden de las unidades 0, 1 y 2 de un manual A1. El cont
   - quel, quelle, quels y quelles, y la entonación de las preguntas;
   - más profesiones: el femenino según la terminación y dónde trabaja cada una;
   - leer un foro sobre el lugar preferido y escribir un SMS con el camino.
+- **Qu'est-ce qu'on mange ? (unidad 3), con 9 unidades:**
+  - las tiendas y qué vende cada una, con à la boulangerie frente a chez le boulanger;
+  - el plural que no se oye, la e final muda frente a la é y las consonantes finales mudas;
+  - du, de la, des y el pas de;
+  - cantidades (un kilo de, une bouteille d', un peu de…) y cómo tomas el café;
+  - el pronombre en (j'en veux, je n'en mange pas);
+  - hacer las compras: quién dice qué, los precios en euros y responder al vendedor;
+  - horarios de apertura en carteles: ¿está abierto el martes a las 15 h?;
+  - el restaurante: la mesa, pedir y leer el menú de la semana (¿qué día no hay carne?);
+  - gustos (j'adore, je déteste) frente a du/de la, y opiniones positivas o negativas.
 - **Planos dibujados en la app:** el barrio y el metro son SVG propios. Los lugares, transportes y profesiones usan emojis en lugar de traducción.
 - **Pronunciación escrita con letras del español** (por ejemplo `bõ·zhur`). Solo se muestra en N1, igual que el pinyin.
 - **Trampas a propósito:** «Je ai», «le 14 de juillet», «Il est un médecin», «Je suis 20 ans», ils ont / ils sont.
-- **Diálogos:** en clase, en el tren, entre voluntarios, al intercambiar contactos, en la calle, en el metro y en la oficina de turismo.
+- **Diálogos:** en clase, en el tren, entre voluntarios, al intercambiar contactos, en la calle, en el metro, en la oficina de turismo, en el mercado, en la panadería, en el restaurante y en el café.
 
 ## Chino
 
@@ -116,6 +126,7 @@ El progreso se guarda en `localStorage`, así que queda solo en ese navegador y 
   - `base.js`: los ayudantes.
   - `bienvenue.js` y `et-vous.js`: las rutas 1 y 2.
   - `on-va-ou.js`: la ruta 3, con sus unidades, diálogos y los planos.
+  - `on-mange.js`: la ruta 4, con los carteles de horario y el menú.
   - `rutas.js`: los modos, los niveles, las unidades y los diálogos.
   - `engine.js`: las piezas del motor que dependen del idioma.
   - En las frases, `_` une dos palabras en una ficha y `|` separa una palabra en dos (`n'|aime`).

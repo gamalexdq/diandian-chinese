@@ -225,6 +225,21 @@ html.fr .qtext.han{font-size:24px}
 .forum .post{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border-top:1px solid var(--line)}
 .forum .post .av{font-size:26px;line-height:1}
 .forum .post p{margin:0;font-size:16px;line-height:1.4}
+/* francés, unidad 3: the opening-hours sign and the week's menu */
+.sign{display:grid;gap:3px;justify-items:center;text-align:center;margin:6px auto;padding:12px 16px;max-width:300px;border-radius:12px;background:var(--ink);color:var(--surface);font-family:var(--f-body)}
+.sign b{font-family:var(--f-display);font-size:18px}
+.sign .hrs{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.sign small{opacity:.8;font-size:13px}
+.opt .sign{margin:0;padding:8px;max-width:none;width:100%}
+.opt .sign b{font-size:14px} .opt .sign .hrs{font-size:15px} .opt .sign span,.opt .sign small{font-size:12px}
+.menu{text-align:left;border:2px solid var(--line);border-radius:var(--r);overflow:hidden;margin:4px 0 8px}
+.menu .mhead{background:var(--accent-soft);padding:8px 12px;font-weight:700;font-size:15px}
+.menu .mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.menu .mday{display:grid;gap:4px;align-content:start;padding:8px;border-left:1px solid var(--line);font-size:13px;line-height:1.25;overflow-wrap:anywhere}
+.menu .mday:first-child{border-left:0}
+.menu .mday b{text-transform:capitalize;font-size:14px}
+.menu .mplat{font-weight:700}
+@media (max-width:420px){.menu .mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.menu .mday:nth-child(3){border-left:0}.menu .mday:nth-child(n+3){border-top:1px solid var(--line)}}
 .tray{min-height:76px;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding-bottom:10px}
 .bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .tile{border:2px solid var(--line);border-bottom-width:4px;background:var(--surface);border-radius:12px;padding:6px 12px;display:grid;justify-items:center;line-height:1.2}
