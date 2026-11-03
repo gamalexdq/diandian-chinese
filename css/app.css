@@ -208,6 +208,23 @@ html.fr .qtext.han{font-size:24px}
 .mt[data-p="4"]{border-color:var(--t4)}.mt[data-p="4"]::after{background:var(--t4)}
 .mt.ok{background:var(--good-soft)}
 .mt.no{background:var(--bad-soft);text-decoration:line-through}
+/* francés, unidad 2: pictures in options, the street plan, the metro and the forum */
+.opt .emo{font-size:40px;line-height:1.1}
+.waymap{display:block;width:min(200px,62vw);height:auto;margin:6px auto}
+.opt .waymap{width:100%;max-width:130px;margin:0 auto}
+.wm-b{fill:var(--sunk)} .wm-s{stroke:var(--surface);stroke-width:16}
+.wm-r{fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.wm-me{fill:var(--accent)} .wm-ec{fill:var(--surface);stroke:var(--accent);stroke-width:2.5} .wm-e{font-size:17px}
+.metro{display:block;width:100%;max-width:440px;height:auto;margin:6px auto;color:var(--ink)}
+.mt-bg{fill:var(--sunk)} .mt-n{fill:#fff;font-size:10px;font-weight:700}
+.mt-s{fill:var(--surface);stroke:var(--ink);stroke-width:2} .mt-s.a{fill:var(--ink)} .mt-s.b{fill:var(--accent);stroke:var(--accent)}
+.mt-l{fill:currentColor;font-size:10px;font-family:var(--f-body)} .mt-l.hot{font-weight:700;font-size:11px}
+.forum{text-align:left;border:2px solid var(--line);border-radius:var(--r);overflow:hidden;margin:4px 0 8px}
+.forum .fhead{background:var(--accent-soft);padding:8px 12px;display:grid}
+.forum .fhead small{color:var(--muted);font-size:12px}
+.forum .post{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border-top:1px solid var(--line)}
+.forum .post .av{font-size:26px;line-height:1}
+.forum .post p{margin:0;font-size:16px;line-height:1.4}
 .tray{min-height:76px;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding-bottom:10px}
 .bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .tile{border:2px solid var(--line);border-bottom-width:4px;background:var(--surface);border-radius:12px;padding:6px 12px;display:grid;justify-items:center;line-height:1.2}

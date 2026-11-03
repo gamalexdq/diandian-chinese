@@ -19,6 +19,16 @@ wordEx = function(it, mode){
   const rev = {h:it.h, p:it.p, es:it.es};
   const frO = x => ({v:x.id, say:x.h, html:`<span class="han">${esc(x.h)}</span>${LV >= 2 ? '' : `<small>${pyHTML(x.p)}</small>`}`});
   const wide = all.some(x => x.h.length > 14);
+  // words with a picture: the picture stands in for the Spanish, so you link the word to the thing
+  if (it.e && (mode === 'meaning' || mode === 'pick')){
+    const pics = frOthers(it, 40).filter(x => x.e && x.e !== it.e && x.cat === it.cat).slice(0, 3);
+    if (pics.length === 3){
+      const four = shuffle([it, ...pics]);
+      if (mode === 'meaning') return {t:'mc', item:it.id, kind:'¿Qué es?', say:it.h, q:`<div class="frbig han">${esc(it.h)}</div><div class="pybig">${pyHint(it.p)}</div>${audioBtns(it.h)}`,
+        options:four.map(x => ({v:x.id, html:`<span class="emo">${x.e}</span>`})), answer:it.id, rev};
+      return {t:'mc', item:it.id, kind:'¿Cómo se dice en francés?', q:`<div class="pic">${it.e}</div>`, options:four.map(frO), answer:it.id, rev, wide:four.some(x => x.h.length > 14)};
+    }
+  }
   switch (mode){
     case 'meaning': return {t:'mc', item:it.id, kind:'¿Qué significa?', say:it.h, q:`<div class="frbig han">${esc(it.h)}</div><div class="pybig">${pyHint(it.p)}</div>${audioBtns(it.h)}`,
       options:all.map(x => ({v:x.id, html:esc(x.es)})), answer:it.id, rev, wide:all.some(x => x.es.length > 16)};

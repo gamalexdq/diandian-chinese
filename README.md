@@ -10,7 +10,7 @@ El idioma se cambia arriba, en el inicio. Cada idioma guarda su propio progreso.
 
 ## Francés (nivel A1)
 
-Dos rutas que siguen el orden de las unidades 0 y 1 de un manual A1. El contenido es propio: los temas y el vocabulario vienen del temario, pero los textos y los ejercicios están escritos para la app.
+Tres rutas que siguen el orden de las unidades 0, 1 y 2 de un manual A1. El contenido es propio: los temas y el vocabulario vienen del temario, pero los textos y los ejercicios están escritos para la app.
 
 - **Bienvenue (unidad 0), con 8 unidades:** saludos y tu/vous, el alfabeto (deletrear y siglas), presentarse, números del 0 al 31 con cuentas, días, meses, estaciones y fechas, y frases para la clase.
 - **Et vous ? (unidad 1), con 10 unidades:**
@@ -24,9 +24,20 @@ Dos rutas que siguen el orden de las unidades 0 y 1 de un manual A1. El contenid
   - ne… pas;
   - profesiones;
   - la ficha de identidad.
+- **On va où ? (unidad 2), con 9 unidades:**
+  - la ciudad: lugares con su artículo y adivinanzas;
+  - un, une y des frente a le, la, l' y les (y el des obligatorio en plural);
+  - los verbos en -er en presente y cuáles formas suenan igual;
+  - indicar el camino sobre un plano del barrio, con à + le = au;
+  - los transportes: en o à, prendre y qué conviene según la distancia;
+  - el metro: un plano con tres líneas para elegir línea, dirección y dónde cambiar, y ordenar el itinerario;
+  - quel, quelle, quels y quelles, y la entonación de las preguntas;
+  - más profesiones: el femenino según la terminación y dónde trabaja cada una;
+  - leer un foro sobre el lugar preferido y escribir un SMS con el camino.
+- **Planos dibujados en la app:** el barrio y el metro son SVG propios. Los lugares, transportes y profesiones usan emojis en lugar de traducción.
 - **Pronunciación escrita con letras del español** (por ejemplo `bõ·zhur`). Solo se muestra en N1, igual que el pinyin.
 - **Trampas a propósito:** «Je ai», «le 14 de juillet», «Il est un médecin», «Je suis 20 ans», ils ont / ils sont.
-- **Diálogos:** en clase, en el tren, entre voluntarios y al intercambiar contactos.
+- **Diálogos:** en clase, en el tren, entre voluntarios, al intercambiar contactos, en la calle, en el metro y en la oficina de turismo.
 
 ## Chino
 
@@ -103,7 +114,8 @@ El progreso se guarda en `localStorage`, así que queda solo en ese navegador y 
 - **`js/zh/hsk1/`:** la sección HSK 1. `base.js` tiene los ayudantes, hay un archivo por semana, y `rutas.js` tiene los diálogos y el examen final.
 - **`js/fr/`:** el francés. Solo se carga con `?lang=fr`, después del chino, y reemplaza `ITEMS`, `UNITS`, `MODULES` y los generadores. También adapta `wordEx`, `sentEx` y `cardHTML`.
   - `base.js`: los ayudantes.
-  - `bienvenue.js` y `et-vous.js`: las dos rutas.
+  - `bienvenue.js` y `et-vous.js`: las rutas 1 y 2.
+  - `on-va-ou.js`: la ruta 3, con sus unidades, diálogos y los planos.
   - `rutas.js`: los modos, los niveles, las unidades y los diálogos.
   - `engine.js`: las piezas del motor que dependen del idioma.
   - En las frases, `_` une dos palabras en una ficha y `|` separa una palabra en dos (`n'|aime`).
