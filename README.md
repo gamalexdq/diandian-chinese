@@ -10,7 +10,7 @@ El idioma se cambia arriba, en el inicio. Cada idioma guarda su propio progreso.
 
 ## Francés (nivel A1)
 
-Cuatro rutas que siguen el orden de las unidades 0 a 3 de un manual A1. El contenido es propio: los temas y el vocabulario vienen del temario, pero los textos y los ejercicios están escritos para la app.
+Cinco rutas que siguen el orden de las unidades 0 a 4 de un manual A1. El contenido es propio: los temas y el vocabulario vienen del temario, pero los textos y los ejercicios están escritos para la app.
 
 - **Bienvenue (unidad 0), con 8 unidades:** saludos y tu/vous, el alfabeto (deletrear y siglas), presentarse, números del 0 al 31 con cuentas, días, meses, estaciones y fechas, y frases para la clase.
 - **Et vous ? (unidad 1), con 10 unidades:**
@@ -44,10 +44,21 @@ Cuatro rutas que siguen el orden de las unidades 0 a 3 de un manual A1. El conte
   - horarios de apertura en carteles: ¿está abierto el martes a las 15 h?;
   - el restaurante: la mesa, pedir y leer el menú de la semana (¿qué día no hay carne?);
   - gustos (j'adore, je déteste) frente a du/de la, y opiniones positivas o negativas.
-- **Planos dibujados en la app:** el barrio y el metro son SVG propios. Los lugares, transportes y profesiones usan emojis en lugar de traducción.
+- **Les soldes, c'est parti ! (unidad 4), con 10 unidades:**
+  - la ropa con su artículo, porter y mettre;
+  - accesorios, materiales (en cuir, en laine…) y dar tu opinión (ça me plaît, quelle horreur !), con un blog para leer;
+  - los colores y su concordancia (noire, blanche, marron que no cambia);
+  - el género y el número de los adjetivos (beau, belle, beaux) y distinguir de oído masculino y femenino;
+  - el lugar del adjetivo: une jolie robe rouge;
+  - el tiempo sobre un mapa de Francia dibujado en la app, las temperaturas bajo cero y qué ponerse según el tiempo;
+  - las rebajas: taille y pointure, la tabla de tallas, calcular el precio con descuento y un quiz de cultura (Quebec, la marinière);
+  - los objetos tecnológicos y para qué sirven (ça sert à…);
+  - objetos perdidos: describir forma, peso, tamaño y color, y ce, cet, cette, ces;
+  - el futuro próximo y el pasado reciente sobre una línea de tiempo, con la elisión y la liaison.
+- **Planos dibujados en la app:** el barrio, el metro y el mapa del tiempo son SVG propios. Los lugares, transportes y profesiones usan emojis en lugar de traducción.
 - **Pronunciación escrita con letras del español** (por ejemplo `bõ·zhur`). Solo se muestra en N1, igual que el pinyin.
 - **Trampas a propósito:** «Je ai», «le 14 de juillet», «Il est un médecin», «Je suis 20 ans», ils ont / ils sont.
-- **Diálogos:** en clase, en el tren, entre voluntarios, al intercambiar contactos, en la calle, en el metro, en la oficina de turismo, en el mercado, en la panadería, en el restaurante y en el café.
+- **Diálogos:** en clase, en el tren, entre voluntarios, al intercambiar contactos, en la calle, en el metro, en la oficina de turismo, en el mercado, en la panadería, en el restaurante, en el café, en la tienda de ropa, en objetos perdidos y en la tienda de tecnología.
 
 ## Chino
 
@@ -127,6 +138,7 @@ El progreso se guarda en `localStorage`, así que queda solo en ese navegador y 
   - `bienvenue.js` y `et-vous.js`: las rutas 1 y 2.
   - `on-va-ou.js`: la ruta 3, con sus unidades, diálogos y los planos.
   - `on-mange.js`: la ruta 4, con los carteles de horario y el menú.
+  - `soldes.js`: la ruta 5, con el mapa del tiempo, las etiquetas de rebaja y la línea de tiempo.
   - `rutas.js`: los modos, los niveles, las unidades y los diálogos.
   - `engine.js`: las piezas del motor que dependen del idioma.
   - En las frases, `_` une dos palabras en una ficha y `|` separa una palabra en dos (`n'|aime`).

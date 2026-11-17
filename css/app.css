@@ -240,6 +240,21 @@ html.fr .qtext.han{font-size:24px}
 .menu .mday b{text-transform:capitalize;font-size:14px}
 .menu .mplat{font-weight:700}
 @media (max-width:420px){.menu .mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.menu .mday:nth-child(3){border-left:0}.menu .mday:nth-child(n+3){border-top:1px solid var(--line)}}
+/* unidad 4: mapa del tiempo, tallas, etiqueta de rebaja, línea de tiempo y formas */
+.wxmap{display:block;width:min(320px,88vw);height:auto;margin:4px auto}
+.wm-fr{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2;stroke-linejoin:round}
+.wm-dot{fill:var(--ink)} .wm-ic{font-size:15px} .wm-tp{font:800 11px var(--f-display);fill:var(--ink)} .wm-ct{font:700 9.5px var(--f-body);fill:var(--ink)}
+.sizes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:2px solid var(--line);border-radius:12px;overflow:hidden;margin:4px auto 8px;max-width:360px}
+.sizes span{display:grid;gap:2px;justify-items:center;padding:6px 2px;border-left:1px solid var(--line);font-size:13px;font-variant-numeric:tabular-nums}
+.sizes span:first-child{border-left:0} .sizes b{font-family:var(--f-display);font-size:16px}
+.ptag{display:inline-grid;justify-items:center;gap:2px;padding:10px 22px;border:3px dashed var(--line);border-radius:18px;font-variant-numeric:tabular-nums}
+.ptag s{color:var(--muted);font-size:22px} .ptag b{font-family:var(--f-display);font-size:30px;color:var(--bad)} .ptag small{color:var(--muted);font-size:13px}
+.tline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:4px auto 8px;width:min(340px,100%)}
+.tline div{display:grid;gap:2px;justify-items:center;padding:8px 4px;border:2px solid var(--line);border-radius:12px;font-size:13px;color:var(--muted)}
+.tline .now{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:700}
+.tline i{font-style:normal;font-size:34px;line-height:1.1}
+.shape{display:block;margin:6px auto;background:var(--t2)}
+.shape.sh-r{width:76px;height:76px;border-radius:50%} .shape.sh-c{width:76px;height:76px;border-radius:8px} .shape.sh-x{width:120px;height:62px;border-radius:8px}
 .tray{min-height:76px;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding-bottom:10px}
 .bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .tile{border:2px solid var(--line);border-bottom-width:4px;background:var(--surface);border-radius:12px;padding:6px 12px;display:grid;justify-items:center;line-height:1.2}
